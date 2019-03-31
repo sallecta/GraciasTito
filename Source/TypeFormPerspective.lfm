@@ -1,4 +1,4 @@
-object frmControlVista: TfrmControlVista
+object FormPerspective: TFormPerspective
   Left = 167
   Height = 210
   Top = 441

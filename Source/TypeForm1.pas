@@ -5,7 +5,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, ActnList, Menus,
   StdCtrls, ComCtrls, LCLProc, LCLType, Buttons, MisUtils, FormConfig,
   FrameCfgGeneral, CadDefinitions, frameVisorGraf, FormProject,
-  Globales, FrameExplorProyectos, FormControlVista, FormVistaProp,
+  Globales, FrameExplorProyectos, TypeFormPerspective, FormVistaProp,
   VisGraf3D;
 const
   NUM_CUAD = 20;
@@ -504,7 +504,7 @@ end;
 procedure TForm1.acVerConVistaExecute(Sender: TObject);
 begin
   if curProject = nil then exit;
-  frmControlVista.Exec(curProject.ActivePage.vista);
+  FormPerspective.Exec(curProject.ActivePage.vista);
 end;
 procedure TForm1.acVerVisSupExecute(Sender: TObject);
 begin

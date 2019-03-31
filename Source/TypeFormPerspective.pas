@@ -1,5 +1,5 @@
 {Formulario para controlar la vista de un objeto "frameGrafEditor"}
-unit FormControlVista;
+unit TypeFormPerspective;
 {$mode objfpc}{$H+}
 interface
 uses
@@ -7,9 +7,9 @@ uses
   Spin, ExtCtrls, frameVisorGraf;
 type
 
-  { TfrmControlVista }
+  { TFormPerspective }
 
-  TfrmControlVista = class(TForm)
+  TFormPerspective = class(TForm)
     btnFijar: TButton;
     btnLeer: TButton;
     btnLimpiar: TButton;
@@ -42,12 +42,12 @@ type
   end;
 
 var
-  frmControlVista: TfrmControlVista;
+  FormPerspective: TFormPerspective;
 
 implementation
 {$R *.lfm}
 
-procedure TfrmControlVista.btnLeerClick(Sender: TObject);
+procedure TFormPerspective.btnLeerClick(Sender: TObject);
 begin
   spnXdesp.Value:= fraEditor.xDes;
   spnYdesp.Value:= fraEditor.yDes;
@@ -60,7 +60,7 @@ begin
   spnZoom.Value := fraEditor.Zoom;
 
 end;
-procedure TfrmControlVista.btnLimpiarClick(Sender: TObject);
+procedure TFormPerspective.btnLimpiarClick(Sender: TObject);
 begin
   spnAlfa.Value := 0;
   spnFi.Value := 0;
@@ -68,7 +68,7 @@ begin
   btnFijarClick(self);
   fraEditor.PaintBox1.Invalidate;
 end;
-procedure TfrmControlVista.btnFijarClick(Sender: TObject);
+procedure TFormPerspective.btnFijarClick(Sender: TObject);
 begin
   fraEditor.xDes := spnXdesp.Value;
   fraEditor.yDes := spnYdesp.Value;
@@ -82,22 +82,22 @@ begin
   fraEditor.PaintBox1.Invalidate;
 end;
 
-procedure TfrmControlVista.spnAlfaClick(Sender: TObject);
+procedure TFormPerspective.spnAlfaClick(Sender: TObject);
 begin
   btnFijarClick(self);
 end;
-procedure TfrmControlVista.spnAlfaMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TFormPerspective.spnAlfaMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   btnFijarClick(self);
 end;
 
-procedure TfrmControlVista.Timer1Timer(Sender: TObject);
+procedure TFormPerspective.Timer1Timer(Sender: TObject);
 begin
 //  btnLeerClick(self);  //actualiza
 end;
 
-procedure TfrmControlVista.Exec(fraEditor0: TfraVisorGraf);
+procedure TFormPerspective.Exec(fraEditor0: TfraVisorGraf);
 begin
   fraEditor:= fraEditor0;
   self.Show;
