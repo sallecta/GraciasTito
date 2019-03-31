@@ -1,5 +1,5 @@
 {Formulario para configurar ub objeto Vista }
-unit FormVistaProp;
+unit TypeFormPropView;
 {$mode objfpc}{$H+}
 interface
 uses
@@ -7,9 +7,9 @@ uses
   Buttons, StdCtrls, Spin, CadDefinitions, frameVisorGraf;
 type
 
-  { TfrmVistaProp }
+  { TFormPropView }
 
-  TfrmVistaProp = class(TForm)
+  TFormPropView = class(TForm)
     btnAplicar: TBitBtn;
     btnCancelar: TBitBtn;
     btnAceptar: TBitBtn;
@@ -28,19 +28,19 @@ type
   end;
 
 var
-  frmVistaProp: TfrmVistaProp;
+  FormPropView: TFormPropView;
 
 implementation
 {$R *.lfm}
 
-{ TfrmVistaProp }
+{ TFormPropView }
 
-procedure TfrmVistaProp.btnAceptarClick(Sender: TObject);
+procedure TFormPropView.btnAceptarClick(Sender: TObject);
 begin
   btnAplicarClick(self);
 end;
 
-procedure TfrmVistaProp.btnAplicarClick(Sender: TObject);
+procedure TFormPropView.btnAplicarClick(Sender: TObject);
 begin
   vista.visEdi.VerEjesCoor  := chkVerEjes.Checked;
   vista.visEdi.LonEjesCoor  := spnLongEje.Value;
@@ -49,7 +49,7 @@ begin
   vista.visEdi.Refrescar;
 end;
 
-procedure TfrmVistaProp.Exec(vista0: TfraVisorGraf);
+procedure TFormPropView.Exec(vista0: TfraVisorGraf);
 begin
   vista := vista0;
   chkVerEjes.Checked    := vista.visEdi.VerEjesCoor;

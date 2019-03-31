@@ -5,7 +5,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, ActnList, Menus,
   StdCtrls, ComCtrls, LCLProc, LCLType, Buttons, MisUtils, FormConfig,
   FrameCfgGeneral, CadDefinitions, frameVisorGraf, FormProject,
-  glob, FrameExplorProyectos, TypeFormPerspective, FormVistaProp,
+  glob, FrameExplorProyectos, TypeFormPerspective, TypeFormPropView,
   VisGraf3D;
 const
   NUM_CUAD = 20;
@@ -515,7 +515,7 @@ begin
 end;
 procedure TForm1.acVisPropiedExecute(Sender: TObject);
 begin
-  frmVistaProp.Exec(ExpProyVis);
+  FormPropView.Exec(ExpProyVis);
 end;
 procedure TForm1.acProAgrPagExecute(Sender: TObject);
 begin

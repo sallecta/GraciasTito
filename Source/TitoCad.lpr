@@ -9,7 +9,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, TypeForm1, EvalExpres, FormConfig, FrameCfgSynEdit,
   FrameCfgGeneral, FrameCfgPanCom, TypeFormPerspective, FrameCfgVista, FormProject,
-  FrameExplorProyectos, FormVistaProp, ObjGraficos, DefObjGraf
+  FrameExplorProyectos, TypeFormPropView, ObjGraficos, DefObjGraf
   { you can add units after this };
 
 {$R *.res}
@@ -21,7 +21,7 @@ begin
   Application.CreateForm(TConfig, Config);
   Application.CreateForm(TFormPerspective, FormPerspective);
   Application.CreateForm(TfrmProject, frmProject);
-  Application.CreateForm(TfrmVistaProp, frmVistaProp);
+  Application.CreateForm(TFormPropView, FormPropView);
   Application.Run;
 end.
 

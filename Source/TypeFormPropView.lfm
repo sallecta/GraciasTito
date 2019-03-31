@@ -1,4 +1,4 @@
-object frmVistaProp: TfrmVistaProp
+object FormPropView: TFormPropView
   Left = 283
   Height = 240
   Top = 141
