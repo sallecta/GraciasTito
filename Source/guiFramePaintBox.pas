@@ -10,7 +10,7 @@ unit guiFramePaintBox;
 interface
 uses
   Classes, Forms, ExtCtrls,
-  graphicsEditor, graphicsCore;
+  sketchEditor, sketchCore;
 type
   TOnObjetosElim = procedure of object;
   {Evento para movimiento del Mouse. Notar que además de las coordenaadas del ratón,

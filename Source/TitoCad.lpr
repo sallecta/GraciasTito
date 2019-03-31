@@ -7,9 +7,9 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, TypeForm1, EvalExpres, FormConfig, FrameCfgSynEdit,
-  FrameCfgGeneral, FrameCfgPanCom, TypeFormPerspective, FrameCfgVista, FormProject,
-  guiFrameProjExplorer, TypeFormPropView, guiDrawObjects, graphicsCore, graphicsEditor
+  Forms, guiForm1, sketchEvalExpres, guiFormConfig, guiFrameCfgSynEdit,
+  guiFrameCfgGeneral, guiFrameCfgPanCom, guiFormPerspective, guiFrameCfgView, guiFormProject,
+  guiFrameProjExplorer, guiFormViewProp, sketchDxf, sketchCore, sketchEditor
   { you can add units after this };
 
 {$R *.res}
