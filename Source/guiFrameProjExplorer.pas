@@ -5,7 +5,7 @@ derecho en una pa´gina.
 La idea es que este explroador no interactúe para nada con el visor del proyecto, ya que
 el visor debe ser independiente del explorador de proyecto.
 Sin embargo, este explorador, si puede cambiar la página activa del proyecto.}
-unit FrameExplorProyectos;
+unit guiFrameProjExplorer;
 {$mode objfpc}{$H+}
 interface
 uses
