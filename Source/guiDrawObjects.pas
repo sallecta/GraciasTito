@@ -8,7 +8,7 @@ unit guiDrawObjects;
 interface
 uses
   Classes, Graphics, LCLProc, fgl,
-  MotGraf3d, DefObjGraf;
+  MotGraf3d, graphicsCore;
 
 type
 //Tipo de entidad gráfica

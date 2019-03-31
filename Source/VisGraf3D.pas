@@ -45,7 +45,7 @@ unit VisGraf3D;
 INTERFACE
 uses
   Classes, Controls, ExtCtrls, Graphics, LCLProc, LCLType, fgl,
-  MotGraf3d, DefObjGraf, guiDrawObjects;
+  MotGraf3d, graphicsCore, guiDrawObjects;
 const
   CUR_DEFEC = crDefault;          //cursor por defecto
 

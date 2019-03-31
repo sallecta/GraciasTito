@@ -147,7 +147,7 @@
         <IsPartOfProject Value="True"/>
       </Unit13>
       <Unit14>
-        <Filename Value="DefObjGraf.pas"/>
+        <Filename Value="graphicsCore.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit14>
       <Unit15>
