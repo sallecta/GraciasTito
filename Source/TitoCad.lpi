@@ -166,7 +166,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="units\MisUtils_1at_28Sep2017;units\SynFacilUtils_1at_31Dec2017;units\MiConfig_4at_15Nov2017;units\MotGraf_5at_9Jan2017;..\..\_Librerias\UtilsGrilla 0.4;ConfigFrames"/>
+      <OtherUnitFiles Value="units\MisUtils_1at_28Sep2017;units\SynFacilUtils_1at_31Dec2017;units\MiConfig_4at_15Nov2017;units\MotGraf_5at_9Jan2017;units\UtilsGrilla_2at_18Nov2017;ConfigFrames"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
