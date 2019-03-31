@@ -181,7 +181,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\TitoCad"/>
+      <Filename Value="application\$NameOnly($(ProjFile)).$(SrcOS).$(TargetCPU)"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
