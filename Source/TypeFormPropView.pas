@@ -4,7 +4,7 @@ unit TypeFormPropView;
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  Buttons, StdCtrls, Spin, CadDefinitions, frameVisorGraf;
+  Buttons, StdCtrls, Spin, CadDefinitions, guiFramePaintBox;
 type
 
   { TFormPropView }

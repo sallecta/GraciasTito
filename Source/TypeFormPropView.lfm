@@ -6,7 +6,7 @@ object FormPropView: TFormPropView
   Caption = 'frmVistaProp'
   ClientHeight = 240
   ClientWidth = 320
-  LCLVersion = '1.6.2.0'
+  LCLVersion = '2.0.0.4'
   object Panel1: TPanel
     Left = 0
     Height = 50
@@ -51,31 +51,31 @@ object FormPropView: TFormPropView
   end
   object chkVerEjes: TCheckBox
     Left = 32
-    Height = 19
+    Height = 23
     Top = 24
-    Width = 137
+    Width = 152
     Caption = 'Ver &Ejes Coordenados.'
     TabOrder = 1
   end
   object Label1: TLabel
     Left = 32
-    Height = 15
+    Height = 17
     Top = 60
-    Width = 90
+    Width = 94
     Caption = 'Longitud de ejes:'
     ParentColor = False
   end
   object chkVerPtoGiro: TCheckBox
     Left = 32
-    Height = 19
+    Height = 23
     Top = 96
-    Width = 113
+    Width = 124
     Caption = 'Ver Punto de &Giro'
     TabOrder = 2
   end
   object spnLongEje: TSpinEdit
     Left = 128
-    Height = 23
+    Height = 29
     Top = 60
     Width = 50
     Alignment = taRightJustify
@@ -83,9 +83,9 @@ object FormPropView: TFormPropView
   end
   object chkVerCuadric: TCheckBox
     Left = 32
-    Height = 19
+    Height = 23
     Top = 136
-    Width = 97
+    Width = 108
     Caption = 'Ver &Cuadrícula'
     TabOrder = 4
   end

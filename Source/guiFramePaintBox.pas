@@ -5,7 +5,7 @@ Al ser un frame, puede incluirse en un formulario cualquiera.
 
                                               Por Tito Hinostroza  04/01/2017
 }
-unit frameVisorGraf;
+unit guiFramePaintBox;
 {$mode objfpc}{$H+}
 interface
 uses

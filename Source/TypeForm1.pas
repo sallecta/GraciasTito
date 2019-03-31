@@ -4,7 +4,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, ActnList, Menus,
   StdCtrls, ComCtrls, LCLProc, LCLType, Buttons, MisUtils, FormConfig,
-  FrameCfgGeneral, CadDefinitions, frameVisorGraf, FormProject,
+  FrameCfgGeneral, CadDefinitions, guiFramePaintBox, FormProject,
   glob, guiFrameProjExplorer, TypeFormPerspective, TypeFormPropView,
   VisGraf3D;
 const

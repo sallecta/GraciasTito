@@ -6,7 +6,7 @@ object FormPerspective: TFormPerspective
   Caption = 'frmControlVista'
   ClientHeight = 210
   ClientWidth = 283
-  LCLVersion = '1.6.2.0'
+  LCLVersion = '2.0.0.4'
   object btnLimpiar: TButton
     Left = 16
     Height = 32
@@ -18,20 +18,19 @@ object FormPerspective: TFormPerspective
   end
   object Label2: TLabel
     Left = 152
-    Height = 15
+    Height = 17
     Top = 128
-    Width = 52
+    Width = 53
     Caption = 'Áng. Alfa:'
     ParentColor = False
   end
   object spnAlfa: TFloatSpinEdit
     Left = 208
-    Height = 23
+    Height = 29
     Top = 120
     Width = 60
     Alignment = taRightJustify
     Increment = 0.1
-    MaxValue = 100
     MinValue = 0
     OnClick = spnAlfaClick
     OnMouseUp = spnAlfaMouseUp
@@ -40,7 +39,7 @@ object FormPerspective: TFormPerspective
   end
   object Label3: TLabel
     Left = 152
-    Height = 15
+    Height = 17
     Top = 152
     Width = 40
     Caption = 'Áng. Fi:'
@@ -48,31 +47,29 @@ object FormPerspective: TFormPerspective
   end
   object spnFi: TFloatSpinEdit
     Left = 208
-    Height = 23
+    Height = 29
     Top = 144
     Width = 60
     Alignment = taRightJustify
     Increment = 0.1
-    MaxValue = 100
     MinValue = 0
     TabOrder = 2
     Value = 0
   end
   object spnZoom: TFloatSpinEdit
     Left = 208
-    Height = 23
+    Height = 29
     Top = 168
     Width = 60
     Alignment = taRightJustify
     Increment = 0.1
-    MaxValue = 100
     MinValue = 0
     TabOrder = 3
     Value = 1
   end
   object Label4: TLabel
     Left = 152
-    Height = 15
+    Height = 17
     Top = 176
     Width = 35
     Caption = 'Zoom:'
@@ -98,31 +95,31 @@ object FormPerspective: TFormPerspective
   end
   object Label5: TLabel
     Left = 152
-    Height = 15
+    Height = 17
     Top = 16
-    Width = 38
+    Width = 41
     Caption = 'x_desp:'
     ParentColor = False
   end
   object Label6: TLabel
     Left = 152
-    Height = 15
+    Height = 17
     Top = 40
-    Width = 39
+    Width = 41
     Caption = 'y_desp:'
     ParentColor = False
   end
   object Label7: TLabel
     Left = 152
-    Height = 15
+    Height = 17
     Top = 96
-    Width = 34
+    Width = 35
     Caption = 'yCam:'
     ParentColor = False
   end
   object spnYcam: TFloatSpinEdit
     Left = 208
-    Height = 23
+    Height = 29
     Top = 88
     Width = 60
     Alignment = taRightJustify
@@ -136,15 +133,15 @@ object FormPerspective: TFormPerspective
   end
   object Label8: TLabel
     Left = 152
-    Height = 15
+    Height = 17
     Top = 72
-    Width = 33
+    Width = 35
     Caption = 'xCam:'
     ParentColor = False
   end
   object spnXcam: TFloatSpinEdit
     Left = 208
-    Height = 23
+    Height = 29
     Top = 64
     Width = 60
     Alignment = taRightJustify
@@ -158,7 +155,7 @@ object FormPerspective: TFormPerspective
   end
   object spnXdesp: TSpinEdit
     Left = 208
-    Height = 23
+    Height = 29
     Top = 8
     Width = 56
     Alignment = taRightJustify
@@ -168,7 +165,7 @@ object FormPerspective: TFormPerspective
   end
   object spnYdesp: TSpinEdit
     Left = 208
-    Height = 23
+    Height = 29
     Top = 33
     Width = 58
     Alignment = taRightJustify

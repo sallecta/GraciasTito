@@ -4,7 +4,7 @@ unit TypeFormPerspective;
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Spin, ExtCtrls, frameVisorGraf;
+  Spin, ExtCtrls, guiFramePaintBox;
 type
 
   { TFormPerspective }
