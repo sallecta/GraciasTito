@@ -165,7 +165,7 @@
         <ResourceBaseClass Value="Frame"/>
       </Unit16>
       <Unit17>
-        <Filename Value="VisGraf3D.pas"/>
+        <Filename Value="graphicsEditor.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit17>
     </Units>

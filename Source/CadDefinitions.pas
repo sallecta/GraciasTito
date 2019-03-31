@@ -3,7 +3,7 @@ unit CadDefinitions;
 interface
 uses
   Classes, SysUtils, fgl, MisUtils, Graphics,
-  guiFramePaintBox, graphicsCore, guiDrawObjects, VisGraf3D;
+  guiFramePaintBox, graphicsCore, guiDrawObjects, graphicsEditor;
 type
   Tunidades = (
     tmuMetros,

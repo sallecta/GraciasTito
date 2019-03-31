@@ -6,7 +6,7 @@ uses
   StdCtrls, ComCtrls, LCLProc, LCLType, Buttons, MisUtils, FormConfig,
   FrameCfgGeneral, CadDefinitions, guiFramePaintBox, FormProject,
   glob, guiFrameProjExplorer, TypeFormPerspective, TypeFormPropView,
-  VisGraf3D;
+  graphicsEditor;
 const
   NUM_CUAD = 20;
   ZOOM_INI = 12;
