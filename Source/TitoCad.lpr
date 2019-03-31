@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, FormPrincipal, EvalExpres, FormConfig, FrameCfgSynEdit,
+  Forms, TypeForm1, EvalExpres, FormConfig, FrameCfgSynEdit,
   FrameCfgGeneral, FrameCfgPanCom, FormControlVista, FrameCfgVista, FormProject,
   FrameExplorProyectos, FormVistaProp, ObjGraficos, DefObjGraf
   { you can add units after this };
@@ -17,7 +17,7 @@ uses
 begin
   RequireDerivedFormResource := True;
   Application.Initialize;
-  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.CreateForm(TForm1, Form1);
   Application.CreateForm(TConfig, Config);
   Application.CreateForm(TfrmControlVista, frmControlVista);
   Application.CreateForm(TfrmProject, frmProject);

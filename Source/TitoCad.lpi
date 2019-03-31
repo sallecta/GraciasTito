@@ -69,9 +69,9 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="FormPrincipal.pas"/>
+        <Filename Value="TypeForm1.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="frmPrincipal"/>
+        <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit1>

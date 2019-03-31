@@ -1,0 +1,80 @@
+3151/5000
+Titocad 0.2.5
+=============
+The structure of the TVisGraf3D class is improved, so that it allows the execution of commands.
+The class TVisGraf3D continues to be reordered.
+Simple processing of the LINE command is implemented.
+
+Earrings: Finish implementing the RECTANGLE command, which involves creating a polyline.
+You have to check to see which is the best structure to the TobjGrafDXF class.
+It would be necessary to implement the mechanism of "Redo", "Undo".
+See how it is the best way to structure the objects to draw, since currently only
+we have a useful class (TObjGrafDXF) that derives from TObjjGraf.
+
+
+Titocad 0.2.4
+=============
+The TVisGraf3D viewer routines are rewritten, creating procedures for each state
+of the Viewer. In this way, the code is oriented to the management of states, instead of events,
+facilitating maintenance, and expansion.
+The event is created to handle status change in the TVisGraf3D viewer.
+The code has been reordered and revised considerably, changing some names and
+parameters.
+
+
+Titocad 0.2.3
+=============
+The selection of lines is improved.
+The display of the mouse coordinates in the status bar is activated.
+The grid is activated.
+Virtual coordinates are defined for the mouse pointer, on the screen.
+It modifies the drawing of the control points so that they are not affected by the zoom.
+
+Titocad 0.2.2
+=============
+The TMotPoint point is created in MotGraf3D and some routines are adapted for its use.
+The control of the actions is improved, with the possibility of being able to identify the control
+who fired the action.
+The drawing routine of the control points is modified so that they appear in perspective.
+The selection routine of the control points is modified so that it considers the z axis.
+The "position" field of TPtoCtrl is eliminated, as it does not make sense in the new scheme.
+The control points created by default in TObjGraf are removed, since in the new
+scheme, the objects are very varied and their control points too.
+The TPtoCtrl class is modified to adapt it to the new way of working.
+
+
+
+Titocad 0.2.1
+=============
+The object Line enter the graphic objects and become virtual some methods
+of ObjGraf.
+
+Titocad 0.2
+===========
+The architecture of the libraries continues to be adapted to the one described in the model of the
+document.
+A routine is included to fix the pivot point, always at the center of the screen.
+Identification methods are added to the project explorer.
+Context menus are completed and a form is created for the properties of
+a sight.
+The graphic object container is moved to the TCadPagina class.
+
+
+Titocad 0.1
+===========
+In this version, the units and the classes of the project are modified, to adapt them
+to the architecture planned for the application. Be part of the architecture of the
+ogEditGraf library, and it is adapted to the new TitoCad scheme. The
+main difference with respect to ogEditGraf, is that the containers of the objects,
+they are not part of the editing engine.
+
+A Project Explorer Frame is created.
+
+Titocad 0.0
+===========
+First version of TitoCad. It is not functional yet.
+Отправить отзыв
+История
+Сохранено
+Сообщества
+
