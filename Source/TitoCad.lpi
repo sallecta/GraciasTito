@@ -63,7 +63,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="19">
       <Unit0>
         <Filename Value="TitoCad.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -168,6 +168,13 @@
         <Filename Value="sketchEditor.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit17>
+      <Unit18>
+        <Filename Value="guiFrameEditor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraGrafEditor"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
