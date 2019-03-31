@@ -432,7 +432,7 @@ function LoadPNGToImageList(imagList16: TImageList; imgFile: string): Integer;
 var
   pngbmp: TPortableNetworkGraphic;
 begin
-  if not FileExistsUTF8(imgFile) then exit(-1);
+  if not FileExists(imgFile) then exit(-1);
   pngbmp:=TPortableNetworkGraphic.Create;
   pngbmp.LoadFromFile(imgFile);
   Result:= imagList16.Add(pngbmp, nil);
