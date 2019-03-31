@@ -69,63 +69,63 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="guiForm1.pas"/>
+        <Filename Value="gui/guiForm1.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit1>
       <Unit2>
-        <Filename Value="sketchEvalExpres.pas"/>
+        <Filename Value="sketch/sketchEvalExpres.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="guiFormConfig.pas"/>
+        <Filename Value="gui/guiFormConfig.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Config"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit3>
       <Unit4>
-        <Filename Value="guiFrameCfgSynEdit.pas"/>
+        <Filename Value="gui/guiFrameCfgSynEdit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraCfgSynEdit"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit4>
       <Unit5>
-        <Filename Value="guiFrameCfgGeneral.pas"/>
+        <Filename Value="gui/guiFrameCfgGeneral.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraCfgGeneral"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit5>
       <Unit6>
-        <Filename Value="guiFrameCfgPanCom.pas"/>
+        <Filename Value="gui/guiFrameCfgPanCom.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraCfgPanCom"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit6>
       <Unit7>
-        <Filename Value="guiFormPerspective.pas"/>
+        <Filename Value="gui/guiFormPerspective.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormPerspective"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit7>
       <Unit8>
-        <Filename Value="guiFrameCfgView.pas"/>
+        <Filename Value="gui/guiFrameCfgView.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraCfgVista"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit8>
       <Unit9>
-        <Filename Value="sketchDocument.pas"/>
+        <Filename Value="sketch/sketchDocument.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
       <Unit10>
-        <Filename Value="guiFormProject.pas"/>
+        <Filename Value="gui/guiFormProject.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmProject"/>
         <HasResources Value="True"/>
@@ -136,40 +136,40 @@
         <IsPartOfProject Value="True"/>
       </Unit11>
       <Unit12>
-        <Filename Value="guiFrameProjExplorer.pas"/>
+        <Filename Value="gui/guiFrameProjExplorer.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraExplorProyectos"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit12>
       <Unit13>
-        <Filename Value="sketchDxf.pas"/>
+        <Filename Value="sketch/sketchDxf.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit13>
       <Unit14>
-        <Filename Value="sketchCore.pas"/>
+        <Filename Value="sketch/sketchCore.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit14>
       <Unit15>
-        <Filename Value="guiFormViewProp.pas"/>
+        <Filename Value="gui/guiFormViewProp.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormPropView"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit15>
       <Unit16>
-        <Filename Value="guiFramePaintBox.pas"/>
+        <Filename Value="gui/guiFramePaintBox.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraVisorGraf"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit16>
       <Unit17>
-        <Filename Value="sketchEditor.pas"/>
+        <Filename Value="sketch/sketchEditor.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit17>
       <Unit18>
-        <Filename Value="guiFrameEditor.pas"/>
+        <Filename Value="gui/guiFrameEditor.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraGrafEditor"/>
         <HasResources Value="True"/>
@@ -185,7 +185,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="units\MisUtils_1at_28Sep2017;units\SynFacilUtils_1at_31Dec2017;units\MiConfig_4at_15Nov2017;units\MotGraf_5at_9Jan2017;units\UtilsGrilla_2at_18Nov2017;ConfigFrames"/>
+      <OtherUnitFiles Value="units\MisUtils_1at_28Sep2017;units\SynFacilUtils_1at_31Dec2017;units\MiConfig_4at_15Nov2017;units\MotGraf_5at_9Jan2017;units\UtilsGrilla_2at_18Nov2017;gui"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
