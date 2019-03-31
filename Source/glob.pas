@@ -1,4 +1,4 @@
-unit Globales;
+unit glob;
 {$mode objfpc}{$H+}
 interface
 uses

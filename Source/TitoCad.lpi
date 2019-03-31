@@ -109,7 +109,7 @@
       <Unit7>
         <Filename Value="TypeFormPerspective.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="frmControlVista"/>
+        <ComponentName Value="FormPerspective"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit7>
@@ -132,7 +132,7 @@
         <ResourceBaseClass Value="Form"/>
       </Unit10>
       <Unit11>
-        <Filename Value="Globales.pas"/>
+        <Filename Value="glob.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit11>
       <Unit12>

@@ -5,7 +5,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, ActnList, Menus,
   StdCtrls, ComCtrls, LCLProc, LCLType, Buttons, MisUtils, FormConfig,
   FrameCfgGeneral, CadDefinitions, frameVisorGraf, FormProject,
-  Globales, FrameExplorProyectos, TypeFormPerspective, FormVistaProp,
+  glob, FrameExplorProyectos, TypeFormPerspective, FormVistaProp,
   VisGraf3D;
 const
   NUM_CUAD = 20;

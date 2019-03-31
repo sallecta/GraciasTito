@@ -4,7 +4,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   EditBtn, StdCtrls, ButtonPanel, Buttons, ComCtrls, Spin, Menus, MisUtils,
-  BasicGrilla, CadDefinitions, Globales;
+  BasicGrilla, CadDefinitions, glob;
 type
   { TfrmProject }
   TfrmProject = class(TForm)
