@@ -9,7 +9,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, TypeForm1, EvalExpres, FormConfig, FrameCfgSynEdit,
   FrameCfgGeneral, FrameCfgPanCom, TypeFormPerspective, FrameCfgVista, FormProject,
-  guiFrameProjExplorer, TypeFormPropView, ObjGraficos, DefObjGraf
+  guiFrameProjExplorer, TypeFormPropView, guiDrawObjects, DefObjGraf, VisGraf3D
   { you can add units after this };
 
 {$R *.res}

@@ -63,7 +63,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="18">
       <Unit0>
         <Filename Value="TitoCad.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -143,7 +143,7 @@
         <ResourceBaseClass Value="Frame"/>
       </Unit12>
       <Unit13>
-        <Filename Value="ObjGraficos.pas"/>
+        <Filename Value="guiDrawObjects.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit13>
       <Unit14>
@@ -164,6 +164,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="VisGraf3D.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit17>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
