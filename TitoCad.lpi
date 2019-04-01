@@ -2,7 +2,6 @@
 <CONFIG>
   <ProjectOptions>
     <Version Value="11"/>
-    <PathDelim Value="/"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
@@ -76,7 +75,7 @@
         <ComponentName Value="fraCfgPanCom"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit6>
-      <Unit7>       
+      <Unit7>
         <Filename Value="gui/guiFrameCfg/guiFrameCfgView.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraCfgVista"/>
@@ -149,7 +148,6 @@
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
-    <PathDelim Value="/"/>
     <Target>
       <Filename Value="application/$NameOnly($(ProjFile)).$(SrcOS).$(TargetCPU)"/>
     </Target>

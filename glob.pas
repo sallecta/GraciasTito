@@ -6,7 +6,7 @@ uses
 
 const
   NOM_PROG = 'TitoCad';   //nombre de programa
-  {$I ../version.txt}   //versión del programa
+  {$I meta/version.txt}   //versión del programa
 
 type
   TEvRefrescar = procedure of object;
