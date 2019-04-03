@@ -112,7 +112,7 @@ Su uso es similar al de TUtilGrilla:
   UtilGrilla.ImageList := ImageList1;  //Íconos a usar
 ```
 
- Para mayor información, se recomienda ver el proyecto ejemplo.
+ Para mayor información, se recomienda Show el proyecto ejemplo.
 
 
 ## FrameFiltCampo ##
@@ -157,7 +157,7 @@ Hay que notar que es posible agregar varios FrameFiltCampo, a un TUtilGrilla, y 
 
 ### Tipos de búsqueda con TfraFiltCampo ###
 
-El tipo de búsueda por defecto, con TfraFiltCampo, consiste en que se buscarán en todas las filas, en el campo seleccionado, para ver si el contenido de texto mostrado (sea numérico, booleano, etc), incluye al texto escrito como palabra de búsqueda en el frame TfraFiltCampo (específicamente en el control TEdit, del frame).
+El tipo de búsueda por defecto, con TfraFiltCampo, consiste en que se buscarán en todas las filas, en el campo seleccionado, para Show si el contenido de texto mostrado (sea numérico, booleano, etc), incluye al texto escrito como palabra de búsqueda en el frame TfraFiltCampo (específicamente en el control TEdit, del frame).
 
 Es decir, que la búsqueda es equivalente al operador LIKE del lenguaje SQL, cuando trabaja con campos de texto.
 
@@ -181,7 +181,7 @@ En este caso habría que implementar en fraFiltCampo1CambiaFiltro(), el código 
 
 ### Objeto TListaCompletado ###
 
-Esta clase no tiene que ver con grillas, pero se incluye como una utilidad adicional.
+Esta clase no tiene que Show con grillas, pero se incluye como una utilidad adicional.
 
 TListaCompletado permite implementar la funcionalidad de lista desplegable cuando se llena un control TEdit. 
 

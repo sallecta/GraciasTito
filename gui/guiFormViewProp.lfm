@@ -54,7 +54,7 @@ object FormPropView: TFormPropView
     Height = 23
     Top = 24
     Width = 152
-    Caption = 'Ver &Ejes Coordenados.'
+    Caption = 'Show &Ejes Coordenados.'
     TabOrder = 1
   end
   object Label1: TLabel
@@ -70,7 +70,7 @@ object FormPropView: TFormPropView
     Height = 23
     Top = 96
     Width = 124
-    Caption = 'Ver Punto de &Giro'
+    Caption = 'Show Punto de &Giro'
     TabOrder = 2
   end
   object spnLongEje: TSpinEdit
@@ -86,7 +86,7 @@ object FormPropView: TFormPropView
     Height = 23
     Top = 136
     Width = 108
-    Caption = 'Ver &Cuadrícula'
+    Caption = 'Show &Cuadrícula'
     TabOrder = 4
   end
 end

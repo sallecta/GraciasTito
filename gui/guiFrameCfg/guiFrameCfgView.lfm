@@ -13,7 +13,7 @@ object fraCfgVista: TfraCfgVista
     Height = 19
     Top = 24
     Width = 137
-    Caption = 'Ver &Ejes Coordenados.'
+    Caption = 'Show &Ejes Coordenados.'
     OnChange = chkVerEjesChange
     TabOrder = 0
   end
@@ -42,7 +42,7 @@ object fraCfgVista: TfraCfgVista
     Height = 19
     Top = 96
     Width = 267
-    Caption = 'Mostrar Coord. del &Puntero en barra de estado.'
+    Caption = 'Mostrar Coord. del &Puntero en barra de state.'
     OnChange = chkVerEjesChange
     TabOrder = 2
   end

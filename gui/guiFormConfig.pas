@@ -45,10 +45,10 @@ type
     fcPanComEd: TfraCfgSynEdit;  //Editor de panel de comandos
     //Eventos
     OnPropertiesChanged: procedure of object;
-    procedure Iniciar(hl0: TSynFacilComplet);
+    procedure Initiate(hl0: TSynFacilComplet);
     procedure LeerArchivoIni;
-    procedure escribirArchivoIni;
-    procedure Configurar(Id: string='');
+    procedure writeIniFile;
+    procedure doConfig(Id: string='');
     function ContienePrompt(const linAct: string): integer;
     procedure SetLanguage(lang: string);
   end;
@@ -68,7 +68,7 @@ begin
   fcGeneral.Parent := self;
 
   fcVista := TfraCfgVista.Create(self);
-  fcVista.Name:='Vista';
+  fcVista.Name:='View';
   fcVista.Parent := self;
 
   fcPanCom := TfraCfgPanCom.Create(self);
@@ -81,7 +81,7 @@ begin
 
   TreeView1.Items.Clear;  //Limpia árbol
   LinkFrameToTreeView(TreeView1, '1',   dic('General'), fcGeneral);
-  LinkFrameToTreeView(TreeView1, '1.1', dic('Vista'), fcVista);
+  LinkFrameToTreeView(TreeView1, '1.1', dic('View'), fcVista);
   LinkFrameToTreeView(TreeView1, '2',   dic('Panel de Comandos'), fcPanCom);
   LinkFrameToTreeView(TreeView1, '2.1', dic('General'), fcPanCom);
   LinkFrameToTreeView(TreeView1, '2.2', dic('Editor') , fcPanComEd);
@@ -104,15 +104,15 @@ begin
   if OnPropertiesChanged<>nil then OnPropertiesChanged;
   fcPanComEd.ConfigEditor;  //para que actualice su editor
 end;
-procedure TConfig.Iniciar(hl0: TSynFacilComplet);
+procedure TConfig.Initiate(hl0: TSynFacilComplet);
 //Inicia el formulario de configuración. Debe llamarse antes de usar el formulario y
 //después de haber cargado todos los frames.
 begin
   //inicia Frames
-  fcGeneral.Iniciar(cfgFile);
-  fcVista.Iniciar(cfgFile);
-  fcPanCom.Iniciar(cfgFile);
-  fcPanComEd.Iniciar(cfgFile, edTerm, clBlack);
+  fcGeneral.Initiate(cfgFile);
+  fcVista.Initiate(cfgFile);
+  fcPanCom.Initiate(cfgFile);
+  fcPanComEd.Initiate(cfgFile, edTerm, clBlack);
   //lee parámetros del archivo de configuración.
   LeerArchivoIni;
 end;
@@ -135,7 +135,7 @@ begin
     msgerr(cfgFile.MsjErr);
     exit;
   end;
-  escribirArchivoIni;   //guarda propiedades en disco
+  writeIniFile;   //guarda propiedades en disco
   if edTerm<>nil then edTerm.Invalidate;     //para que refresque los cambios
   if edPCom<>nil then edPCom.Invalidate;     //para que refresque los cambios
 end;
@@ -143,7 +143,7 @@ procedure TConfig.bitCancelClick(Sender: TObject);
 begin
   self.Hide;
 end;
-procedure TConfig.Configurar(Id: string='');
+procedure TConfig.doConfig(Id: string='');
 //Muestra el formulario, de modo que permita configurar la sesión actual
 var
   it: TTreeNode;
@@ -195,7 +195,7 @@ begin
   cfgFile.FileToProperties;
 end;
 
-procedure TConfig.escribirArchivoIni;
+procedure TConfig.writeIniFile;
 //Escribe el archivo de configuración
 begin
   cfgFile.PropertiesToFile;

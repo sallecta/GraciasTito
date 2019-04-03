@@ -76,7 +76,7 @@ type
     TD_INF_DER   //inferior izquierda
    );
 
-  {Evento que genera un putno de control cuando está siendo desplazado pro el Moues.
+  {Evento que genera un putno de control cuando está siendo desplazado Proj el Moues.
   (xvTra, yvTar) es el punto objetivo a donde se espera que se ubique el punto de
   control, y dxv/dyv, son los desplazamientos esperados de acuerdo al desplazamiento
   del ratón. El desplazamiento final se puede obtener solo con dx y dy, pero se envía
@@ -110,7 +110,7 @@ type
   { Objeto Tbot - Permite gestionar los botones}
 
 //Procedimiento-evento para evento Click en Botón
-  TEvenBTclk = procedure(estado: Boolean) of object;
+  TEvenBTclk = procedure(state: Boolean) of object;
 
   TTipBot =
    (BOT_CERRAR,   //botón cerrar
@@ -124,7 +124,7 @@ type
 
   { TogButton }
   TogButton = class(TObjVsible)
-    estado     : Boolean;   //Permite ver el estado del botón o el check
+    state     : Boolean;   //Permite Show el state del botón o el check
     drawBack   : boolean;   //indica si debe dibujar el fondo
     constructor Create(mGraf: TMotGraf; tipo0: TTipBot; EvenBTclk0: TEvenBTclk);
     procedure Dibujar;
@@ -259,11 +259,11 @@ begin
    inherited Crear(mGraf, 16, 16);    //crea
    tipo := tipo0;
    OnClick := EvenBTclk0;
-   estado := FALSE;   //inicia en 0 (check no marcado, o botón por contraer)
+   state := FALSE;   //inicia en 0 (check no marcado, o botón por contraer)
    drawBack := true;
 end;
 procedure TogButton.Dibujar;
-//Dibuja el botón de acuerdo a su tipo y estado
+//Dibuja el botón de acuerdo a su tipo y state
 begin
 {  case tipo of
   BOT_CERRAR: begin
@@ -272,7 +272,7 @@ begin
        v2d.DibVnormal(fx+2,fy+12,10,-5);
      end;
   BOT_EXPAND:
-      if estado then begin
+      if state then begin
         if drawBack then v2d.DibBorBoton(fx,fy,width,height);
 //         v2d.DibVnormal(fx+2,fy+7,10,-5);
 //         v2d.DibVnormal(fx+2,fy+11,10,-5);
@@ -286,7 +286,7 @@ begin
         v2d.DrawTrianDown(fx+2,fy+5,width-4,height-10);
       end;
   BOT_CHECK: begin  //botón check
-     if estado then begin   //dibuja solo borde
+     if state then begin   //dibuja solo borde
         v2d.DibBorBoton(fx,fy,15,15);
      end else begin         //dibuja con check
         v2d.DibBorBoton(fx,fy,15,15);
@@ -294,7 +294,7 @@ begin
      end;
     end;
   BOT_REPROD: begin  //botón reproducir
-     if estado then begin   //dibuja solo borde
+     if state then begin   //dibuja solo borde
        v2d.FijaColor(clBlack, TColor($E5E5E5), 1);
        v2d.RectRedonR(fx,fy,fx+width, fy+height);
        v2d.FijaColor(clBlack, clBlack, 1);
@@ -314,10 +314,10 @@ end;
 procedure TogButton.MouseUp(Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
 begin
    if LoSelec(xp,yp) then begin    //se soltó en el botón
-      //cambia el estado, si aplica
-      if tipo in [BOT_EXPAND, BOT_CHECK, BOT_REPROD] then estado := not estado;
+      //cambia el state, si aplica
+      if tipo in [BOT_EXPAND, BOT_CHECK, BOT_REPROD] then state := not state;
       if Assigned(OnClick) then
-         OnClick(estado);    //ejecuta evento
+         OnClick(state);    //ejecuta evento
    end;
 end;
 
@@ -437,7 +437,7 @@ begin
                             //el evento fy no se lo pasé a los demás que pueden estar seleccionados.
       Resizing := True; //Marca bandera
    end;
-  { TODO : Verificar por qué, a veces se puede iniciar el movimiento del objeto cuando el puntero está en modo de dimensionamiento. }
+  { TODO : Verificar por qué, a veces se puede Initiate el movimiento del objeto cuando el puntero está en modo de dimensionamiento. }
 end;
 procedure TObjGraf.MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
 //Metodo que funciona como evento "MouseDown"

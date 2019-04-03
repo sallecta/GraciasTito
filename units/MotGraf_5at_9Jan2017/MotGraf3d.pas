@@ -11,8 +11,8 @@ Y  /|\
     +--------------------> X
 
 Con la salvedad de que existe la coordenada Z que se levanta perpendicular al plano XY,
-en la línea de vista.
-Cambiando los ángulos ALfa y Fi, es posible obtener una vista de perspectiva o
+en la línea de View.
+Cambiando los ángulos ALfa y Fi, es posible obtener una View de perspectiva o
 proyeccción parecida a la isométrica.
 }
 unit MotGraf3d;
@@ -222,7 +222,7 @@ begin
       xv := (x2c * cosa * cosi + sena * (y2c - zv * seni)) / cosi + x_cam;
       yv := (cosa * (y2c - zv * seni) - x2c * sena * cosi) / cosi + y_cam;
   end;
-  //Si los ángulos de vista alfa y fi son cero (caso normal), bastaría con
+  //Si los ángulos de View alfa y fi son cero (caso normal), bastaría con
   //xv = x2c + x_cam
   //yv = y2c + y_cam
 end;
@@ -457,7 +457,7 @@ begin
    cv.Font.Size := round(11 * fZoom);
    r.Left := XPant(x1,y1,0);
    r.Top := YPant(x1,y1,0);
-   r.Right := XPant(x1+ancho,y1,0);     { TODO : Ver como dibujar texto no limitado }
+   r.Right := XPant(x1+ancho,y1,0);     { TODO : Show como dibujar texto no limitado }
    r.Bottom:= YPant(x1,y1+alto,0);
 //   s.Alignment:=taRightJustify;  //alineado a la derecha
 // cv.TextRect(r,r.Left,r.Top,txt,s);//No permite cambia el tamaño de letra!!!!

@@ -12,11 +12,11 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
-    acArcAbrir: TAction;
+    acProjFileOpen: TAction;
     acArcGuaCom: TAction;
     acArcGuardar: TAction;
     acArcNuevo: TAction;
-    acArcSalir: TAction;
+    acProjFileLeave: TAction;
     acBusBuscar: TAction;
     acBusBusSig: TAction;
     acBusReemp: TAction;
@@ -27,7 +27,7 @@ type
     acEdRedo: TAction;
     acEdSelecAll: TAction;
     acEdUndo: TAction;
-    AcHerConfig: TAction;
+    acToolbarConfig: TAction;
     ActionList: TActionList;
     acVerBarEst: TAction;
     acVerNumLin: TAction;
@@ -78,7 +78,7 @@ type
     procedure acArcGuaComExecute(Sender: TObject);
     procedure acArcGuardarExecute(Sender: TObject);
     procedure acArcNuevoExecute(Sender: TObject);
-    procedure acArcSalirExecute(Sender: TObject);
+    procedure acProjFileLeaveExecute(Sender: TObject);
     procedure acBusBuscarExecute(Sender: TObject);
     procedure acBusBusSigExecute(Sender: TObject);
     procedure acEdiRedoExecute(Sender: TObject);
@@ -122,7 +122,7 @@ begin
   edit.PanLangName  := StatusBar1.Panels[4];  //panel para el lenguaje
   edit.PanFileName  := StatusBar1.Panels[5];  //panel para el nombre del archivo
 
-  edit.NewFile;        //para actualizar estado
+  edit.NewFile;        //para actualizar state
   edit.InitMenuRecents(mnRecientes, nil);  //inicia el menú "Recientes"
   edit.InitMenuLanguages(mnLenguajes, '..\languages');
   edit.LoadSyntaxFromPath;  //para que busque el archivo apropiado
@@ -207,7 +207,7 @@ begin
   edit.LoadSyntaxFromPath;  //para que busque el archivo apropiado
 end;
 
-procedure TForm1.acArcSalirExecute(Sender: TObject);
+procedure TForm1.acProjFileLeaveExecute(Sender: TObject);
 begin
   Form1.Close;
 end;
@@ -249,14 +249,14 @@ begin
 
       acArcNuevo.Caption := '&Nuevo';
       acArcNuevo.Hint := 'Nueva consulta';
-      acArcAbrir.Caption := '&Abrir...';
-      acArcAbrir.Hint := 'Abrir archivo';
+      acProjFileOpen.Caption := '&Abrir...';
+      acProjFileOpen.Hint := 'Abrir archivo';
       acArcGuardar.Caption := '&Guardar';
       acArcGuardar.Hint := 'Guardar archivo';
       acArcGuaCom.Caption := 'G&uardar Como...';
       acArcGuaCom.Hint := 'Guardar como';
-      acArcSalir.Caption := '&Salir';
-      acArcSalir.Hint := 'Cerrar el programa';
+      acProjFileLeave.Caption := '&Salir';
+      acProjFileLeave.Hint := 'Cerrar el programa';
       acEdUndo.Caption := '&Deshacer';
       acEdUndo.Hint := 'Deshacer';
       acEdRedo.Caption := '&Rehacer';
@@ -277,8 +277,8 @@ begin
       acBusBusSig.Hint := 'Buscar Siguiente';
       acBusReemp.Caption := '&Remplazar...';
       acBusReemp.Hint := 'Reemplazar texto';
-      acHerConfig.Caption:='Configuración';
-      acHerConfig.Hint := 'Ver configuración';
+      acToolbarConfig.Caption:='Configuración';
+      acToolbarConfig.Hint := 'Show configuración';
     end;
   'en': begin
       //menú principal
@@ -290,14 +290,14 @@ begin
 
       acArcNuevo.Caption := '&New';
       acArcNuevo.Hint := 'New query';
-      acArcAbrir.Caption := '&Open...';
-      acArcAbrir.Hint := 'Open file';
+      acProjFileOpen.Caption := '&Open...';
+      acProjFileOpen.Hint := 'Open file';
       acArcGuardar.Caption := '&Save';
       acArcGuardar.Hint := 'Save file';
       acArcGuaCom.Caption := 'Sa&ve As ...';
       acArcGuaCom.Hint := 'Save file as ...';
-      acArcSalir.Caption := '&Quit';
-      acArcSalir.Hint := 'Close the program';
+      acProjFileLeave.Caption := '&Quit';
+      acProjFileLeave.Hint := 'Close the program';
       acEdUndo.Caption := '&Undo';
       acEdUndo.Hint := 'Undo';
       acEdRedo.Caption := '&Redo';
@@ -318,8 +318,8 @@ begin
       acBusBusSig.Hint := 'Search Next';
       acBusReemp.Caption := '&Replace...';
       acBusReemp.Hint := 'Replace text';
-      acHerConfig.Caption := '&Settings';
-      acHerConfig.Hint := 'Configuration dialog';
+      acToolbarConfig.Caption := '&Settings';
+      acToolbarConfig.Hint := 'Configuration dialog';
     end;
   end;
 end;

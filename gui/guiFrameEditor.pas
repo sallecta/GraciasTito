@@ -83,7 +83,7 @@ begin
   og.OnSelec   := @motEdi.ObjGraf_Select;     //referencia a procedimiento de selección
   og.OnDeselec := @motEdi.ObjGraf_Unselec;    //referencia a procedimiento de "de-selección"
   og.OnCamPunt := @motEdi.ObjGraf_SetPointer; //procedimiento para cambiar el puntero
-//  Refrescar(s)   ;             //Refresca objeto
+//  Refresh(s)   ;             //Refresca objeto
   objetos.Add(og);               //agrega elemento
 end;
 procedure TfraGrafEditor.EliminarObjGrafico(obj: TObjGraf);  //elimina un objeto grafico
@@ -117,7 +117,7 @@ begin
     EliminarObjGrafico(v);
   OnObjetosElim := tmp;  //restaura
   if OnObjetosElim<>nil then OnObjetosElim;  //llama evento
-  motEdi.Refrescar;
+  motEdi.Refresh;
 end;
 
 function TfraGrafEditor.AgregaObjeto: TMiObjeto;
@@ -203,7 +203,7 @@ begin
       If Key = 9 Then SeleccionarSiguiente;  //TAB
       If Key = 27 Then begin  //ESCAPE
           DeseleccionarTodos;
-          Refrescar;
+          Refresh;
       end;
       If seleccion.Count = 0 Then     ;  //si no hay objetos seleccionados
           If Key = 37 Then Call moverDerecha(DESPLAZ_MENOR)        ;  //derecha
@@ -215,25 +215,25 @@ begin
               For Each v In seleccion
                   If Not v.Bloqueado Then v.X = v.X - DESPLAZ_MENOR
               Next
-              Call Refrescar
+              Call Refresh
           End If
           If Key = 39 Then ;  //izquierda
               For Each v In seleccion
                   If Not v.Bloqueado Then v.X = v.X + DESPLAZ_MENOR
               Next
-              Call Refrescar
+              Call Refresh
           End If
           If Key = 40 Then ;  //arriba
               For Each v In seleccion
                   If Not v.Bloqueado Then v.Y = v.Y + DESPLAZ_MENOR
               Next
-              Call Refrescar
+              Call Refresh
           End If
           If Key = 38 Then ;  //abajo
               For Each v In seleccion
                   If Not v.Bloqueado Then v.Y = v.Y - DESPLAZ_MENOR
               Next
-              Call Refrescar
+              Call Refresh
           End If
       end If
   end else If Shift = [ssShift] Then begin //**********************Shift + ************************

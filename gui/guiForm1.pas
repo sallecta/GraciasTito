@@ -1,12 +1,15 @@
 unit guiForm1;
+
 {$mode objfpc}{$H+}
 interface
+
 uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, ActnList, Menus,
   StdCtrls, ComCtrls, LCLProc, LCLType, Buttons, MisUtils, guiFormConfig,
   guiFrameCfgGeneral, sketchDocument, guiFramePaintBox, guiFormProject,
   glob, guiFrameProjExplorer, guiFormPerspective, guiFormViewProp,
   sketchEditor;
+
 const
   NUM_CUAD = 20;
   ZOOM_INI = 12;
@@ -16,26 +19,26 @@ type
   { TForm1 }
   TForm1 = class(TForm)
   published
-    acHerDesp: TAction;
-    acHerPunt: TAction;
-    acHerRot: TAction;
-    acArcNuePro: TAction;
-    acArcCerrar: TAction;
-    acArcGuar: TAction;
-    acArcSalir: TAction;
-    acProInsPolylin: TAction;
-    acProPropied: TAction;
-    acProInsRect: TAction;
-    acProInsCubo: TAction;
-    acProInsRectan: TAction;
-    acProAgrPag: TAction;
-    acPagPropied: TAction;
-    acPagCamNom: TAction;
-    acPagElim: TAction;
-    acPagAgrLin: TAction;
-    acVisPropied: TAction;
-    acVerVisSup: TAction;
-    acVerConVista: TAction;
+    acToolbarDesp: TAction;
+    acToolbarPoint: TAction;
+    acToolbarRot: TAction;
+    acProjFileNew: TAction;
+    acProjFileClose: TAction;
+    acProjFileSave: TAction;
+    acProjFileLeave: TAction;
+    acProjInsPolyline: TAction;
+    acProjProp: TAction;
+    acProjInsRect: TAction;
+    acProInsCube: TAction;
+    acProjInsRectan: TAction;
+    acProjAddPage: TAction;
+    acPageProp: TAction;
+    acPageCamNom: TAction;
+    acPageRemove: TAction;
+    acPageAddLine: TAction;
+    acViewProp: TAction;
+    acVerViewSup: TAction;
+    acVerConView: TAction;
     BitBtn1: TBitBtn;
     Edit1: TEdit;
     Label1: TLabel;
@@ -64,9 +67,9 @@ type
     MenuItem31: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
-    acHerConfig: TAction;
+    acToolbarConfig: TAction;
     ActionList1: TActionList;
-    acArcAbrir: TAction;
+    acProjFileOpen: TAction;
     ImgActions16: TImageList;
     ImgActions32: TImageList;
     MainMenu1: TMainMenu;
@@ -80,10 +83,10 @@ type
     PageControl1: TPageControl;
     Panel1: TPanel;
     panCommand: TPanel;
-    PopupVista: TPopupMenu;
-    PopupPagina: TPopupMenu;
+    PopupView: TPopupMenu;
+    PopupPage: TPopupMenu;
     PopupProject: TPopupMenu;
-    PopupObjetos: TPopupMenu;
+    PopupObjects: TPopupMenu;
     Splitter2: TSplitter;
     StatusBar1: TStatusBar;
     TabSheet1: TTabSheet;
@@ -102,472 +105,547 @@ type
     ToolButton7: TToolButton;
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
-    procedure acArcCerrarExecute(Sender: TObject);
-    procedure acArcGuarExecute(Sender: TObject);
-    procedure acArcNueProExecute(Sender: TObject);
-    procedure acArcSalirExecute(Sender: TObject);
-    procedure acPagAgrLinExecute(Sender: TObject);
-    procedure acPagElimExecute(Sender: TObject);
-    procedure acProAgrPagExecute(Sender: TObject);
-    procedure acProInsRectanExecute(Sender: TObject);
-    procedure acProPropiedExecute(Sender: TObject);
-    procedure acVerConVistaExecute(Sender: TObject);
-    procedure acVerVisSupExecute(Sender: TObject);
-    procedure acVisPropiedExecute(Sender: TObject);
-    procedure Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure acProjFileCloseExecute(Sender: TObject);
+    procedure acProjFileSaveExecute(Sender: TObject);
+    procedure acProjFileNewExecute(Sender: TObject);
+    procedure acProjFileLeaveExecute(Sender: TObject);
+    procedure acToolbarDespExecute(Sender: TObject);
+    procedure acToolbarPointExecute(Sender: TObject);
+    procedure acToolbarRotExecute(Sender: TObject);
+    procedure acPageAddLineExecute(Sender: TObject);
+    procedure acPageRemoveExecute(Sender: TObject);
+    procedure acProjAddPageExecute(Sender: TObject);
+    procedure acProjInsRectanExecute(Sender: TObject);
+    procedure acProjPropExecute(Sender: TObject);
+    procedure acVerConViewExecute(Sender: TObject);
+    procedure acVerViewSupExecute(Sender: TObject);
+    procedure acViewPropExecute(Sender: TObject);
+    procedure Edit1KeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
-    procedure acHerConfigExecute(Sender: TObject);
+    procedure acToolbarConfigExecute(Sender: TObject);
+    procedure ToolBar1Click(Sender: TObject);
   private
-    curProject  : TCadProyecto;
-    ExpProyPag  : TCadPagina;     //página seleccionada en el explorador de proyecto
-    ExpProyVis  : TfraVisorGraf;  //vista seleccionada en el explorador de proyecto
+    curProject: TProject;
+    ExploreProjPage: TDocPage;     //page selected in the project explorer
+    ExploreProjView: TfraPaintBox;  //View selected in the project explorer
     procedure ConfigPropertiesChanged;
-    procedure curProjectActivePagevistaSendMessage(msg: string);
-    procedure curProject_Modific;
-    procedure curProject_ChangeState(VisState: TVisStateTyp);
-    procedure curProject_MouseMoveVirt(Shift: TShiftState; xp, yp: Integer; xv,
-      yv, zv: Single);
+    procedure curProjectActivePageViewSendMessage(msg: string);
+    procedure curProject_Modified;
+    procedure curProject_ChangeState(ViewState: TViewState);
+    procedure curProject_MouseMoveVirt(Shift: TShiftState; xp, yp: integer;
+      xv, yv, zv: single);
     procedure curProject_ChangeActivePage;
-    procedure fraExplorProy_ClickDerPagina(pag: TCadPagina);
-    procedure fraExplorProy_ClickDerProyec(pro: TCadProyecto);
-    procedure fraExplorProy_ClickDerVista(vis: TfraVisorGraf);
-    procedure curProject_ChangeView(vista: TfraVisorGraf);
-    function MensajeGuardarCambios: integer;
-    procedure RefrescarEntorno;
-    procedure Refrescar;
-    procedure RefrescarPanelVista;
+    procedure fraExploreProj_ClickRightPage(Page: TDocPage);
+    procedure fraExploreProj_ClickRightProj(Proj: TProject);
+    procedure fraExploreProj_ClickRightView(View: TfraPaintBox);
+    procedure curProject_ChangeView(View: TfraPaintBox);
+    function MessageSaveChanges: integer;
+    procedure RefreshEnvironment;
+    procedure Refresh;
+    procedure RefreshPanelView;
   public
-    fraExplorProy : TfraExplorProyectos;  //Explorador de proyectos
+    fraExploreProj: TfraExploreProject;  //Project Explorer
   end;
 
 var
   Form1: TForm1;
 
 implementation
+
 {$R *.lfm}
 const
-  BOT_CANCEL    = 3;
+  BUT_CANCEL = 3;
 
-procedure TForm1.fraExplorProy_ClickDerProyec(pro: TCadProyecto);
+procedure TForm1.fraExploreProj_ClickRightProj(Proj: TProject);
 begin
   PopupProject.PopUp;
 end;
-procedure TForm1.fraExplorProy_ClickDerPagina(pag: TCadPagina);
+
+procedure TForm1.fraExploreProj_ClickRightPage(Page: TDocPage);
 begin
-  ExpProyPag := pag;
-  PopupPagina.PopUp;
+  ExploreProjPage := Page;
+  PopupPage.PopUp;
 end;
-procedure TForm1.fraExplorProy_ClickDerVista(vis: TfraVisorGraf);
+
+procedure TForm1.fraExploreProj_ClickRightView(View: TfraPaintBox);
 begin
-  ExpProyVis := vis;
-  PopupVista.PopUp;
+  ExploreProjView := View;
+  PopupView.PopUp;
 end;
+
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  //Configura Explorador de proyectos
-  fraExplorProy := TfraExplorProyectos.Create(self);
-  fraExplorProy.Parent := self;
-  fraExplorProy.Name:='fraExpProy';
-  fraExplorProy.Caption:='Explorador de Proyectos1';
-  fraExplorProy.OnClickDerProyec:=@fraExplorProy_ClickDerProyec;
-  fraExplorProy.OnClickDerPagina:=@fraExplorProy_ClickDerPagina;
-  fraExplorProy.OnClickDerVista:=@fraExplorProy_ClickDerVista;
-  fraExplorProy.OnBorrarPagina:=@acPagElimExecute;
-  fraExplorProy.Iniciar(@curProject);
+  //Configure Project Explorer
+  fraExploreProj := TfraExploreProject.Create(self);
+  fraExploreProj.Parent := self;
+  fraExploreProj.Name := 'fraExpProy';
+  fraExploreProj.Caption := 'Explorador de Proyectos1';
+  fraExploreProj.OnClickRightProject := @fraExploreProj_ClickRightProj;
+  fraExploreProj.OnClickRightPage := @fraExploreProj_ClickRightPage;
+  fraExploreProj.OnClickRightView := @fraExploreProj_ClickRightView;
+  fraExploreProj.OnDeletePage := @acPageRemoveExecute;
+  fraExploreProj.Initiate(@curProject);
 
-  //Configura el alineamiento
-  fraExplorProy.Align:=alLeft;
-  Splitter2.Align:=alLeft;
-  fraExplorProy.Visible:=true;
-  panCommand.Align:=alBottom;
-  PageControl1.Align:=alClient;
+  //Set the alignment
+  fraExploreProj.Align := alLeft;
+  Splitter2.Align := alLeft;
+  fraExploreProj.Visible := True;
+  panCommand.Align := alBottom;
+  PageControl1.Align := alClient;
 end;
+
 procedure TForm1.FormShow(Sender: TObject);
 begin
   Config.SetLanguage('en');
-  Config.Iniciar(nil);  //Inicia la configuración
-  Config.OnPropertiesChanged:=@ConfigPropertiesChanged;
+  Config.Initiate(nil);  //Start the configuration
+  Config.OnPropertiesChanged := @ConfigPropertiesChanged;
   ConfigPropertiesChanged;
-  Refrescar;
-acArcNueProExecute(self);
-//acVerConVistaExecute(self);
+  Refresh;
+  acProjFileNewExecute(self);
+  //acVerConViewExecute(self);
 end;
-procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction
-  );
+
+procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  Config.escribirArchivoIni();
+  Config.writeIniFile();
 end;
+
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  if curProject<>nil then curProject.Destroy;
+  if curProject <> nil then
+    curProject.Destroy;
 end;
-procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-{Intercepta el teclado para administrarlo de acuerdo al control elegido}
+
+procedure TForm1.FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
+{Intercept the keyboard to manage it according to the chosen control}
 begin
-  if curProject = nil then exit;
-  //Envía todos los comandos al cuadro de comandos
-  if TabSheet1.Focused then begin
-    edit1.SetFocus;  //pasa el enfoque
-  end else if PageControl1.Focused then begin
-    edit1.SetFocus;  //pasa el enfoque
-  end;
+  if curProject = nil then
+    exit;
+  //Send all commands to the command box
+  if TabSheet1.Focused then
+    edit1.SetFocus//pass the focus
+  else if PageControl1.Focused then
+    edit1.SetFocus//pass the focus
+  ;
 end;
 
 procedure TForm1.ConfigPropertiesChanged;
-//Se cambian las propiedades de la configuración
+//Configuration properties are changed
 begin
-  StatusBar1.Visible:= Config.fcGeneral.VerBarEst;
-  ToolBar1.Visible := Config.fcGeneral.VerBarHer;
+  StatusBar1.Visible := Config.fcGeneral.StatusBar;
+  ToolBar1.Visible := Config.fcGeneral.ToolBar;
   case Config.fcGeneral.StateToolbar of
-  stb_SmallIcon: begin
-    ToolBar1.ButtonHeight:=22;
-    ToolBar1.ButtonWidth:=22;
-    ToolBar1.Height:=26;
-    ToolBar1.Images:=ImgActions16;
-  end;
-  stb_BigIcon: begin
-    ToolBar1.ButtonHeight:=38;
-    ToolBar1.ButtonWidth:=38;
-    ToolBar1.Height:=42;
-    ToolBar1.Images:=ImgActions32;
-  end;
+    stb_SmallIcon:
+    begin
+      ToolBar1.ButtonHeight := 22;
+      ToolBar1.ButtonWidth := 22;
+      ToolBar1.Height := 26;
+      ToolBar1.Images := ImgActions16;
+    end;
+    stb_BigIcon:
+    begin
+      ToolBar1.ButtonHeight := 38;
+      ToolBar1.ButtonWidth := 38;
+      ToolBar1.Height := 42;
+      ToolBar1.Images := ImgActions32;
+    end;
   end;
 end;
-function TForm1.MensajeGuardarCambios: integer;
-{Muestra una ventana para confirmar si se guarda o no los cambios. Si se selecciona
-cancelar, se devuelve el valor BOT_CANCEL.}
+
+function TForm1.MessageSaveChanges: integer;
+{Displays a window to confirm whether changes are saved or not. If selected
+cancel, the BUT_CANCEL value is returned.}
 var
-  rpta: Byte;
+  answer: byte;
 begin
-  if (curProject <> nil) and curProject.Modific then begin
-    rpta := MsgYesNoCancel('El presupuesto ha sido modificado, ¿Guardar cambios?');
-    if rpta = 3 then exit(BOT_CANCEL);
-    if rpta = 1 then curProject.GuardarArchivo;
-  end;
-  Result := 0;   //valor por defecto
-end;
-procedure TForm1.RefrescarEntorno;
-{Refresca la pantalla principal para reflejar el estado actual.}
-  procedure AccionesModific(estado: boolean);
+  if (curProject <> nil) and curProject.Modified then
   begin
-    //desactiva opciones de modificación
-//    acPreAgrTab.Enabled   :=estado;
-//    acPreActPresup.Enabled:=estado;
-//    acPreImpTabler.Enabled:=estado;
-//    acPreRplMarca.Enabled :=estado;
-//    acTabAgrMater.Enabled :=estado;
-//    acTabEliTab.Enabled   :=estado;
-//    acMatDefNMat.Enabled  :=estado;
-//    acMatSubir.Enabled    :=estado;
-//    acMatBajar.Enabled    :=estado;
-//    acMatElimin.Enabled   :=estado;
+    answer := MsgYesNoCancel('El presupuesto ha sido modificado, ¿Guardar cambios?');
+    if answer = 3 then
+      exit(BUT_CANCEL);
+    if answer = 1 then
+      curProject.SaveFile;
   end;
-  procedure AccionesReportes(estado: boolean);
+  Result := 0;   //Default value
+end;
+
+procedure TForm1.RefreshEnvironment;
+{Refreshes the main screen to reflect the current state.}
+  procedure AccionsModified(state: boolean);
   begin
-//    acRepPresXLS.Enabled:=estado;
-//    acRepPresPDF.Enabled:=estado;
-//    acRepDiaCAD.Enabled:=estado;
-//    acRepMaterAgrup.Enabled:=estado;
-//    acRepListTab.Enabled:=estado;
-//    acRepMaterTab.Enabled:=estado;
-//    acRepMaterResum.Enabled:=estado;
+    //disable modification options
+    //    acPreAgrTab.Enabled   :=state;
+    //    acPreActPresup.Enabled:=state;
+    //    acPreImpTabler.Enabled:=state;
+    //    acPreRplMarca.Enabled :=state;
+    //    acTabAgrMater.Enabled :=state;
+    //    acTabEliTab.Enabled   :=state;
+    //    acMatDefNMat.Enabled  :=state;
+    //    acMatSubir.Enabled    :=state;
+    //    acMatBajar.Enabled    :=state;
+    //    acMatElimin.Enabled   :=state;
   end;
-  procedure MenuEstadoPresup;
-  {Actualiza los menús de estado}
+
+  procedure AccionsReports(state: boolean);
   begin
-//    if curProject = nil then begin
-//      acPreMarCrea.Enabled:=false;
-//      acPreMarTerm.Enabled:=false;
-//      acPreMarRev.Enabled:=false;
-//      acPreMarCerr.Enabled:=false;
-//    end else begin
-//      //Las opciones disponibles, dependen del estado actual
-//      case curProject.Estado of
-//      epCreado  : begin
-//        acPreMarCrea.Enabled:=false;
-//        acPreMarTerm.Enabled:=true;
-//        acPreMarRev.Enabled:=false;
-//        acPreMarCerr.Enabled:=false;
-//        AccionesModific(true); //opciones de modificación
-//        end;
-//      epTerminado: begin
-//        acPreMarCrea.Enabled:=true;
-//        acPreMarTerm.Enabled:=false;
-//        acPreMarRev.Enabled:=true;
-//        acPreMarCerr.Enabled:=false;
-//        AccionesModific(true); //opciones de modificación
-//        end;
-//      epRevisado: begin
-//        acPreMarCrea.Enabled:=true;
-//        acPreMarTerm.Enabled:=false;
-//        acPreMarRev.Enabled:=false;
-//        acPreMarCerr.Enabled:=true;
-//        AccionesModific(true); //opciones de modificación
-//        end;
-//      epCerrado: begin
-//        acPreMarCrea.Enabled:=false;
-//        acPreMarTerm.Enabled:=false;
-//        acPreMarRev.Enabled:=false;
-//        acPreMarCerr.Enabled:=false;
-//        AccionesModific(false); //opciones de modificación
-//        end;
-//      end;
-//    end;
+    //    acRepPresXLS.Enabled:=state;
+    //    acRepPresPDF.Enabled:=state;
+    //    acRepDiaCAD.Enabled:=state;
+    //    acRepMaterAgrup.Enabled:=state;
+    //    acRepListTab.Enabled:=state;
+    //    acRepMaterTab.Enabled:=state;
+    //    acRepMaterResum.Enabled:=state;
   end;
-begin
-  if curProject = nil then begin
-//    //No hay presupuesto abierto
-//    mnPresup.Enabled:=false;  //desactiva todo el menú
-//    mnTablero.Enabled:=false;
-//    mnReportes.Enabled:=false;
-    Caption := NOM_PROG + ' ' + VER_PROG;
-//    acArcGuar.Enabled:=false;
-//    acArcGuarCom.Enabled:=false;
-//    acArcCerrar.Enabled:=false;
-//    acPreAgrTab.Enabled:=false;
-//    acPrePropied.Enabled:=false;
-//    acPreValidar.Enabled:=false;
-//
-//    acMatBajar.Enabled:=false;
-//    acMatSubir.Enabled:=false;
-//
-//    AccionesReportes(false);
-  end else begin
-     //Hay presupuesto abierto
-//    mnPresup.Enabled:=true;  //activa todo el menú
-//    mnTablero.Enabled:=true;
-//    mnReportes.Enabled:=true;
-    Caption := NOM_PROG + ' ' + VER_PROG + ' - ' + curProject.nombre;
-//    acArcGuar.Enabled := curProject.Modific;
-//    acArcGuarCom.Enabled:=true;
-//    acArcCerrar.Enabled:=true;
-//    acPreAgrTab.Enabled:=true;
-//    acPrePropied.Enabled:=true;
-//    acPreValidar.Enabled:=true;
-//
-//    acMatBajar.Enabled:=true;
-//    acMatSubir.Enabled:=true;
-//
-//    AccionesReportes(true);
+
+  procedure MenuStateUpdate;
+  {Update the state menus}
+  begin
+    //    if curProject = nil then begin
+    //      acPreMarCrea.Enabled:=false;
+    //      acPreMarTerm.Enabled:=false;
+    //      acPreMarRev.Enabled:=false;
+    //      acPreMarCerr.Enabled:=false;
+    //    end else begin
+    //      //Las opciones disponibles, dependen del state actual
+    //      case curProject.state of
+    //      epCreado  : begin
+    //        acPreMarCrea.Enabled:=false;
+    //        acPreMarTerm.Enabled:=true;
+    //        acPreMarRev.Enabled:=false;
+    //        acPreMarCerr.Enabled:=false;
+    //        AccionsModified(true); //opciones de modificación
+    //        end;
+    //      epTerminado: begin
+    //        acPreMarCrea.Enabled:=true;
+    //        acPreMarTerm.Enabled:=false;
+    //        acPreMarRev.Enabled:=true;
+    //        acPreMarCerr.Enabled:=false;
+    //        AccionsModified(true); //opciones de modificación
+    //        end;
+    //      epRevisado: begin
+    //        acPreMarCrea.Enabled:=true;
+    //        acPreMarTerm.Enabled:=false;
+    //        acPreMarRev.Enabled:=false;
+    //        acPreMarCerr.Enabled:=true;
+    //        AccionsModified(true); //opciones de modificación
+    //        end;
+    //      epCerrado: begin
+    //        acPreMarCrea.Enabled:=false;
+    //        acPreMarTerm.Enabled:=false;
+    //        acPreMarRev.Enabled:=false;
+    //        acPreMarCerr.Enabled:=false;
+    //        AccionsModified(false); //opciones de modificación
+    //        end;
+    //      end;
+    //    end;
   end;
-//  menuRec.ActualMenusReciente(Self);
-  MenuEstadoPresup;  //actualiza los menús de estado
-end;
-procedure TForm1.RefrescarPanelVista;
+
 begin
-//  fraMotEdicion.motEdi.Refrescar;
+  if curProject = nil then
+    Caption := APP_NAME + ' ' + APP_VERSION//    //No hay presupuesto abierto
+    //    mnPresup.Enabled:=false;  //desactiva todo el menú
+    //    mnTablero.Enabled:=false;
+    //    mnReportes.Enabled:=false;
+    //    acProjFileSave.Enabled:=false;
+    //    acArcGuarCom.Enabled:=false;
+    //    acProjFileClose.Enabled:=false;
+    //    acPreAgrTab.Enabled:=false;
+    //    acPrePropied.Enabled:=false;
+    //    acPreValidar.Enabled:=false;
+    //    acMatBajar.Enabled:=false;
+    //    acMatSubir.Enabled:=false;
+    //    AccionsReports(false);
+  else
+    Caption := APP_NAME + ' ' + APP_VERSION + ' - ' +
+      curProject.Name//There is an open project
+    //    mnPresup.Enabled:=true;  //activa todo el menú
+    //    mnTablero.Enabled:=true;
+    //    mnReportes.Enabled:=true;
+    //    acProjFileSave.Enabled := curProject.Modified;
+    //    acArcGuarCom.Enabled:=true;
+    //    acProjFileClose.Enabled:=true;
+    //    acPreAgrTab.Enabled:=true;
+    //    acPrePropied.Enabled:=true;
+    //    acPreValidar.Enabled:=true;
+    //    acMatBajar.Enabled:=true;
+    //    acMatSubir.Enabled:=true;
+    //    AccionsReports(true);
+  ;
+  //  menuRec.ActualMenusReciente(Self);
+  MenuStateUpdate;  //update the menus state
 end;
-procedure TForm1.Refrescar;
-{Rerfresca toda la interfaz}
+
+procedure TForm1.RefreshPanelView;
 begin
-  RefrescarEntorno;
-  fraExplorProy.Refrescar;   //Refresca explorador de proyecto
-  RefrescarPanelVista;
+  //  fraMotEdicion.motEdi.Refresh;
 end;
-procedure TForm1.curProject_Modific;
-//Llamado cuando el proyecto ha sido modificado.
+
+procedure TForm1.Refresh;
+{Rerfresca the entire interface}
 begin
-  acArcGuar.Enabled:=true;
+  RefreshEnvironment;
+  fraExploreProj.Refresh;   //Refresh project explorer
+  RefreshPanelView;
 end;
-procedure TForm1.curProject_ChangeState(VisState: TVisStateTyp);
+
+procedure TForm1.curProject_Modified;
+//Call when the project has been modified.
 begin
-  StatusBar1.Panels[0].Text := curProject.ActivePage.vista.StateAsStr;
+  acProjFileSave.Enabled := True;
 end;
-procedure TForm1.curProject_MouseMoveVirt(Shift: TShiftState; xp,
-  yp: Integer; xv, yv, zv: Single);
+
+procedure TForm1.curProject_ChangeState(ViewState: TViewState);
+begin
+  StatusBar1.Panels[0].Text := curProject.ActivePage.View.StateAsStr;
+end;
+
+procedure TForm1.curProject_MouseMoveVirt(Shift: TShiftState;
+  xp, yp: integer; xv, yv, zv: single);
 begin
   StatusBar1.Panels[3].Text :=
-     'x=' + formatfloat('0.00', xv) + ' ' +
-     'y=' + formatfloat('0.00', yv) + ' ' +
-     'z=' + formatfloat('0.00', zv);
+    'x=' + formatfloat('0.00', xv) + ' ' + 'y=' + formatfloat('0.00', yv) +
+    ' ' + 'z=' + formatfloat('0.00', zv);
 end;
-procedure TForm1.curProject_ChangeView(vista: TfraVisorGraf);
+
+procedure TForm1.curProject_ChangeView(View: TfraPaintBox);
 begin
   StatusBar1.Panels[1].Text :=
-     'Alfa=' + formatfloat('0.00',  vista.Alfa) + ' ' +
-     'Fi=' + formatfloat('0.00', vista.Fi);
+    'Alfa=' + formatfloat('0.00', View.Alfa) + ' ' + 'Fi=' +
+    formatfloat('0.00', View.Fi);
   //FloatToStr(fraMotEdicion.Alfa);
   StatusBar1.Panels[2].Text :=
-     'Zoom=' + formatfloat('0.00', vista.Zoom);
+    'Zoom=' + formatfloat('0.00', View.Zoom);
 end;
+
 procedure TForm1.curProject_ChangeActivePage;
-{Se cambió la página activa del proyecto actual. Hay que mostrarlo en pantalla}
+{The active page of the current project was changed. Show it on the screen}
 var
-  ap: TCadPagina;
+  ap: TDocPage;
 begin
-  if curProject=nil then exit;
-  //Enchufa el visor al PageControl1, para mostralo;
-  curProject.HideAllPages;   {oculta primero todas las páginas porque puede que alguna
-                              ya haya puesto su "Parent" en eset visor.}
+  if curProject = nil then
+    exit;
+  //Plug the viewer into PageControl1, to show it;
+  curProject.HideAllPages; {Hide all the pages first because you may have
+                                      already put your "Parent" in viewer.}
   ap := curProject.ActivePage;
-  ap.vista.Parent := TabSheet1;   //Lo coloca aquí
-  ap.vista.Left:=Random(200);
-  ap.vista.Top:=Random(200);
-  ap.vista.Align := alClient;
-  ap.vista.Visible := true;  //lo hace visible
+  ap.View.Parent := TabSheet1;   //Place it here
+  ap.View.Left := Random(200);
+  ap.View.Top := Random(200);
+  ap.View.Align := alClient;
+  ap.View.Visible := True;  //it makes it visible
 end;
-function ComponentFromAction(Sender: Tobject): TComponent;
-{Devuelve el componente que disparó una acción. Si no l oubica, devuelve NIL}
+
+function ComponentFromAction(Sender: TObject): TComponent;
+  {Returns the component that triggered an action. If not object, returns NIL}
 var
   compSource: TComponent;
 begin
-  if not (Sender is Taction) then exit(nil);
+  if not (Sender is Taction) then
+    exit(nil);
   compSource := TAction(Sender).ActionComponent;
-  //Ya tenemos el componente fuente
-  if compSource is TMenuItem then begin
-    //Es un ítem de menú, pero ¿cuál?
-    exit(TMenuItem(compSource).GetParentComponent)
-  end else if compSource is TToolButton then begin
-    //Es un botón de una barra de herramientas, pero ¿cuál?
+  //We already have the source component
+  if compSource is TMenuItem then
+    exit(TMenuItem(compSource).GetParentComponent)//It's a menu item, but which one?
+  else if compSource is TToolButton then
     exit(TToolButton(compSource).GetParentComponent)
-  end else begin
-    //Es otra cosa
-    exit(compSource)
-  end;
+    //It's a button on a toolbar, but which one?
+  else
+    exit(compSource)//It's another thing
+  ;
 end;
-procedure TForm1.Edit1KeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+
+procedure TForm1.Edit1KeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
 var
-  lin: String;
+  strCmd: string;
 begin
-  if curProject = nil then exit;
-  if key = VK_RETURN then begin
-    lin := trim(edit1.Text);
-    if lin = '' then exit;
-    lin := UpCase(lin);  //Convierte a mayúscula
-    //Comando introducido.
-    curProject.ActivePage.vista.ExecuteCommand(lin);
-  end else if key = VK_ESCAPE then begin
-    //Covierte tecla en comando
-    curProject.ActivePage.vista.ExecuteCommand('CANCEL');
-  end;
+  if curProject = nil then
+    exit;
+  if key = VK_RETURN then
+  begin
+    strCmd := trim(edit1.Text);
+    if strCmd = '' then
+      exit;
+    strCmd := UpCase(strCmd);  //Convert upper case
+    //Command entered.
+    curProject.ActivePage.View.ExecuteCommand(strCmd);
+  end
+  else if key = VK_ESCAPE then
+    curProject.ActivePage.View.ExecuteCommand('CANCEL')//Convert key to command
+  ;
 end;
-procedure TForm1.curProjectActivePagevistaSendMessage(msg: string);
-{Ha llegado un mensaje del proyecto}
+
+procedure TForm1.curProjectActivePageViewSendMessage(msg: string);
+{A message has arrived from the project}
 begin
   Memo1.Lines.Add(Edit1.Text);
-  Label1.Caption:= msg;
+  Label1.Caption := msg;
   Edit1.Text := '';
 end;
-///////////////////////////// Acciones ///////////////////////////////
-procedure TForm1.acArcNueProExecute(Sender: TObject);
+///////////////////////////// Actions ///////////////////////////////
+procedure TForm1.acProjFileNewExecute(Sender: TObject);
 var
-  tmpPresp: TCadProyecto;
+  tmpProj: TProject;
 begin
-  //verifica si hay que guardar cambios
-  if MensajeGuardarCambios = BOT_CANCEL then exit;
-  //Crea proyecto temporal
-  tmpPresp := TCadProyecto.Create;
-  if not frmProject.ExecNew(tmpPresp) then begin
-    //se canceló
-    tmpPresp.Destroy;  //no nos va a servir
-    exit;  //sale dejando el proyecto actual
+  //check if changes must be saved
+  if MessageSaveChanges = BUT_CANCEL then
+    exit;
+  //Create temporary project
+  tmpProj := TProject.Create;
+  if not frmProject.ExecNew(tmpProj) then
+  begin
+    //it was canceled
+    tmpProj.Destroy;  //It will not work
+    exit;  //leaving the current project
   end;
-  //Cierra proyecto actual y asigna el temporal al actual
-  acArcCerrarExecute(self);   //cierra actual si estaba abierto
-  curProject := tmpPresp;  //apunta al temporal
-  curProject.OnModific         :=@curProject_Modific;
-  curProject.OnCambiaPerspec   :=@curProject_ChangeView;
-  curProject.OnChangeActivePage:=@curProject_ChangeActivePage;
-  curProject.OnMouseMoveVirt   :=@curProject_MouseMoveVirt;
-  curProject.OnChangeState     :=@curProject_ChangeState;
-  curProject.ActivePage.vista.OnSendMessage:=@curProjectActivePagevistaSendMessage;
-  curProject_ChangeActivePage;  //para refrescar en su visor
-  curProject.ActivePage.vista.InicVista;  //inicia los ejes
-  //curProject.Modific:=true;
-  curProject.guardarArchivo;
-//  menuRec.AgregArcReciente(curProject.GenerarNombreArch);  //Agrega archivo reciente
-  Refrescar;
+  //Close current project and assign the temporary to the current one
+  acProjFileCloseExecute(self);   //close current if it was open
+  curProject := tmpProj;  //points to the temporary
+  curProject.OnModify := @curProject_Modified;
+  curProject.OnChangePersp := @curProject_ChangeView;
+  curProject.OnChangeActivePage := @curProject_ChangeActivePage;
+  curProject.OnMouseMoveVirt := @curProject_MouseMoveVirt;
+  curProject.OnChangeState := @curProject_ChangeState;
+  curProject.ActivePage.View.OnSendMessage := @curProjectActivePageViewSendMessage;
+  curProject_ChangeActivePage;  //for Refresh in your viewer
+  curProject.ActivePage.View.InitView;  //start the axes
+  //curProject.Modified:=true;
+  curProject.SaveFile;
+  //  menuRec.AgregArcReciente(curProject.GenerarNombreArch);  //Add recent file
+  Refresh;
 end;
-procedure TForm1.acArcGuarExecute(Sender: TObject);
+
+procedure TForm1.acProjFileSaveExecute(Sender: TObject);
 begin
 
 end;
-procedure TForm1.acArcCerrarExecute(Sender: TObject);
+
+procedure TForm1.acProjFileCloseExecute(Sender: TObject);
 begin
-  if curProject = nil then exit;  //no hay proyecto abierto
-  //verifica si hay proyecto modificado
-  if MensajeGuardarCambios = BOT_CANCEL then exit;
+  if curProject = nil then
+    exit;  //there is no open project
+  //check if there is a modified project
+  if MessageSaveChanges = BUT_CANCEL then
+    exit;
   curProject.Destroy;
-  curProject := nil;   //lo marca como cerrado
-  Refrescar;
+  curProject := nil;   //marks it as closed
+  Refresh;
 end;
-procedure TForm1.acArcSalirExecute(Sender: TObject);
+
+procedure TForm1.acProjFileLeaveExecute(Sender: TObject);
 begin
   Self.Close;
 end;
-procedure TForm1.acVerConVistaExecute(Sender: TObject);
+
+procedure TForm1.acToolbarDespExecute(Sender: TObject);
 begin
-  if curProject = nil then exit;
-  FormPerspective.Exec(curProject.ActivePage.vista);
-end;
-procedure TForm1.acVerVisSupExecute(Sender: TObject);
-begin
-  if curProject=nil then exit;
-  curProject.ActivePage.vista.Alfa:=0;
-  curProject.ActivePage.vista.Fi:=0;
-  curProject.ActivePage.vista.visEdi.Refrescar;
-end;
-procedure TForm1.acVisPropiedExecute(Sender: TObject);
-begin
-  FormPropView.Exec(ExpProyVis);
-end;
-procedure TForm1.acProAgrPagExecute(Sender: TObject);
-begin
-  if curProject = nil then exit;  //no hay proyecto abierto
-  curProject.AddPage;
-  Refrescar;
-end;
-procedure TForm1.acProPropiedExecute(Sender: TObject);
-begin
-  if curProject = nil then exit;
-  if frmProject.Exec(curProject, @RefrescarPanelVista) then begin
-    curProject.Modific:=true;
-    fraExplorProy.Refrescar;
-    RefrescarPanelVista;
-  end;
-end;
-procedure TForm1.acPagAgrLinExecute(Sender: TObject);  //Agrega línea
-var
-  pag: TCadPagina;
-begin
-  if curProject=nil then exit;
-  {Se verifica si la acción viene del explorador de proyecto, porque en ese caso, para
-  darle la posibilidad de tomar acciones, sobre páginas no activas}
-  if ComponentFromAction(Sender) = PopupPagina then pag := ExpProyPag
-  else pag := curProject.ActivePage;
-  pag.vista.ExecuteCommand('LINE');
-  Refrescar;
-end;
-procedure TForm1.acProInsRectanExecute(Sender: TObject);
-var
-  pag: TCadPagina;
-begin
-  if curProject=nil then exit;
-  {Se verifica si la acción viene del explorador de proyecto, porque en ese caso, para
-  darle la posibilidad de tomar acciones, sobre páginas no activas}
-  if ComponentFromAction(Sender) = PopupPagina then pag := ExpProyPag
-  else pag := curProject.ActivePage;
-  pag.vista.ExecuteCommand('RECTANGLE');
-  Refrescar;
-end;
-procedure TForm1.acPagElimExecute(Sender: TObject);
-begin
-  if curProject = nil then exit;
-  if MsgYesNo('¿Eliminar página "%s"?', [curProject.ActivePage.nombre]) <> 1 then exit;
-  curProject.RemovePage(curProject.ActivePage);
-  Refrescar;
+
 end;
 
-procedure TForm1.acHerConfigExecute(Sender: TObject);
+procedure TForm1.acToolbarPointExecute(Sender: TObject);
 begin
-  Config.Configurar();
+
+end;
+
+procedure TForm1.acToolbarRotExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.acVerConViewExecute(Sender: TObject);
+begin
+  if curProject = nil then
+    exit;
+  FormPerspective.Exec(curProject.ActivePage.View);
+end;
+
+procedure TForm1.acVerViewSupExecute(Sender: TObject);
+begin
+  if curProject = nil then
+    exit;
+  curProject.ActivePage.View.Alfa := 0;
+  curProject.ActivePage.View.Fi := 0;
+  curProject.ActivePage.View.viewEdi.Refresh;
+end;
+
+procedure TForm1.acViewPropExecute(Sender: TObject);
+begin
+  FormPropView.Exec(ExploreProjView);
+end;
+
+procedure TForm1.acProjAddPageExecute(Sender: TObject);
+begin
+  if curProject = nil then
+    exit;  //there is no open project
+  curProject.AddPage;
+  Refresh;
+end;
+
+procedure TForm1.acProjPropExecute(Sender: TObject);
+begin
+  if curProject = nil then
+    exit;
+  if frmProject.Exec(curProject, @RefreshPanelView) then
+  begin
+    curProject.Modified := True;
+    fraExploreProj.Refresh;
+    RefreshPanelView;
+  end;
+end;
+
+procedure TForm1.acPageAddLineExecute(Sender: TObject);  //Add line
+var
+  Page: TDocPage;
+begin
+  if curProject = nil then
+    exit;
+  {It checks if the action comes from the project explorer, to give you the
+    possibility to take actions, on non-active pages}
+  if ComponentFromAction(Sender) = PopupPage then
+    Page := ExploreProjPage
+  else
+    Page := curProject.ActivePage;
+  Page.View.ExecuteCommand('LINE');
+  Refresh;
+end;
+
+procedure TForm1.acProjInsRectanExecute(Sender: TObject);
+var
+  Page: TDocPage;
+begin
+  if curProject = nil then
+    exit;
+  {It checks if the action comes from the project explorer, to give you the
+    possibility to take actions, on non-active pages}
+  if ComponentFromAction(Sender) = PopupPage then
+    Page := ExploreProjPage
+  else
+    Page := curProject.ActivePage;
+  Page.View.ExecuteCommand('RECTANGLE');
+  Refresh;
+end;
+
+procedure TForm1.acPageRemoveExecute(Sender: TObject);
+begin
+  if curProject = nil then
+    exit;
+  if MsgYesNo('¿Eliminar página "%s"?', [curProject.ActivePage.Name]) <> 1 then
+    exit;
+  curProject.RemovePage(curProject.ActivePage);
+  Refresh;
+end;
+
+procedure TForm1.acToolbarConfigExecute(Sender: TObject);
+begin
+  Config.doConfig();
+end;
+
+procedure TForm1.ToolBar1Click(Sender: TObject);
+begin
+
 end;
 
 end.
-

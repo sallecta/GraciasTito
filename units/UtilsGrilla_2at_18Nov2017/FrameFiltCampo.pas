@@ -387,7 +387,7 @@ begin
 end;
 
 procedure TfraFiltCampo.Inic(grilla0: TStringGrid);
-{Prepara al frame para iniciar su trabajo. Notar que para evitar conflictos, se ha
+{Prepara al frame para Initiate su trabajo. Notar que para evitar conflictos, se ha
 definido que no se intercepten los eventos de la grilla, en este Frame.}
 begin
   grilla := grilla0;

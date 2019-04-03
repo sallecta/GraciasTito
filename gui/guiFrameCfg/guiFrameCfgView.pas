@@ -25,7 +25,7 @@ type
     LongEjeCoor: Double;
     VerCoorPunt: boolean;
     incrWheel  : Double;
-    procedure Iniciar(cfgFile: TMiConfigBasic); //Inicia el frame
+    procedure Initiate(cfgFile: TMiConfigBasic); //Inicia el frame
     procedure SetLanguage(lang: string);
   end;
 
@@ -38,7 +38,7 @@ begin
   label1.Enabled:= chkVerEjes.Checked;
 end;
 
-procedure TfraCfgVista.Iniciar(cfgFile: TMiConfigBasic);
+procedure TfraCfgVista.Initiate(cfgFile: TMiConfigBasic);
 begin
   cfgFile.Asoc_Bol(self.Name + '/VerEjesCoor', @VerEjesCoor , chkVerEjes, true);
   cfgFile.Asoc_Dbl(self.Name + '/LongEjeCoor', @LongEjeCoor , spnLongEje, 100);

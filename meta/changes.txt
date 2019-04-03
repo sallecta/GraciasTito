@@ -57,7 +57,7 @@ A routine is included to fix the pivot point, always at the center of the screen
 Identification methods are added to the project explorer.
 Context menus are completed and a form is created for the properties of
 a sight.
-The graphic object container is moved to the TCadPagina class.
+The graphic object container is moved to the TDocPage class.
 
 
 Titocad 0.1

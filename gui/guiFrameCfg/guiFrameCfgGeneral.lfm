@@ -13,7 +13,7 @@ object fraCfgGeneral: TfraCfgGeneral
     Height = 19
     Top = 24
     Width = 157
-    Caption = 'Ver Barra de &Herramientas'
+    Caption = 'Show Barra de &Herramientas'
     TabOrder = 0
   end
   object RadioGroup1: TRadioGroup
@@ -44,7 +44,7 @@ object fraCfgGeneral: TfraCfgGeneral
     Height = 19
     Top = 112
     Width = 121
-    Caption = 'Ver Barra de &Estado'
+    Caption = 'Show Barra de &state'
     TabOrder = 2
   end
 end

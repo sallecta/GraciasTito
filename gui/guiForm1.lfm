@@ -46,20 +46,23 @@ object Form1: TForm1
     Caption = 'ToolBar1'
     Images = ImgActions16
     TabOrder = 1
+    OnClick = ToolBar1Click
     object ToolButton1: TToolButton
       Left = 78
       Top = 2
-      Action = acHerPunt
+      Action = acToolbarRot
+      ImageIndex = 14
     end
     object ToolButton2: TToolButton
       Left = 101
       Top = 2
-      Action = acHerDesp
+      Action = acToolbarRot
+      ImageIndex = 13
     end
     object ToolButton3: TToolButton
       Left = 124
       Top = 2
-      Action = acHerRot
+      Action = acToolbarRot
     end
     object ToolButton4: TToolButton
       Left = 70
@@ -71,12 +74,12 @@ object Form1: TForm1
     object ToolButton6: TToolButton
       Left = 1
       Top = 2
-      Action = acArcNuePro
+      Action = acProjFileNew
     end
     object ToolButton7: TToolButton
       Left = 47
       Top = 2
-      Action = acArcGuar
+      Action = acProjFileSave
     end
     object ToolButton8: TToolButton
       Left = 147
@@ -88,32 +91,32 @@ object Form1: TForm1
     object ToolButton9: TToolButton
       Left = 247
       Top = 2
-      Action = acHerConfig
+      Action = acToolbarConfig
     end
     object ToolButton10: TToolButton
       Left = 24
       Top = 2
-      Action = acArcAbrir
+      Action = acProjFileOpen
     end
     object ToolButton5: TToolButton
       Left = 224
       Top = 2
-      Action = acVerVisSup
+      Action = acVerViewSup
     end
     object ToolButton11: TToolButton
       Left = 201
       Top = 2
-      Action = acProInsRectan
+      Action = acProjInsRectan
     end
     object ToolButton12: TToolButton
       Left = 178
       Top = 2
-      Action = acProInsPolylin
+      Action = acProjInsPolyline
     end
     object ToolButton13: TToolButton
       Left = 155
       Top = 2
-      Action = acPagAgrLin
+      Action = acPageAddLine
     end
   end
   object PageControl1: TPageControl
@@ -238,125 +241,128 @@ object Form1: TForm1
     Images = ImgActions16
     left = 400
     top = 220
-    object acHerPunt: TAction
-      Category = 'Her'
+    object acToolbarPoint: TAction
+      Category = 'TollBox'
       Caption = '&Puntero'
       ImageIndex = 14
+      OnExecute = acToolbarPointExecute
     end
-    object acHerDesp: TAction
-      Category = 'Her'
+    object acToolbarDesp: TAction
+      Category = 'TollBox'
       Caption = '&Desplazar'
       ImageIndex = 13
+      OnExecute = acToolbarDespExecute
     end
-    object acHerRot: TAction
-      Category = 'Her'
+    object acToolbarRot: TAction
+      Category = 'TollBox'
       Caption = '&Rotar'
       ImageIndex = 15
+      OnExecute = acToolbarRotExecute
     end
-    object acHerConfig: TAction
-      Category = 'Her'
+    object acToolbarConfig: TAction
+      Category = 'TollBox'
       Caption = 'Confi&guración'
       ImageIndex = 22
-      OnExecute = acHerConfigExecute
+      OnExecute = acToolbarConfigExecute
     end
-    object acVerVisSup: TAction
-      Category = 'Ver'
-      Caption = 'Vista S&uperior'
+    object acVerViewSup: TAction
+      Category = 'Show'
+      Caption = 'View S&uperior'
       ImageIndex = 20
-      OnExecute = acVerVisSupExecute
+      OnExecute = acVerViewSupExecute
     end
-    object acVerConVista: TAction
-      Category = 'Ver'
-      Caption = 'Control de Vista...'
-      OnExecute = acVerConVistaExecute
+    object acVerConView: TAction
+      Category = 'Show'
+      Caption = 'Control de View...'
+      OnExecute = acVerConViewExecute
     end
-    object acArcNuePro: TAction
-      Category = 'Arc'
+    object acProjFileNew: TAction
+      Category = 'File'
       Caption = 'Nuevo &Proyecto...'
       ImageIndex = 2
-      OnExecute = acArcNueProExecute
+      OnExecute = acProjFileNewExecute
       ShortCut = 16462
     end
-    object acArcAbrir: TAction
-      Category = 'Arc'
+    object acProjFileOpen: TAction
+      Category = 'File'
       Caption = '&Abrir'
       ImageIndex = 3
     end
-    object acArcGuar: TAction
-      Category = 'Arc'
+    object acProjFileSave: TAction
+      Category = 'File'
       Caption = 'G&uardar'
       ImageIndex = 4
-      OnExecute = acArcGuarExecute
+      OnExecute = acProjFileSaveExecute
     end
-    object acArcCerrar: TAction
-      Category = 'Arc'
+    object acProjFileClose: TAction
+      Category = 'File'
       Caption = '&Cerrar'
-      OnExecute = acArcCerrarExecute
+      OnExecute = acProjFileCloseExecute
     end
-    object acArcSalir: TAction
-      Category = 'Arc'
+    object acProjFileLeave: TAction
+      Category = 'File'
       Caption = '&Salir'
       ImageIndex = 6
-      OnExecute = acArcSalirExecute
+      OnExecute = acProjFileLeaveExecute
     end
-    object acProAgrPag: TAction
-      Category = 'Pro'
+    object acProjAddPage: TAction
+      Category = 'Proj'
       Caption = 'Agregar &Página'
       ImageIndex = 34
-      OnExecute = acProAgrPagExecute
+      OnExecute = acProjAddPageExecute
     end
-    object acProInsPolylin: TAction
-      Category = 'Pro'
+    object acProjInsPolyline: TAction
+      Category = 'Proj'
       Caption = 'Insertar Po&lilinea'
       ImageIndex = 31
     end
-    object acProInsRectan: TAction
-      Category = 'Pro'
-      Caption = 'acProInsRectan'
+    object acProjInsRectan: TAction
+      Category = 'Proj'
+      Caption = 'acProjInsRectan'
       ImageIndex = 33
-      OnExecute = acProInsRectanExecute
+      OnExecute = acProjInsRectanExecute
     end
-    object acProPropied: TAction
-      Category = 'Pro'
+    object acProjProp: TAction
+      Category = 'Proj'
       Caption = '&Propiedades'
       ImageIndex = 32
-      OnExecute = acProPropiedExecute
+      OnExecute = acProjPropExecute
     end
-    object acProInsRect: TAction
-      Category = 'Pro'
+    object acProjInsRect: TAction
+      Category = 'Proj'
       Caption = 'Insertar Rectángulo'
     end
-    object acProInsCubo: TAction
-      Category = 'Pro'
+    object acProInsCube: TAction
+      Category = 'Proj'
       Caption = 'Insertar C&ubo'
     end
-    object acPagElim: TAction
-      Category = 'Pag'
+    object acPageRemove: TAction
+      Category = 'Page'
       Caption = '&Eliminar'
       ImageIndex = 21
-      OnExecute = acPagElimExecute
+      OnExecute = acPageRemoveExecute
     end
-    object acPagCamNom: TAction
-      Category = 'Pag'
+    object acPageCamNom: TAction
+      Category = 'Page'
       Caption = 'Cambiar &Nombre'
       ImageIndex = 34
     end
-    object acPagPropied: TAction
-      Category = 'Pag'
+    object acPageProp: TAction
+      Category = 'Page'
       Caption = '&Propiedades'
       ImageIndex = 32
     end
-    object acVisPropied: TAction
-      Category = 'Vis'
+    object acViewProp: TAction
+      Category = 'View'
       Caption = '&Propiedades'
       ImageIndex = 32
-      OnExecute = acVisPropiedExecute
+      OnExecute = acViewPropExecute
     end
-    object acPagAgrLin: TAction
-      Category = 'Pag'
+    object acPageAddLine: TAction
+      Category = 'Page'
       Caption = 'Agregar &Línea'
       ImageIndex = 35
-      OnExecute = acPagAgrLinExecute
+      OnExecute = acPageAddLineExecute
     end
   end
   object MainMenu1: TMainMenu
@@ -366,65 +372,65 @@ object Form1: TForm1
     object MenuItem1: TMenuItem
       Caption = '&Archivo'
       object MenuItem11: TMenuItem
-        Action = acArcNuePro
+        Action = acProjFileNew
       end
       object MenuItem10: TMenuItem
-        Action = acArcAbrir
+        Action = acProjFileOpen
       end
       object MenuItem9: TMenuItem
-        Action = acArcGuar
+        Action = acProjFileSave
       end
       object MenuItem8: TMenuItem
-        Action = acArcCerrar
+        Action = acProjFileClose
       end
       object MenuItem2: TMenuItem
-        Action = acArcAbrir
+        Action = acProjFileOpen
         Caption = '-'
       end
       object MenuItem12: TMenuItem
-        Action = acArcSalir
+        Action = acProjFileLeave
       end
     end
     object MenuItem3: TMenuItem
-      Caption = '&Ver'
+      Caption = '&Show'
       object MenuItem4: TMenuItem
         Caption = 'New Item8'
       end
       object MenuItem5: TMenuItem
-        Action = acVerConVista
+        Action = acVerConView
       end
     end
     object MenuItem13: TMenuItem
       Caption = '&Projecto'
       object MenuItem22: TMenuItem
-        Action = acProAgrPag
+        Action = acProjAddPage
       end
       object MenuItem20: TMenuItem
-        Action = acProInsRect
+        Action = acProjInsRect
       end
       object MenuItem14: TMenuItem
-        Action = acProInsPolylin
+        Action = acProjInsPolyline
       end
       object MenuItem19: TMenuItem
-        Action = acProPropied
+        Action = acProjProp
       end
     end
     object MenuItem23: TMenuItem
       Caption = 'Pa&gina'
       object MenuItem24: TMenuItem
-        Action = acPagCamNom
+        Action = acPageCamNom
       end
       object MenuItem25: TMenuItem
-        Action = acPagElim
+        Action = acPageRemove
       end
       object MenuItem26: TMenuItem
-        Action = acPagPropied
+        Action = acPageProp
       end
     end
     object MenuItem6: TMenuItem
       Caption = '&Herramientas'
       object MenuItem7: TMenuItem
-        Action = acHerConfig
+        Action = acToolbarConfig
       end
     end
   end
@@ -6209,49 +6215,49 @@ object Form1: TForm1
     left = 216
     top = 220
     object MenuItem21: TMenuItem
-      Action = acProAgrPag
+      Action = acProjAddPage
     end
     object MenuItem15: TMenuItem
       Caption = '&Insertar'
       object MenuItem16: TMenuItem
-        Action = acProInsPolylin
+        Action = acProjInsPolyline
       end
     end
     object MenuItem18: TMenuItem
-      Action = acProPropied
+      Action = acProjProp
     end
   end
-  object PopupObjetos: TPopupMenu
+  object PopupObjects: TPopupMenu
     Images = ImgActions16
     left = 216
     top = 296
     object MenuItem17: TMenuItem
-      Action = acProInsPolylin
+      Action = acProjInsPolyline
     end
   end
-  object PopupPagina: TPopupMenu
+  object PopupPage: TPopupMenu
     Images = ImgActions16
     left = 296
     top = 220
     object MenuItem31: TMenuItem
-      Action = acPagAgrLin
+      Action = acPageAddLine
     end
     object MenuItem27: TMenuItem
-      Action = acPagCamNom
+      Action = acPageCamNom
     end
     object MenuItem28: TMenuItem
-      Action = acPagElim
+      Action = acPageRemove
     end
     object MenuItem29: TMenuItem
-      Action = acPagPropied
+      Action = acPageProp
     end
   end
-  object PopupVista: TPopupMenu
+  object PopupView: TPopupMenu
     Images = ImgActions16
     left = 296
     top = 296
     object MenuItem30: TMenuItem
-      Action = acVisPropied
+      Action = acViewProp
     end
   end
 end

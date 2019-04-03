@@ -95,7 +95,7 @@
 "$INFOTABLA()"
 "$INFOTABLA(""tabla"")"
 "$INFOVISTA()"
-"$INFOVISTA(""vista"")"
+"$INFOVISTA(""View"")"
 "$LEE_CADENA()"
 "$LEE_FECHA()"
 "$LEE_NUMERO()"

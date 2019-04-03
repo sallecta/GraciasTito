@@ -226,7 +226,7 @@ type
     tnString  : integer;  //id para las cadenas
     tnComment : integer;  //id para los comentarios
     {Se crea el contenedor adicional Attrib[], para los atributos, porque aunque ya se
-    tiene Attribute[] en TSynCustomHighlighter, este está ordenado pro defecto y no
+    tiene Attribute[] en TSynCustomHighlighter, este está ordenado Proj defecto y no
     ayuda en ubicar a los attributos por su índice}
     Attrib: array of TSynHighlighterAttributes;
     function NewTokAttrib(TypeName: string; out TokID: integer
@@ -1065,7 +1065,7 @@ begin
 end;
 //procesamiento de XML
 function TSynFacilSynBase.ReadXMLParam(n: TDOMNode; nomb:string): TFaXMLatrib;
-//Explora un nodo para ver si existe un atributo, y leerlo. Ignora la caja.
+//Explora un nodo para Show si existe un atributo, y leerlo. Ignora la caja.
 var
   i: integer;
   cad: string;
@@ -1146,7 +1146,7 @@ begin
   inc(posFin);  //para pasar al siguiente caracter
   n := 0;
   while n<tc.nInstruc do begin
-    tc.Instrucs[n].posFin := posFin;  //guarda posición al iniciar
+    tc.Instrucs[n].posFin := posFin;  //guarda posición al Initiate
     case tc.Instrucs[n].expTyp of
     tregString: begin  //texo literal
         //Rutina de comparación de cadenas

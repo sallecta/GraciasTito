@@ -6,7 +6,7 @@ Por Tito Hinostroza
 Pendientes:
 * Incluir una forma simplficada de la forma <OpenOn AfterIdentif="Alter">, para simplificar
 la definición clásica.
-* Ver el trabajo de la librería con caracteres UTF-8 de dos bytes.
+* Show el trabajo de la librería con caracteres UTF-8 de dos bytes.
 * Optimizar el método LookAround(), evitando tener que leer dos veces la línea actual
 y de ser posible creando una rutina personalizada, en lugar de usar ExploreLine().
 * Incluir el manejo de las ventanas de tipo "Tip", como ayuda para los parámetros de las
@@ -158,7 +158,7 @@ type
     CurY     : Integer;        //posición actual del cursor
     curLine  : string;         //línea actual de exploración
     curBlock : TFaSynBlock;    //referencia al bloque actual
-    caseSen  : boolean;        //indica el estado de caja actual
+    caseSen  : boolean;        //indica el state de caja actual
     procedure LookAround(ed: TSynEdit; CaseSen0: boolean);
     //Las siguientes funciones, deben llaamrse después de lamar a LookAround()
     function HaveLastTok: boolean;
@@ -181,7 +181,7 @@ type
   //Acciones válidas que se realizarán al seleccionar un ítem
   TFAPatAction = (
     pac_None,       //no se realiza ninguna acción
-    pac_Default,    //acción pro defecto
+    pac_Default,    //acción Proj defecto
     pac_Insert,     //se inserta el texto seleccionado en la posición del cursor
     pac_Rep_LastTok //se reemplaza el token anterior
   );
@@ -527,13 +527,13 @@ begin
   hlt := hlt0;
 end;
 procedure TFaCursorEnviron.LookAround(ed: TSynEdit; CaseSen0: boolean);
-{Analiza el estado del cursor en el editor. Se supone que se debe llamar, después de
+{Analiza el state del cursor en el editor. Se supone que se debe llamar, después de
  actualizar el editor. Actualiza: PosiCursor, curBlock, tok0, tok_1, tok_2
  y tok_3. Utiliza punteros, para evitar perder tiempo creando copias.}
 var
   iTok0    : integer;       //índice al token actual
 begin
-  caseSen:=CaseSen0;  //actualiza estado
+  caseSen:=CaseSen0;  //actualiza state
   //valores por defecto
   curBlock := nil;
   //explora la línea con el resaltador
@@ -619,7 +619,7 @@ function TFaCursorEnviron.LastIdent: string;
 var
   i: Integer;
 begin
-  {Ya sabemos que hay identificador hasta antes del cursor, ahora debemos ver, hasta
+  {Ya sabemos que hay identificador hasta antes del cursor, ahora debemos Show, hasta
    dónde se extiende}
   i := CurX;
   while curLine[i] in CHAR_BODY_IDEN do  //no debería ser necesario verificar el final
@@ -1737,7 +1737,7 @@ el caso, la cierra y devuelve TRUE.}
 var
   opEve: TFaOpenEvent;
 begin
-  curEnv.LookAround(ed, CaseSensComp);  //para actualizar el nuevo estado
+  curEnv.LookAround(ed, CaseSensComp);  //para actualizar el nuevo state
   opEve := FindOpenEventMatching;    //Busca evento de apertura que aplica
   if opEve = nil then begin
     MenuComplet.Deactivate;
@@ -2005,7 +2005,7 @@ procedure TSynFacilComplet.KeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 {Verifica la tecla pulsada, para determinar si abrir o no el menú de ayuda contextual
  Debe llamarse después de que el editor ha procesado el evento, para tener
- el estado final del editor
+ el state final del editor
  Este evento solo se ejecutará una vez antes de abrir la ventana de autocompletado}
 begin
   {$IFDEF Verbose}

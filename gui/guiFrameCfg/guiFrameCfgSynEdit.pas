@@ -49,8 +49,8 @@ type
     TipLet     : string;     //tipo de letra
     TamLet     : integer;     //tamaño de letra
     MarLinAct : boolean;    //marcar línea actual
-    VerBarDesV  : boolean;    //ver barras de desplazamiento
-    VerBarDesH  : boolean;    //ver barras de desplazamiento
+    VerBarDesV  : boolean;    //Show barras de desplazamiento
+    VerBarDesH  : boolean;    //Show barras de desplazamiento
     ResPalCur  : boolean;    //resaltar palabra bajo el cursor
     cTxtNor     : TColor;    //color de texto normal
     cFonEdi     : TColor;    //Color de fondo del control de edición
@@ -59,13 +59,13 @@ type
     cLinAct     : TColor;    //color de la línea actual
     cResPal     : TColor;    //color de la palabra actual
     //panel vertical
-    VerPanVer  : boolean;    //ver pánel vertical
-    VerNumLin  : boolean;    //ver número de línea
-    VerMarPle  : boolean;    //ver marcas de plegado
+    VerPanVer  : boolean;    //Show pánel vertical
+    VerNumLin  : boolean;    //Show número de línea
+    VerMarPle  : boolean;    //Show marcas de plegado
     cFonPan     : TColor;    //color de fondo del panel vertical
     cTxtPan     : TColor;    //color de texto del panel vertical
     ArcRecientes: TStringList;  //Lista de archivos recientes
-    procedure Iniciar(cfgFile: TMiConfigBasic; ed0: TSynEdit; colFonDef: TColor); //Inicia el frame
+    procedure Initiate(cfgFile: TMiConfigBasic; ed0: TSynEdit; colFonDef: TColor); //Inicia el frame
     procedure SetLanguage(lang: string);
     procedure ConfigEditor;
     //genera constructor y destructor
@@ -99,7 +99,7 @@ begin
   label10.Enabled:=chkResPalCur.Checked;
   cbutResPal.Enabled:=chkResPalCur.Checked;
 end;
-procedure TfraCfgSynEdit.Iniciar(cfgFile: TMiConfigBasic; ed0: TSynEdit; colFonDef: TColor);
+procedure TfraCfgSynEdit.Initiate(cfgFile: TMiConfigBasic; ed0: TSynEdit; colFonDef: TColor);
 {Inicia el frame de configuración. Notar que se usar el nombre del frame, para crear
 una categoría en el archivo XML.}
 begin
@@ -199,9 +199,9 @@ begin
       chkResPalCur.Caption:='Resaltar palabra bajo cursor';
       chkMarLinAct.Caption:='Marcar línea actual';
       chkVerPanVer.Caption:='Panel Vertical';
-      chkVerNumLin.Caption:='Ver Núm.de línea';
+      chkVerNumLin.Caption:='Show Núm.de línea';
       label2.Caption:='Color Fondo:';
-      chkVerMarPle.Caption:='Ver Marc.de plegado';
+      chkVerMarPle.Caption:='Show Marc.de plegado';
       label3.Caption:='Color de texto:';
     end;
   'en': begin

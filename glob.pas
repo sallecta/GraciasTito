@@ -5,7 +5,7 @@ uses
   Classes, SysUtils;
 
 const
-  NOM_PROG = 'GraciasTito';   //nombre de programa
+  APP_NAME = 'GraciasTito';   //nombre de programa
   {$I meta/version.txt}   //versión del programa
 
 type

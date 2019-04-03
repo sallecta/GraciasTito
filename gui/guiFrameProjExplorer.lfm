@@ -1,4 +1,4 @@
-object fraExplorProyectos: TfraExplorProyectos
+object fraExploreProj: TfraExploreProject
   Left = 0
   Height = 480
   Top = 0

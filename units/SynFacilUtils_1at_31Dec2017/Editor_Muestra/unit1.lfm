@@ -554,7 +554,7 @@ object Form1: TForm1
     object ToolButton2: TToolButton
       Left = 24
       Top = 2
-      Action = acArcAbrir
+      Action = acProjFileOpen
     end
     object ToolButton3: TToolButton
       Left = 47
@@ -1484,14 +1484,14 @@ object Form1: TForm1
     left = 200
     top = 76
     object acArcNuevo: TAction
-      Category = 'Arc'
+      Category = 'File'
       Caption = '&Nuevo'
       Hint = 'Nuevo Archivo'
       ImageIndex = 13
       OnExecute = acArcNuevoExecute
     end
-    object acArcAbrir: TAction
-      Category = 'Arc'
+    object acProjFileOpen: TAction
+      Category = 'File'
       Caption = '&Abrir...'
       Hint = 'Abrir Archivo'
       ImageIndex = 9
@@ -1499,7 +1499,7 @@ object Form1: TForm1
       ShortCut = 16449
     end
     object acArcGuardar: TAction
-      Category = 'Arc'
+      Category = 'File'
       Caption = '&Guardar'
       Hint = 'Guardar Archivo'
       ImageIndex = 6
@@ -1507,18 +1507,18 @@ object Form1: TForm1
       ShortCut = 16455
     end
     object acArcGuaCom: TAction
-      Category = 'Arc'
+      Category = 'File'
       Caption = 'G&uardar Como...'
       Hint = 'Guardar como...'
       ImageIndex = 12
       OnExecute = acArcGuaComExecute
     end
-    object acArcSalir: TAction
-      Category = 'Arc'
+    object acProjFileLeave: TAction
+      Category = 'File'
       Caption = '&Salir'
       Hint = 'Salir'
       ImageIndex = 7
-      OnExecute = acArcSalirExecute
+      OnExecute = acProjFileLeaveExecute
     end
     object acEdUndo: TAction
       Category = 'Edit'
@@ -1568,12 +1568,12 @@ object Form1: TForm1
       ImageIndex = 15
     end
     object acVerNumLin: TAction
-      Category = 'Ver'
-      Caption = 'Ver &Núm. de Línea'
+      Category = 'Show'
+      Caption = 'Show &Núm. de Línea'
     end
     object acVerBarEst: TAction
-      Category = 'Ver'
-      Caption = 'Ver Barra de &Estado'
+      Category = 'Show'
+      Caption = 'Show Barra de &state'
     end
     object acBusBuscar: TAction
       Category = 'Search'
@@ -1595,13 +1595,13 @@ object Form1: TForm1
       ShortCut = 16466
     end
     object acVerPanArc: TAction
-      Category = 'Ver'
+      Category = 'Show'
       Caption = 'Panel de &Archivos'
       ShortCut = 113
     end
-    object AcHerConfig: TAction
-      Category = 'Her'
-      Caption = 'AcHerConfig'
+    object acToolbarConfig: TAction
+      Category = 'TollBox'
+      Caption = 'acToolbarConfig'
       ImageIndex = 16
     end
   end
@@ -1651,7 +1651,7 @@ object Form1: TForm1
         }
       end
       object MenuItem4: TMenuItem
-        Action = acArcAbrir
+        Action = acProjFileOpen
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           20000000000000040000640000006400000000000000000000002C86D8002D88
@@ -1774,7 +1774,7 @@ object Form1: TForm1
         Caption = '-'
       end
       object MenuItem8: TMenuItem
-        Action = acArcSalir
+        Action = acProjFileLeave
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000FFFFFF00FFFF

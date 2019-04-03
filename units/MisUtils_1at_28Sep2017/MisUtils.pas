@@ -272,7 +272,7 @@ begin
     p.Execute;
   except
     Result := false;
-    MsgBox('Fallo al iniciar aplicativo: '+ p.Executable);;
+    MsgBox('Fallo al Initiate aplicativo: '+ p.Executable);;
   end;
   p.Free;
 end;

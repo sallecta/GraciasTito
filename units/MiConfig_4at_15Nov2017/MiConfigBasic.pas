@@ -485,7 +485,7 @@ begin
 end;
 //Rutinas de validación
 function TMiConfigBasic.EditValidateInt(edit: TEdit; min: integer; max: integer): boolean;
-{Valida el contenido de un TEdit, para ver si se puede convertir a un valor entero.
+{Valida el contenido de un TEdit, para Show si se puede convertir a un valor entero.
 Si no se puede convertir, devuelve FALSE, devuelve el mensaje de error en "MsjErr", y
 pone el TEdit con enfoque.
 Si se puede convertir, devuelve TRUE, y el valor convertido en "valInt".}
@@ -538,7 +538,7 @@ begin
   Result := true;   //tuvo éxito
 end;
 function TMiConfigBasic.EditValidateDbl(edit: TEdit; min: Double; max: Double): boolean;
-{Valida el contenido de un TEdit, para ver si se puede convertir a un valor Double.
+{Valida el contenido de un TEdit, para Show si se puede convertir a un valor Double.
 Si no se puede convertir, devuelve FALSE, devuelve el mensaje de error en "MsjErr", y
 pone el TEdit con enfoque.
 Si se puede convertir, devuelve TRUE, y el valor convertido en "valDbl".}

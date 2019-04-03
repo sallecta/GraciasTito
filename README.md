@@ -33,4 +33,4 @@ Los Requerimientos planteados para este proyecto son:
 
 Desarrollado por Tito Hinostroza.
 
-Para información sobre la licencia, ver el archivo LICENSE.md
+Para información sobre la licencia, Show el archivo LICENSE.md

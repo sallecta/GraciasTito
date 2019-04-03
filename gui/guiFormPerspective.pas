@@ -1,4 +1,4 @@
-{Formulario para controlar la vista de un objeto "frameGrafEditor"}
+{Formulario para controlar la View de un objeto "frameGrafEditor"}
 unit guiFormPerspective;
 {$mode objfpc}{$H+}
 interface
@@ -36,9 +36,9 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure Timer1Timer(Sender: TObject);
   private
-    fraEditor: TfraVisorGraf;
+    fraEditor: TfraPaintBox;
   public
-    procedure Exec(fraEditor0: TfraVisorGraf);
+    procedure Exec(fraEditor0: TfraPaintBox);
   end;
 
 var
@@ -97,7 +97,7 @@ begin
 //  btnLeerClick(self);  //actualiza
 end;
 
-procedure TFormPerspective.Exec(fraEditor0: TfraVisorGraf);
+procedure TFormPerspective.Exec(fraEditor0: TfraPaintBox);
 begin
   fraEditor:= fraEditor0;
   self.Show;

@@ -102,7 +102,7 @@ Type
     ErrorStr : string;    //cadena de error
     procedure GenError(msje: String; col: integer=-1);
   public  //Inicialización
-    procedure Iniciar(txt: string);   //Prepara la secuencia de preprocesamiento
+    procedure Initiate(txt: string);   //Prepara la secuencia de preprocesamiento
     constructor Create;
     destructor Destroy; override;
   end;
@@ -376,7 +376,7 @@ begin
   End;
 End;
 function TEvalExpres.jerOp(oper: String): Integer;
-//Devuelve la jerarquía de un operador ver documentación técnica.
+//Devuelve la jerarquía de un operador Show documentación técnica.
 begin
     Case oper of
 //    '>>', '<<', '>+', '>-': jerOp = 1: Exit Function
@@ -725,7 +725,7 @@ function TEvalExpres.EvaluarLinea(lin: string): Texpre;
 {Evalúa la expresión que está contenida en "lin"}
 begin
   ErrorStr:='';          //Inicia bandera de error
-  Iniciar(lin);   //Inicia cadena
+  Initiate(lin);   //Inicia cadena
   Result := CogExpresion(0);  //coge expresión
   if ErrorStr<>'' then exit;  //puede generar error
   //Verifica si terminó de procesar toda la línea
@@ -749,7 +749,7 @@ begin
   cEnt.Destroy;
   inherited;
 end;
-procedure TEvalExpres.Iniciar(txt: string);
+procedure TEvalExpres.Initiate(txt: string);
 //Inicia la maquinaria de manejo de Contextos
 begin
   cEnt.lin := txt;

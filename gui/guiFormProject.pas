@@ -26,12 +26,12 @@ type
   private
     Aceptado  : boolean;   //Indica que se ha pulsado el botón ACEPTAR
     ErrorDatos: boolean;   //Indica que hubo error de datos al Aceptar
-    presup    : TCadProyecto; //Referencia al presupuesto
+    presup    : TProject; //Referencia al presupuesto
     procRefresc: TEvRefrescar;
   public
-    function Exec(presup0: TCadProyecto; procRefrescar: TEvRefrescar;
+    function Exec(presup0: TProject; procRefrescar: TEvRefrescar;
       soloLect: boolean=false): boolean;
-    function ExecNew(presup0: TCadProyecto): boolean;
+    function ExecNew(presup0: TProject): boolean;
   end;
 
 var
@@ -61,7 +61,7 @@ begin
     exit;
   end;
   //Asignación
-  presup.nombre   := txtNombre.Text;
+  presup.name   := txtNombre.Text;
   presup.notas    := txtNotas.Text;
   presup.creadoPor:= txtCreadoPor.TextHint;
   Aceptado := true;
@@ -72,13 +72,13 @@ begin
   Aceptado := false;
 end;
 
-function TfrmProject.Exec(presup0: TCadProyecto; procRefrescar: TEvRefrescar;
+function TfrmProject.Exec(presup0: TProject; procRefrescar: TEvRefrescar;
   soloLect: boolean): boolean;
 begin
   presup := presup0;
   procRefresc := procRefrescar;
 
-  txtNombre.Text   := presup.nombre;
+  txtNombre.Text   := presup.name;
   txtCreadoPor.Text:= presup.creadoPor;
   txtNotas.Text    := presup.notas;
 
@@ -87,7 +87,7 @@ begin
   Self.ShowModal;  //se muestra modal
   Result := Aceptado;
 end;
-function TfrmProject.ExecNew(presup0: TCadProyecto): boolean;
+function TfrmProject.ExecNew(presup0: TProject): boolean;
 {Abre la ventana y la configura de modo apropiado, de modo que la ventana permita configurar
 las propiedades iniciales de un nuevo presupuesto.}
 var
@@ -95,7 +95,7 @@ var
 begin
   maxord := '1'; //frmAbrirPresup.LeerMaxOrdinalPresup;
   //configura valores iniciales
-  presup0.nombre := 'Proyecto' + maxord;
+  presup0.name := 'Proyecto' + maxord;
   //Abre ventana de propiedades
   Result := Exec(presup0, nil);
 end;

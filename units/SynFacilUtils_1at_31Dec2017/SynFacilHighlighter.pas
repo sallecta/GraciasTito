@@ -3,7 +3,7 @@ Unidad principal de SynfacilSyn.
 
 Queda pendiente incluir el procesamiento de los paréntesis en las expresiones regulares,
 como una forma sencilla de definir bloques de Regex, sin tener que usar la definición
-avanzada. También se podría ver si se puede mejorar el soporte de Regex, sobre todo para el
+avanzada. También se podría Show si se puede mejorar el soporte de Regex, sobre todo para el
 caso de expresiones como ".*a".
 
 
@@ -35,8 +35,8 @@ type
   end;
   TATokInfo = array of TFaTokInfo;
 
-  //Permite leer el estado actual del resaltador. Considera la posición actual de la
-  //exploración y el estado del rango, NO CONSIDERA el estado de los bloques de
+  //Permite leer el state actual del resaltador. Considera la posición actual de la
+  //exploración y el state del rango, NO CONSIDERA el state de los bloques de
   //plegado. Se usa cuando se hace trabajar al resaltador como analizador léxico.
   TFaLexerState = record
     //propiedades fijadas al inicio de la línea y no cambian en toda la línea.
@@ -1993,7 +1993,7 @@ begin
 end;
 function TSynFacilSyn.SetHighlighterAtXY(XY: TPoint): boolean;
 //Pone al resaltador en una posición específica del texto, como si estuviera
-//haciendo la exploración normal. Así se puede leer el estado.
+//haciendo la exploración normal. Así se puede leer el state.
 //La posición XY, empieza en (1,1). Si tuvo exito devuelve TRUE.
 var
   PosX, PosY: integer;
@@ -2009,10 +2009,10 @@ begin
 {  Line := CurrentLines[PosY];
   //validación
   if PosX >= Length(Line)+1 then begin
-    //Está al final o más. Simula el estado al final de la línea
+    //Está al final o más. Simula el state al final de la línea
     //Este bloque se puede quitar
     SetLine(Line);
-    SetRange(CurrentRanges[PosY]);   //carga estado de rango al final
+    SetRange(CurrentRanges[PosY]);   //carga state de rango al final
     fTokenId := tkEol;        //marca final
     posFin := length(Line)+1;
     posIni := posFin;
@@ -2252,8 +2252,8 @@ begin
   Result.x:=posIni+1;  //corrige
 end;
 function TSynFacilSyn.GetState: TFaLexerState;
-//Devuelve el estado actual del resaltador, pero sin considerar el estado de los bloque,
-//solo el estado de tokens y rangos.
+//Devuelve el state actual del resaltador, pero sin considerar el state de los bloque,
+//solo el state de tokens y rangos.
 { TODO : Tal vez deba incluirse también a "FIsInNextToEOL" }
 begin
   //Propiedades fijadas al inicio de la línea y no cambian en toda la línea.
@@ -2270,9 +2270,9 @@ begin
   Result.fTokenID := fTokenID;
 end;
 procedure TSynFacilSyn.SetState(state: TFaLexerState);
-//Configura el estado actual del resaltador, pero sin considerar el estado de los bloque,
-//solo el estado de tokens y rangos.
-//Al cambiar el estado actual del resaltador, se pierde el estado que tenía.
+//Configura el state actual del resaltador, pero sin considerar el state de los bloque,
+//solo el state de tokens y rangos.
+//Al cambiar el state actual del resaltador, se pierde el state que tenía.
 begin
   //Propiedades fijadas al inicio de la línea y no cambian en toda la línea.
   //fLine      := state.fLine;
@@ -2334,7 +2334,7 @@ begin
       fTokenID:=tnEol;
       exit;
     end;
-    {Debe actualizar el estado del rango porque las líneas no necesariamente se exploran
+    {Debe actualizar el state del rango porque las líneas no necesariamente se exploran
      consecutivamente}
     fTokenID:=fRange^.tTok;  //tipo de token
     delTok := fRange^.dEnd;  //delimitador de rango

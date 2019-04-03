@@ -1,4 +1,4 @@
-{Formulario para configurar ub objeto Vista }
+{Formulario para configurar ub objeto View }
 unit guiFormViewProp;
 {$mode objfpc}{$H+}
 interface
@@ -22,9 +22,9 @@ type
     procedure btnAceptarClick(Sender: TObject);
     procedure btnAplicarClick(Sender: TObject);
   private
-    vista: TfraVisorGraf;
+    View: TfraPaintBox;
   public
-    procedure Exec(vista0: TfraVisorGraf);
+    procedure Exec(vista0: TfraPaintBox);
   end;
 
 var
@@ -42,20 +42,20 @@ end;
 
 procedure TFormPropView.btnAplicarClick(Sender: TObject);
 begin
-  vista.visEdi.VerEjesCoor  := chkVerEjes.Checked;
-  vista.visEdi.LonEjesCoor  := spnLongEje.Value;
-  vista.visEdi.VerPuntoGiro := chkVerPtoGiro.Checked;
-  vista.visEdi.VerCuadric   := chkVerCuadric.Checked;
-  vista.visEdi.Refrescar;
+  View.viewEdi.VerEjesCoor  := chkVerEjes.Checked;
+  View.viewEdi.LonEjesCoor  := spnLongEje.Value;
+  View.viewEdi.VerPuntoGiro := chkVerPtoGiro.Checked;
+  View.viewEdi.VerCuadric   := chkVerCuadric.Checked;
+  View.viewEdi.Refresh;
 end;
 
-procedure TFormPropView.Exec(vista0: TfraVisorGraf);
+procedure TFormPropView.Exec(vista0: TfraPaintBox);
 begin
-  vista := vista0;
-  chkVerEjes.Checked    := vista.visEdi.VerEjesCoor;
-  spnLongEje.Value      := vista.visEdi.LonEjesCoor;
-  chkVerPtoGiro.Checked := vista.visEdi.VerPuntoGiro;
-  chkVerCuadric.Checked := vista.visEdi.VerCuadric;
+  View := vista0;
+  chkVerEjes.Checked    := View.viewEdi.VerEjesCoor;
+  spnLongEje.Value      := View.viewEdi.LonEjesCoor;
+  chkVerPtoGiro.Checked := View.viewEdi.VerPuntoGiro;
+  chkVerCuadric.Checked := View.viewEdi.VerCuadric;
   Showmodal;
 end;
 

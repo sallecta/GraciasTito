@@ -62,7 +62,7 @@ begin
 end;
 { TMiConfigINI }
 function TMiConfigINI.DefaultFileName: string;
-{Devuelve el nombre pro defecto del archvio de configuración}
+{Devuelve el nombre Proj defecto del archvio de configuración}
 begin
   Result := ChangeFileExt(Application.ExeName,'.ini');
 end;

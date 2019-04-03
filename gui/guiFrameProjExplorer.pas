@@ -12,14 +12,14 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, ComCtrls, StdCtrls, LCLType, ActnList,
   sketchDocument, guiFramePaintBox, sketchCore;
 type
-  TEvClickDerPro = procedure(pro: TCadProyecto) of object;
-  TEvClickDerPag = procedure(pag: TCadPagina) of object;
+  TEvClickDerPro = procedure(Proj: TProject) of object;
+  TEvClickDerPag = procedure(Page: TDocPage) of object;
   TEvClickDerObj = procedure(obj: TCadObjetos_list) of object;
-  TEvClickDerVis = procedure(vis: TfraVisorGraf) of object;
+  TEvClickDerVis = procedure(View: TfraPaintBox) of object;
 
-  { TfraExplorProyectos }
+  { TfraExploreProject }
 
-  TfraExplorProyectos = class(TFrame)
+  TfraExploreProject = class(TFrame)
     arbNaveg: TTreeView;
     ImgActions16: TImageList;
     ImgActions32: TImageList;
@@ -45,14 +45,14 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure arbNavegSelectionChanged(Sender: TObject);
   public  //Eventos
-    OnClickDerProyec : TEvClickDerPro;
-    OnClickDerPagina : TEvClickDerPag;
-    OnClickDerVista  : TEvClickDerVis;
+    OnClickRightProject : TEvClickDerPro;
+    OnClickRightPage : TEvClickDerPag;
+    OnClickRightView  : TEvClickDerVis;
     OnClickDerObjetos: TEvClickDerObj;
-    OnBorrarPagina   : TNotifyEvent;
-    procedure Refrescar;
+    OnDeletePage   : TNotifyEvent;
+    procedure Refresh;
   public  //Inicialización
-    procedure Iniciar(proj: TCadProyectoPtr);
+    procedure Initiate(Proj: TCadProyectoPtr);
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -66,32 +66,32 @@ const
   IMIDX_VISTA  = 2;
   IMIDX_OBJGRA = 3;
 
-  { TfraExplorProyectos }
-procedure TfraExplorProyectos.arbNavegKeyDown(Sender: TObject; var Key: Word;
+  { TfraExploreProject }
+procedure TfraExploreProject.arbNavegKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Key = VK_DELETE then begin
-    if OnBorrarPagina<>nil then OnBorrarPagina(self);
+    if OnDeletePage<>nil then OnDeletePage(self);
   end;
 end;
-function TfraExplorProyectos.NodoSelec: TTreeNode;
+function TfraExploreProject.NodoSelec: TTreeNode;
 {Devuelve el nodo seleccionado actualmente. }
 begin
   if curProject^ = nil then exit(nil);
   Result := arbNaveg.Selected;
 end;
-function TfraExplorProyectos.NombreNodo(nod: TTreeNode): string;
+function TfraExploreProject.NombreNodo(nod: TTreeNode): string;
 {Devuelve el nombre de un nodo. }
 begin
   Result := nod.Text;
 end;
-function TfraExplorProyectos.NombreNodoSelec: string;
+function TfraExploreProject.NombreNodoSelec: string;
 {Devuelve el nombre del nodo seleccionado.}
 begin
   if arbNaveg.Selected = nil then exit('');
   Result := NombreNodo(arbNaveg.Selected);
 end;
-procedure TfraExplorProyectos.SeleccNodo(nom: string);
+procedure TfraExploreProject.SeleccNodo(nom: string);
 {Seleciona un nodo en al árbol, usando su nombre. Funcionará si el árbol tiene o no enfoque.}
 var
   nod: TTreeNode;
@@ -104,31 +104,31 @@ begin
   end;
 end;
 //Identificación de nodos seleccionados
-function TfraExplorProyectos.NodoEsPagina(nod: TTreeNode): boolean;
+function TfraExploreProject.NodoEsPagina(nod: TTreeNode): boolean;
 {Indica si el nodo seleccionado corresponde a un tablero}
 begin
   if nod=nil then exit(false);
   Result := (nod.Level = 1) and (nod.ImageIndex = IMIDX_PAGINA);
 end;
-function TfraExplorProyectos.NodoEsVista(nod: TTreeNode): boolean;
+function TfraExploreProject.NodoEsVista(nod: TTreeNode): boolean;
 {Indica si el nodo seleccionado corresponde a un tablero}
 begin
   if nod=nil then exit(false);
   Result := (nod.Level = 2) and (nod.ImageIndex = IMIDX_VISTA);
 end;
-function TfraExplorProyectos.NodoEsObjetos(nod: TTreeNode): boolean;
+function TfraExploreProject.NodoEsObjetos(nod: TTreeNode): boolean;
 {Indica si el nodo seleccionado corresponde a un tablero}
 begin
   if nod=nil then exit(false);
   Result := (nod.Level = 2) and (nod.ImageIndex = IMIDX_OBJGRA);
 end;
-function TfraExplorProyectos.NodoProyecSelec: TTreeNode;
+function TfraExploreProject.NodoProyecSelec: TTreeNode;
 begin
   if NodoSelec=nil then exit(nil);
   if NodoSelec.Level = 0 then exit(NodoSelec);
   exit(nil);
 end;
-function TfraExplorProyectos.NodoPaginaSelec: TTreeNode;
+function TfraExploreProject.NodoPaginaSelec: TTreeNode;
 begin
   if NodoSelec=nil then exit(nil);
   if NodoSelec.Visible = false then exit(nil);
@@ -136,7 +136,7 @@ begin
     exit(NodoSelec);
   exit(nil);
 end;
-function TfraExplorProyectos.NodoObjetosSelec: TTreeNode;
+function TfraExploreProject.NodoObjetosSelec: TTreeNode;
 begin
   if NodoSelec=nil then exit(nil);
   if NodoSelec.Visible = false then exit(nil);
@@ -144,7 +144,7 @@ begin
     exit(NodoSelec);
   exit(nil);
 end;
-function TfraExplorProyectos.NodoVistaSelec: TTreeNode;
+function TfraExploreProject.NodoVistaSelec: TTreeNode;
 begin
   if NodoSelec=nil then exit(nil);
   if NodoSelec.Visible = false then exit(nil);
@@ -153,11 +153,11 @@ begin
   exit(nil);
 end;
 //Eventos del árbol
-procedure TfraExplorProyectos.arbNavegMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TfraExploreProject.arbNavegMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
   nod: TTreeNode;
-  pag: TCadPagina;
+  Page: TDocPage;
 begin
   nod := arbNaveg.GetNodeAt(x, y);
   if nod = nil then begin
@@ -168,24 +168,24 @@ begin
   if Button = mbRight then begin
     if arbNaveg.GetNodeAt(X,Y)<>nil then arbNaveg.GetNodeAt(X,Y).Selected:=true;
     if NodoProyecSelec<>nil then begin       //proyecto seleccionado
-      if OnClickDerProyec<>nil then
-        OnClickDerProyec(curProject^);
+      if OnClickRightProject<>nil then
+        OnClickRightProject(curProject^);
     end else if NodoPaginaSelec<>nil then begin  //página seleccionada
-      pag := curProject^.PageByName(NombreNodoSelec);
-      if OnClickDerPagina<>nil then
-        OnClickDerPagina(pag);
+      Page := curProject^.PageByName(NombreNodoSelec);
+      if OnClickRightPage<>nil then
+        OnClickRightPage(Page);
     end else if NodoVistaSelec<>nil then begin
-      pag := curProject^.PageByName(NodoSelec.Parent.Text);
-      if OnClickDerVista<>nil then
-        OnClickDerVista(pag.vista);
+      Page := curProject^.PageByName(NodoSelec.Parent.Text);
+      if OnClickRightView<>nil then
+        OnClickRightView(Page.View);
     end else if NodoObjetosSelec<>nil then begin
-      pag := curProject^.PageByName(NodoSelec.Parent.Text);
+      Page := curProject^.PageByName(NodoSelec.Parent.Text);
       if OnClickDerObjetos<>nil then
-        OnClickDerObjetos(pag.objetosGraf);
+        OnClickDerObjetos(Page.objetosGraf);
     end;
   end;
 end;
-procedure TfraExplorProyectos.arbNavegSelectionChanged(Sender: TObject);
+procedure TfraExploreProject.arbNavegSelectionChanged(Sender: TObject);
 {El elemento seleccionado ha cambiado. Tomar las acciones correspondientes.}
 begin
   if NodoPaginaSelec<>nil then begin
@@ -193,10 +193,10 @@ begin
     curProject^.SetActivePageByName(NodoPaginaSelec.Text);
   end;
 end;
-procedure TfraExplorProyectos.Refrescar;
+procedure TfraExploreProject.Refresh;
 {Refresca la apariencia del frame, de acuerdo al proyecto actual.}
 var
-  pag: TCadPagina;
+  Page: TDocPage;
   nodPag: TTreeNode;
   nodProj: TTreeNode;
   nodGeomet, nodVista, nodObjGraf: TTreeNode;
@@ -214,13 +214,13 @@ begin
   end;
   //Hay un proyecto abierto
   //Agrega nodo de proyecto
-  nodProj := arbNaveg.items.AddChild(nil, curProject^.nombre);  //agrega proyecto actual
+  nodProj := arbNaveg.items.AddChild(nil, curProject^.name);  //agrega proyecto actual
   nodProj.ImageIndex    := IMIDX_PROYEC;
   nodProj.SelectedIndex :=IMIDX_PROYEC;
   //Agrega nodo de las páginas
   arbNaveg.BeginUpdate;
-  for pag in curProject^.paginas do begin
-     nodPag := arbNaveg.Items.AddChild(nodProj, pag.nombre);
+  for Page in curProject^.paginas do begin
+     nodPag := arbNaveg.Items.AddChild(nodProj, Page.name);
      nodPag.ImageIndex   := IMIDX_PAGINA;
      nodPag.SelectedIndex:= IMIDX_PAGINA;
      //Agrega campos de objetos gráficos
@@ -228,11 +228,11 @@ begin
      nodGeomet.ImageIndex   := IMIDX_OBJGRA;
      nodGeomet.SelectedIndex:= IMIDX_OBJGRA;
 
-     for og in pag.vista.objetos do begin
+     for og in Page.View.objetos do begin
        nodObjGraf := arbNaveg.items.AddChild(nodGeomet, 'Objeto');
      end;
-     //Agrega campo de vista
-     nodVista := arbNaveg.items.AddChild(nodPag, 'Vista');
+     //Agrega campo de View
+     nodVista := arbNaveg.items.AddChild(nodPag, 'View');
      nodVista.ImageIndex   := IMIDX_VISTA;
      nodVista.SelectedIndex:= IMIDX_VISTA;
 
@@ -243,24 +243,24 @@ begin
   nodProj.Expanded:=true;   //lo deja expandido
 //  SeleccNodo(ns);  //restaura la selección
   //selecciona el nodo activo
-  SeleccNodo(curProject^.ActivePage.nombre);
+  SeleccNodo(curProject^.ActivePage.name);
 end;
-procedure TfraExplorProyectos.Iniciar(proj: TCadProyectoPtr);
+procedure TfraExploreProject.Initiate(Proj: TCadProyectoPtr);
 {Inicia el frame, pasándole la dirección del proyecto actual que se está manejando.
 Por el momento se asume que solo puede manejar cero o un proyecto.
 Notar que se le pasa la dirección de la referecnia, ya que esta puede cambiar. }
 begin
-  curProject := proj;   //guarda referecnia
-  Refrescar;
+  curProject := Proj;   //guarda referecnia
+  Refresh;
 end;
-constructor TfraExplorProyectos.Create(TheOwner: TComponent);
+constructor TfraExploreProject.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
   arbNaveg.OnMouseUp:=@arbNavegMouseUp;
   arbNaveg.OnSelectionChanged:=@arbNavegSelectionChanged;
 end;
 
-destructor TfraExplorProyectos.Destroy;
+destructor TfraExploreProject.Destroy;
 begin
 
   inherited Destroy;

@@ -5,7 +5,6 @@
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="TitoCad"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
     </General>
@@ -129,7 +128,7 @@
       <Unit16>
         <Filename Value="gui/guiFramePaintBox.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="fraVisorGraf"/>
+        <ComponentName Value="fraPaintBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit16>

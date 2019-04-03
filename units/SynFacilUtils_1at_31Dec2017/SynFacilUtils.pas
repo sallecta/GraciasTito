@@ -41,7 +41,7 @@ type
     mnEncoding  : TMenuItem;  //Menú de Codificación de texto
     LangPath    : string;     //ruta donde están los lengaujes
     MaxRecents  : integer;    //Máxima cantidad de archivos recientes
-    //paneles con información del estado del editor
+    //paneles con información del state del editor
     fPanFileSaved : TStatusPanel;  //Panel para mensaje "Guardado"
     fPanCursorPos : TStatusPanel;  //Panel para mostrar posición del cursor
     //paneles para información del archivo
@@ -57,7 +57,7 @@ type
     procedure edCommandProcessed(Sender: TObject;
       var Command: TSynEditorCommand; var AChar: TUTF8Char; Data: pointer);
 
-    //Estado de modificación
+    //state de modificación
     procedure SetModified(valor: boolean);
     function GetModified: boolean;
     procedure SetPanCodifFile(AValue: TStatusPanel);
@@ -79,7 +79,7 @@ type
     RecentFiles: TStringList;  //Lista de archivos recientes
     hl      : TSynFacilComplet; //Resaltador.
     //eventos
-    OnChangeEditorState:TEventoArchivo;  {Cuando cambia el estado de modificado, con opción
+    OnChangeEditorState:TEventoArchivo;  {Cuando cambia el state de modificado, con opción
                           "Undo", con "Redo", con opción "Copiar", "Cortar", "Pegar"}
     OnChangeFileInform: TEventoArchivo;  {Cuando cambia información de nombre de archivo, tipo
                            de delimitador de línea o tipo de codificación}
@@ -124,7 +124,7 @@ type
     procedure Undo;
     procedure Redo;
     procedure SelectAll;
-    //Lee estado
+    //Lee state
     function CanUndo: boolean;
     function CanRedo: boolean;
     function CanCopy: boolean;
@@ -151,7 +151,7 @@ type
 
     procedure InitMenuLanguages(menLanguage0: TMenuItem; LangPath0: string);
     procedure LoadSyntaxFromFile(XMLfile: string);  //carga un archivo de sintaxis
-    procedure LoadSyntaxFromPath(arc: string='');  //carga sintaxis viendo extensión de archivo
+    procedure LoadSyntaxFromPath(File: string='');  //carga sintaxis viendo extensión de archivo
     procedure SetLanguage(lang: string);
     constructor Create(ed0: TsynEdit; nomDef0, extDef0: string); virtual;
     destructor Destroy; override;
@@ -268,7 +268,7 @@ begin
       Formato := TAR_DESC;  //no se reconoce delimitadores
    //Analiza codifiación
    Codificacion := GuessEncoding(Pbolsa);  //analiza los primeros bytes
-{ TODO : Ver por qué no detectó correctaente la carga de un archivo UTF-8 sin BOM }
+{ TODO : Show por qué no detectó correctaente la carga de un archivo UTF-8 sin BOM }
 end;
 function LineEnd_To_Str(delim: TLineEnd): string;
 //proporciona una descripción al tipo de delimitador
@@ -371,11 +371,11 @@ begin
   if OnMouseDown <> nil then OnMouseDown(Sender, Button, Shift, X, Y);
 end;
 procedure TSynFacilEditor.edStatusChange(Sender: TObject; Changes: TSynStatusChanges);
-//Cambia el estado del editor
+//Cambia el state del editor
 begin
   if scSelection in changes then begin   //cambios en la selección
     if OnSelectionChange<>nil then OnSelectionChange;  //dispara eventos
-    if OnChangeEditorState<>nil then OnChangeEditorState;  //para iniciar controles
+    if OnChangeEditorState<>nil then OnChangeEditorState;  //para Initiate controles
   end;
 end;
 procedure TSynFacilEditor.edChange(Sender: TObject);
@@ -384,7 +384,7 @@ begin
     if GetModified then fPanFileSaved.Text:=dic('Sin Guardar') else fPanFileSaved.Text:=dic('Guardado');
   end;
   //Ha habido cambio de contenido
-  if OnChangeEditorState<>nil then OnChangeEditorState;  //para iniciar controles
+  if OnChangeEditorState<>nil then OnChangeEditorState;  //para Initiate controles
   //Pasa el evento
   if OnEditChange <> nil then OnEditChange(Sender);
 end;
@@ -556,7 +556,7 @@ procedure TSynFacilEditor.SetModified(valor: boolean);
 //Cambia el valor del campo "Modified", del editor
 begin
   if ed.Modified<> valor then begin
-    //se ha cambiado el estado de "Modificado"
+    //se ha cambiado el state de "Modificado"
     ed.Modified := valor;    //Fija valor
     //dispara evento
     if fPanFileSaved <> nil then begin
@@ -645,8 +645,8 @@ begin
     NomArc := nomDef + '.' + extDef
   else NomArc := nomDef;
   //verifica existencia
-//  if FileExists(Arc) then   //ya existe
-//     AbrirArchivo(Arc)  //lo abre
+//  if FileExists(File) then   //ya existe
+//     AbrirArchivo(File)  //lo abre
 //  else begin   //no existe
 //    mnArGuarClick(nil);  //Lo crea
   DelArc := TAR_DOS;  //inicia con Windows por defecto
@@ -655,7 +655,7 @@ begin
   ed.ClearUndo;       //limpia acciones "deshacer"
   SetModified(false);
   ChangeFileInform;   //actualiza
-  if OnChangeEditorState<>nil then OnChangeEditorState;  //para iniciar controles
+  if OnChangeEditorState<>nil then OnChangeEditorState;  //para Initiate controles
 end;
 procedure TSynFacilEditor.LoadFile(arc8: string);
 //Carga el contenido de un archivo en el editor, analizando la codificación.
@@ -675,7 +675,7 @@ begin
   CargarArchivoLin(arc8, ed.Lines, DelArc, CodArc);
 //  StatusBar1.Panels[4].Text := CodArc;  //actualiza codificación
   NomArc := arc0;         //fija nombre de archivo de trabajo
-  SetModified(false);  //Inicia estado
+  SetModified(false);  //Inicia state
   linErr := 0;            //limpia línea marcada por si acaso
   ChangeFileInform;   //actualiza
   if OnFileOpened<>nil then OnFileOpened;  //dispara evento
@@ -1014,7 +1014,7 @@ procedure TSynFacilEditor.SelectAll;
 begin
   ed.SelectAll;
 end;
-//Lee estado
+//Lee state
 function TSynFacilEditor.CanUndo: boolean;
 //Indica si Hay Algo por deshacer
 begin
@@ -1102,17 +1102,17 @@ begin
     //es una ruta distinta
   end;
 end;
-procedure TSynFacilEditor.LoadSyntaxFromPath(arc: string = '');
+procedure TSynFacilEditor.LoadSyntaxFromPath(File: string = '');
 //Carga la sintaxis de un archivo, buscando el archivo XML, apropiado en la ruta
 //de lengaujes definida con InitMenuLanguages().
 //Si no se indica el nombre del archivo, se usará el archivo actual
 var
   XML: String;
 begin
-  if arc='' then begin
-    arc := NomArc;
+  if File='' then begin
+    File := NomArc;
   end;
-  XML := hl.LoadSyntaxFromPath(arc,LangPath);
+  XML := hl.LoadSyntaxFromPath(File,LangPath);
   //marca menú
   if XML<>'' then begin  //encontró
     if fPanLangName<> nil then begin
