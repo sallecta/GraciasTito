@@ -1,0 +1,9 @@
+APP_VERSION = '0.0.3';
+- remove all useless code and comments.
+
+APP_VERSION = '0.0.2';
+- source code translated to English.
+
+APP_VERSION = '0.0.1';
+- source code restructured
+- source code can build.
