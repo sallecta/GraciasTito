@@ -55,27 +55,27 @@
         <ResourceBaseClass Value="Form"/>
       </Unit3>
       <Unit4>
-        <Filename Value="gui/guiFrameCfg/guiFrameCfgSynEdit.pas"/>
+        <Filename Value="gui/guiFormConfig_Frames/guiFrameCfgSynEdit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraCfgSynEdit"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit4>
       <Unit5>
-        <Filename Value="gui/guiFrameCfg/guiFrameCfgGeneral.pas"/>
+        <Filename Value="gui/guiFormConfig_Frames/guiFrameCfgGeneral.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraCfgGeneral"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit5>
       <Unit6>
-        <Filename Value="gui/guiFrameCfg/guiFrameCfgPanCom.pas"/>
+        <Filename Value="gui/guiFormConfig_Frames/guiFrameCfgPanCom.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraCfgPanCom"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit6>
       <Unit7>
-        <Filename Value="gui/guiFrameCfg/guiFrameCfgView.pas"/>
+        <Filename Value="gui/guiFormConfig_Frames/guiFrameCfgView.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraCfgVista"/>
         <HasResources Value="True"/>
@@ -152,7 +152,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="units/MiConfig_4at_15Nov2017;units/MisUtils_1at_28Sep2017;units/MotGraf_5at_9Jan2017;units/SynFacilUtils_1at_31Dec2017;units/UtilsGrilla_2at_18Nov2017;gui;gui/guiFrameCfg;sketch"/>
+      <OtherUnitFiles Value="units/MiConfig_4at_15Nov2017;units/MisUtils_1at_28Sep2017;units/MotGraf_5at_9Jan2017;units/SynFacilUtils_1at_31Dec2017;units/UtilsGrilla_2at_18Nov2017;gui;gui/guiFormConfig_Frames;sketch"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
