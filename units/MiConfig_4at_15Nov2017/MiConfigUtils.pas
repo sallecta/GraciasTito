@@ -171,7 +171,7 @@ end;
 
 function LinkFrameToTreeView(tree: TTreeView; id, Caption: string;
          frame: TFrame = nil): TTreeNode;
-{Crea un nodo en el TreeView y lo asocias a un Frame de configuración (Show documentación
+{Crea un nodo en el TreeView y lo asocias a un Frame de configuración (Ver documentación
 de MiConfig). Debe llamarse, después de crear el Frame.
 El "id", debe ser único y es de la forma: "1", "2.1" o "3.2.1".
 Si se indica el Frame en NIL, no se crea configura el Frame,solo se agrega el ítem}

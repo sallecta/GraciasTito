@@ -178,7 +178,7 @@ type
     function Asoc_StrList(etiq: string; ptrStrList: pointer): TParElem;
     function Asoc_StrList_TListBox(etiq: string; ptrStrList: pointer; lstBox: TlistBox): TParElem;
   public
-    MsjErr: string;    //mensaje de error
+    strErr: string;    //mensaje de error
     ctlErr: TParElem;  //elemento con error
     constructor Create;
     destructor Destroy; override;
@@ -259,7 +259,7 @@ begin
         TEdit(r.pCtl).Text:=IntToStr(r.AsInteger);
     end else begin
         if not EditValidateInt(TEdit(r.pCtl),r.minEnt, r.MaxEnt) then
-          exit;   //hubo error. con mensaje en "msjErr"
+          exit;   //hubo error. con mensaje en "strErr"
         r.AsInteger := valInt;  //guarda
     end;
   tp_Int_TSpinEdit:
@@ -286,7 +286,7 @@ begin
         TEdit(r.pCtl).Text:=FloatToStr(r.AsDouble);
     end else begin
       if not EditValidateDbl(TEdit(r.pCtl),r.minDbl, r.MaxDbl) then
-        exit;   //hubo error. con mensaje en "msjErr"
+        exit;   //hubo error. con mensaje en "strErr"
       r.AsDouble := valDbl;  //guarda
     end;
   tp_Dbl_TFloatSpinEdit:
@@ -351,7 +351,7 @@ begin
           if n<=High(r.radButs) then
             r.radButs[n].checked := true;  //lo activa
         end else begin  //tamño no implementado
-          msjErr := dic('Enumerated type no handled.');
+          strErr := dic('Enumerated type no handled.');
           exit;
         end;
     end else begin
@@ -363,7 +363,7 @@ begin
                r.AsInt32 := j;  //guarda
                break;
              end else begin  //tamaño no implementado
-               msjErr := dic('Enumerated type no handled.');
+               strErr := dic('Enumerated type no handled.');
                exit;
              end;
            end;
@@ -376,7 +376,7 @@ begin
           if n<TRadioGroup(r.pCtl).Items.Count then
             TRadioGroup(r.pCtl).ItemIndex:=n; //activa
         end else begin  //tamño no implementado
-          msjErr := dic('Enumerated type no handled.');
+          strErr := dic('Enumerated type no handled.');
           exit;
         end;
     end else begin
@@ -384,7 +384,7 @@ begin
        if r.lVar = 4 then begin  //se puede manejar como entero
          r.AsInt32 := TRadioGroup(r.pCtl).ItemIndex;  //lee
        end else begin  //tamaño no implementado
-         msjErr := dic('Enumerated type no handled.');
+         strErr := dic('Enumerated type no handled.');
          exit;
        end;
     end;
@@ -443,50 +443,50 @@ begin
       //????????
     end;
   else  //no se ha implementado bien
-    msjErr := dic('Design error.');
+    strErr := dic('Design error.');
     exit;
   end;
 end;
 function TMiConfigBasic.PropertiesToWindow: boolean;
 {Muestra en los controles, las variables asociadas
-Si encuentra error devuelve FALSE, y el mensaje de error en "MsjErr", y el elemento
+Si encuentra error devuelve FALSE, y el mensaje de error en "strErr", y el elemento
 con error en "ctlErr".}
 var
   r: TParElem;
 begin
-  msjErr := '';
+  strErr := '';
   for r in listParElem do begin
     PropertyWindow(r, true);
-    if msjErr<>'' then begin
+    if strErr<>'' then begin
       ctlErr := r;  //guarda la referencia al elemento, en caso de que haya error
     end;
     if r.OnPropertyToWindow<>nil then r.OnPropertyToWindow;
   end;
-  Result := (msjErr='');
+  Result := (strErr='');
 end;
 function TMiConfigBasic.WindowToProperties: boolean;
 {Lee en las variables asociadas, los valores de loc controles
-Si encuentra error devuelve FALSE, y el mensaje de error en "MsjErr", y el elemento
+Si encuentra error devuelve FALSE, y el mensaje de error en "strErr", y el elemento
 con error en "ctlErr".}
 var
   r: TParElem;
 begin
-  msjErr := '';
+  strErr := '';
   for r in listParElem do begin
     PropertyWindow(r, false);
-    if msjErr<>'' then begin
+    if strErr<>'' then begin
       ctlErr := r;  //guarda la referencia al elemento, en caso de que haya error
     end;
     if r.OnWindowToProperty<>nil then r.OnWindowToProperty;
   end;
   //Terminó con éxito. Actualiza los cambios
   if OnPropertiesChanges<>nil then OnPropertiesChanges;
-  Result := (msjErr='');  //si hubo error, se habrá actualizado "ctlErr"
+  Result := (strErr='');  //si hubo error, se habrá actualizado "ctlErr"
 end;
 //Rutinas de validación
 function TMiConfigBasic.EditValidateInt(edit: TEdit; min: integer; max: integer): boolean;
-{Valida el contenido de un TEdit, para Show si se puede convertir a un valor entero.
-Si no se puede convertir, devuelve FALSE, devuelve el mensaje de error en "MsjErr", y
+{Valida el contenido de un TEdit, para ver si se puede convertir a un valor entero.
+Si no se puede convertir, devuelve FALSE, devuelve el mensaje de error en "strErr", y
 pone el TEdit con enfoque.
 Si se puede convertir, devuelve TRUE, y el valor convertido en "valInt".}
 var
@@ -501,7 +501,7 @@ begin
   larMaxInt := length(IntToStr(MaxInt));
   tmp := trim(edit.Text);
   if tmp = '' then begin
-    MsjErr:= dic('Field must contain a value.');
+    strErr:= dic('Field must contain a value.');
     if edit.visible and edit.enabled then edit.SetFocus;
     exit;
   end;
@@ -511,25 +511,25 @@ begin
   end;
   for c in tmp do begin
     if not (c in ['0'..'9']) then begin
-      MsjErr:= dic('Only numeric values are allowed.');
+      strErr:= dic('Only numeric values are allowed.');
       if edit.visible and edit.enabled then edit.SetFocus;
       exit;
     end;
   end;
   if length(tmp) > larMaxInt then begin
-    MsjErr:= dic('Numeric value is too large.');
+    strErr:= dic('Numeric value is too large.');
     if edit.visible and edit.enabled then edit.SetFocus;
     exit;
   end;
   //lo leemos en Int64 por seguridad y validamos
   n := StrToInt64(signo + tmp);
   if n>max then begin
-    MsjErr:= dic('The maximun allowed value is: %d', [max]);
+    strErr:= dic('The maximun allowed value is: %d', [max]);
     if edit.visible and edit.enabled then edit.SetFocus;
     exit;
   end;
   if n<min then begin
-    MsjErr:= dic('The minimun allowed value is: %d', [min]);
+    strErr:= dic('The minimun allowed value is: %d', [min]);
     if edit.visible and edit.enabled then edit.SetFocus;
     exit;
   end;
@@ -538,8 +538,8 @@ begin
   Result := true;   //tuvo éxito
 end;
 function TMiConfigBasic.EditValidateDbl(edit: TEdit; min: Double; max: Double): boolean;
-{Valida el contenido de un TEdit, para Show si se puede convertir a un valor Double.
-Si no se puede convertir, devuelve FALSE, devuelve el mensaje de error en "MsjErr", y
+{Valida el contenido de un TEdit, para ver si se puede convertir a un valor Double.
+Si no se puede convertir, devuelve FALSE, devuelve el mensaje de error en "strErr", y
 pone el TEdit con enfoque.
 Si se puede convertir, devuelve TRUE, y el valor convertido en "valDbl".}
 var
@@ -548,18 +548,18 @@ begin
   Result := false;
   //intenta convertir
   if not TryStrToFloat(edit.Text, d) then begin
-    MsjErr:= dic('Wrong float number.');
+    strErr:= dic('Wrong float number.');
     if edit.visible and edit.enabled then edit.SetFocus;
     exit;
   end;
   //validamos
   if d>max then begin
-    MsjErr:= dic('The maximun allowed value is: %f', [max]);
+    strErr:= dic('The maximun allowed value is: %f', [max]);
     if edit.visible and edit.enabled then edit.SetFocus;
     exit;
   end;
   if d<min then begin
-    MsjErr:= dic('The minimun allowed value is: %f', [min]);
+    strErr:= dic('The minimun allowed value is: %f', [min]);
     if edit.visible and edit.enabled then edit.SetFocus;
     exit;
   end;

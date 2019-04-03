@@ -211,7 +211,7 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  Config.writeIniFile();
+  Config.IniFileWrite();
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);

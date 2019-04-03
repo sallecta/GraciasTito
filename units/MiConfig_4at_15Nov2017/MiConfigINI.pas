@@ -62,7 +62,7 @@ begin
 end;
 { TMiConfigINI }
 function TMiConfigINI.DefaultFileName: string;
-{Devuelve el nombre Proj defecto del archvio de configuración}
+{Devuelve el nombre pro defecto del archvio de configuración}
 begin
   Result := ChangeFileExt(Application.ExeName,'.ini');
 end;
@@ -122,14 +122,14 @@ begin
        if r.lVar = 4 then begin  //tamaño común de las variable enumeradas
          r.AsInt32 := iniCfg.ReadInteger(secINI, r.etiqVar, r.defInt);
        end else begin  //tamaño no implementado
-         msjErr := dic('Enumerated type no handled.');
+         strErr := dic('Enumerated type no handled.');
          exit;
        end;
     end else begin
       if r.lVar = 4 then begin
         iniCfg.WriteInteger(secINI, r.etiqVar, r.AsInt32);  //como entero de 4 bytes
       end else begin  //tamaño no implementado
-        msjErr := dic('Enumerated type no handled.');
+        strErr := dic('Enumerated type no handled.');
         exit;
       end;
     end;
@@ -156,13 +156,13 @@ begin
       end;
     end;
   else  //no se ha implementado bien
-    msjErr := dic('Design error.');
+    strErr := dic('Design error.');
     exit;
   end;
 end;
 function TMiConfigINI.FileToProperties: boolean;
 {Lee de disco las propiedades registradas
-Si encuentra error devuelve FALSE, y el mensaje de error en "MsjErr", y el elemento
+Si encuentra error devuelve FALSE, y el mensaje de error en "strErr", y el elemento
 con error en "ctlErr".}
 var
   r: TParElem;
@@ -170,21 +170,21 @@ var
 begin
   if not FileExists(fileName) then begin
     ctlErr := nil;
-    MsjErr := dic('INI file does not exist.');  //errro
+    strErr := dic('INI file does not exist.');  //errro
     exit(false);  //para que no intente leer
   end;
   try
     iniCfg := TIniFile.Create(fileName);
   except
     ctlErr := nil;
-    MsjErr := dic('Error reading INI file: %s', [fileName]);
+    strErr := dic('Error reading INI file: %s', [fileName]);
     iniCfg.Free;
     exit(false);
   end;
-  msjErr := '';
+  strErr := '';
   for r in listParElem do begin
     FileProperty(iniCfg, r, true);
-    if msjErr<>'' then begin
+    if strErr<>'' then begin
       ctlErr := r;  //elemento que produjo el error
       iniCfg.Free;  //libera
       exit(false);   //sale con error
@@ -199,7 +199,7 @@ begin
 end;
 function TMiConfigINI.PropertiesToFile: boolean;
 {Guarda en disco las propiedades registradas
-Si encuentra error devuelve FALSE, y el mensaje de error en "MsjErr", y el elemento
+Si encuentra error devuelve FALSE, y el mensaje de error en "strErr", y el elemento
 con error en "ctlErr".}
 var
   r: TParElem;
@@ -208,7 +208,7 @@ begin
   if FileExists(fileName) then begin  //ve si existe
      if FileIsReadOnly(fileName) then begin
        ctlErr := nil;
-       MsjErr := dic('INI file is only read.');
+       strErr := dic('INI file is only read.');
        exit(false);
      end;
   end;
@@ -216,14 +216,14 @@ begin
     iniCfg := TIniFile.Create(fileName);
   except
     ctlErr := nil;
-    MsjErr := dic('Error writing INI file: %s', [fileName]);
+    strErr := dic('Error writing INI file: %s', [fileName]);
     exit(false);
   end;
-  msjErr := '';
+  strErr := '';
   for r in listParElem do begin
     if r.OnPropertyToFile<>nil then r.OnPropertyToFile;  //se ejecuta antes
     FileProperty(iniCfg, r, false);
-    if msjErr<>'' then begin
+    if strErr<>'' then begin
       ctlErr := r;   //elemento que produjo el error
       iniCfg.Free;   //libera
       exit(false);   //sale con error

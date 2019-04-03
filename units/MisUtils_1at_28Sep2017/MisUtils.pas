@@ -11,7 +11,7 @@ MisUtils 0.5b
  Por Tito Hinostroza 13/05/2015
 * Se agregan las funciones DT2Number() and Number2DT().
 * Se agrega la función StringLike().
-* Se elimina la variable global msjError, ya que se encontró casos de duplicidad de
+* Se elimina la variable global msgError, ya que se encontró casos de duplicidad de
 nombre con la variable de error global de la aplicación. Además se está evitando usar
 variables globales.
 * Se agrega la función TrimEndLine() para quitar un salto de línea al final de una
@@ -34,7 +34,7 @@ uses  Classes, SysUtils, Forms, Graphics, Dialogs, process, Controls, lclType,
   FileUtil, Masks, types, dateutils, strutils, Menus, LCLProc, LCLIntf;
 
 var
-//  msjError  : string;       //mensaje de error de la aplicación
+//  msgError  : string;       //mensaje de error de la aplicación
   dictionary: TstringList;  //diccionario para el manejo de mensajes
   TranslateMsgs: boolean;   //activa la traducción del mensaje
 //funciones para mostrar mensajes

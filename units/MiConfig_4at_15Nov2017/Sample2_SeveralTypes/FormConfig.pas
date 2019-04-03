@@ -73,7 +73,7 @@ begin
                     [RadButton1, RadButton2, RadButton3],0);
   cfgFile.Asoc_Str('MyMultStr', @MyMultStr, Memo1, 'line1' + LineEnding + 'line2');
   if not cfgFile.FileToProperties then begin
-    MsgErr(cfgFile.MsjErr);
+    MsgErr(cfgFile.strErr);
   end;
 end;
 
@@ -85,8 +85,8 @@ end;
 procedure TConfig.BitAceptarClick(Sender: TObject);
 begin
   cfgFile.WindowToProperties;
-  if cfgFile.MsjErr<>'' then begin
-    MsgErr(cfgFile.MsjErr);
+  if cfgFile.strErr<>'' then begin
+    MsgErr(cfgFile.strErr);
     exit;
   end;
   self.Close;
@@ -95,7 +95,7 @@ end;
 procedure TConfig.SaveToFile;
 begin
   if not cfgFile.PropertiesToFile then begin
-    MsgErr(cfgFile.MsjErr);
+    MsgErr(cfgFile.strErr);
   end;
 end;
 

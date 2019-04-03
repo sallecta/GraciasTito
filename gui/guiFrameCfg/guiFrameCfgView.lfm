@@ -1,4 +1,4 @@
-object fraCfgVista: TfraCfgVista
+object fraCfgVista: TfraCfgView
   Left = 0
   Height = 240
   Top = 0

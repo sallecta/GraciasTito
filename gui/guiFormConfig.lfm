@@ -10,8 +10,8 @@ object Config: TConfig
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.6.2.0'
-  object bitAceptar: TBitBtn
+  LCLVersion = '2.0.0.4'
+  object btnAccept: TBitBtn
     Left = 168
     Height = 30
     Top = 248
@@ -19,10 +19,10 @@ object Config: TConfig
     Default = True
     DefaultCaption = True
     Kind = bkOK
-    OnClick = bitAceptarClick
+    OnClick = btnAcceptClick
     TabOrder = 0
   end
-  object bitCancel: TBitBtn
+  object btnCancel: TBitBtn
     Left = 368
     Height = 30
     Top = 248
@@ -31,17 +31,17 @@ object Config: TConfig
     DefaultCaption = True
     Kind = bkCancel
     ModalResult = 2
-    OnClick = bitCancelClick
+    OnClick = btnCancelClick
     TabOrder = 1
   end
-  object bitAplicar: TBitBtn
+  object btnApply: TBitBtn
     Left = 264
     Height = 30
     Top = 248
     Width = 80
     Caption = 'A&plicar'
     Kind = bkYes
-    OnClick = bitAplicarClick
+    OnClick = btnApplyClick
     TabOrder = 2
   end
   object TreeView1: TTreeView
@@ -49,7 +49,6 @@ object Config: TConfig
     Height = 272
     Top = 8
     Width = 144
-    DefaultItemHeight = 18
     Font.CharSet = ANSI_CHARSET
     Font.Height = -13
     Font.Name = 'Arial'

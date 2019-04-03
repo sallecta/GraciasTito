@@ -12,44 +12,44 @@ uses
   MiConfigXML, MiConfigUtils, Classes;
 
 type
-  TEvCambiaProp = procedure of object;  //evento para indicar que hay cambio
+  {TEvChangeProp}TEvChangeProp = procedure of object;  //event to indicate that there is change
 
   { TConfig }
 
   TConfig = class(TForm)
-    bitAceptar: TBitBtn;
-    bitAplicar: TBitBtn;
-    bitCancel: TBitBtn;
+  btnAccept: TBitBtn;
+  btnApply: TBitBtn;
+   btnCancel: TBitBtn;
     TreeView1: TTreeView;
-    procedure bitAceptarClick(Sender: TObject);
-    procedure bitAplicarClick(Sender: TObject);
-    procedure bitCancelClick(Sender: TObject);
+    procedure btnAcceptClick(Sender: TObject);
+    procedure btnApplyClick(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure TreeView1SelectionChanged(Sender: TObject);
   private
     procedure cfgFilePropertiesChanges;
-    procedure LeerDeVentana;
-    procedure MostEnVentana;
+    procedure  Win2Props;
+    procedure  Props2Win;
   public
-    msjError: string;
-    edTerm  : TSynEdit;    //referencia al editor SynEdit
-    edPCom  : TSynEdit;    //referencia al editor panel de comando
-    edMacr  : TSynEdit;    //referencia al editor panel de comando
-    edRemo  : TSynEdit;    //referencia al editor remoto
-    //Frames de configuración
+    msgError: string;
+    edTerm  : TSynEdit;    //reference to the SynEdit editor
+    edPCom  : TSynEdit;    //reference to the editor command panel
+    edMacr  : TSynEdit;    //reference to the editor command panel
+    edRemo  : TSynEdit;    //reference to the remote editor
+    //Configuration Frames
     fcGeneral : TfraCfgGeneral;
-    fcVista   : TfraCfgVista;
-    fcPanCom  : TfraCfgPanCom;   //Panel de comandos
-    fcPanComEd: TfraCfgSynEdit;  //Editor de panel de comandos
-    //Eventos
+    fcView   : TfraCfgView;
+    fcPanCom  : TfraCfgPanCom;   //Command panel
+    fcPanComEd: TfraCfgSynEdit;  //Command panel editor
+    //Events
     OnPropertiesChanged: procedure of object;
     procedure Initiate(hl0: TSynFacilComplet);
-    procedure LeerArchivoIni;
-    procedure writeIniFile;
+    procedure IniFileRead;
+    procedure IniFileWrite;
     procedure doConfig(Id: string='');
-    function ContienePrompt(const linAct: string): integer;
+    function ContiainsPrompt(const strAct: string): integer;
     procedure SetLanguage(lang: string);
   end;
 
@@ -64,29 +64,29 @@ implementation
 procedure TConfig.FormCreate(Sender: TObject);
 begin
   fcGeneral := TfraCfgGeneral.Create(self);
-  fcGeneral.Name:= 'General';  //Necesario para que genere su etiqueta en el XML
+  fcGeneral.Name:= 'General';  //Necessary for it to generate its label in the XML
   fcGeneral.Parent := self;
 
-  fcVista := TfraCfgVista.Create(self);
-  fcVista.Name:='View';
-  fcVista.Parent := self;
+  fcView := TfraCfgView.Create(self);
+  fcView.Name:='View';
+  fcView.Parent := self;
 
   fcPanCom := TfraCfgPanCom.Create(self);
   fcPanCom.Name:= 'PanComGen';
   fcPanCom.Parent := self;
 
   fcPanComEd := TfraCfgSynEdit.Create(self);
-  fcPanComEd.Name := 'EdTer';  //Necesario para que genere su etiqueta en el XML
+  fcPanComEd.Name := 'EdTer';  //Necessary for it to generate its label in the XML
   fcPanComEd.parent := self;
 
-  TreeView1.Items.Clear;  //Limpia árbol
+  TreeView1.Items.Clear;  //Clean tree
   LinkFrameToTreeView(TreeView1, '1',   dic('General'), fcGeneral);
-  LinkFrameToTreeView(TreeView1, '1.1', dic('View'), fcVista);
+  LinkFrameToTreeView(TreeView1, '1.1', dic('View'), fcView);
   LinkFrameToTreeView(TreeView1, '2',   dic('Panel de Comandos'), fcPanCom);
   LinkFrameToTreeView(TreeView1, '2.1', dic('General'), fcPanCom);
   LinkFrameToTreeView(TreeView1, '2.2', dic('Editor') , fcPanComEd);
 
-  //selecciona primera opción
+  //select first option
   TreeView1.Items[0].Selected:=true;
   TreeView1SelectionChanged(self);
   cfgFile.OnPropertiesChanges:=@cfgFilePropertiesChanges;
@@ -97,24 +97,24 @@ begin
 end;
 procedure TConfig.FormShow(Sender: TObject);
 begin
-  MostEnVentana;   //carga las propiedades en el frame
+  Props2Win;   //load the properties in the frame
 end;
 procedure TConfig.cfgFilePropertiesChanges;
 begin
   if OnPropertiesChanged<>nil then OnPropertiesChanged;
-  fcPanComEd.ConfigEditor;  //para que actualice su editor
+  fcPanComEd.ConfigEditor;  //to update your editor
 end;
 procedure TConfig.Initiate(hl0: TSynFacilComplet);
-//Inicia el formulario de configuración. Debe llamarse antes de usar el formulario y
-//después de haber cargado todos los frames.
+//Start the configuration form. It must be called before using the form
+// and after having loaded all the frames.
 begin
-  //inicia Frames
+  //start Frames
   fcGeneral.Initiate(cfgFile);
-  fcVista.Initiate(cfgFile);
+  fcView.Initiate(cfgFile);
   fcPanCom.Initiate(cfgFile);
   fcPanComEd.Initiate(cfgFile, edTerm, clBlack);
-  //lee parámetros del archivo de configuración.
-  LeerArchivoIni;
+  //reads parameters from the configuration file.
+  IniFileRead;
 end;
 procedure TConfig.TreeView1SelectionChanged(Sender: TObject);
 begin
@@ -122,38 +122,38 @@ begin
   ShowFrameOfNode(self, Treeview1.Selected, 145, 0);
 end;
 
-procedure TConfig.bitAceptarClick(Sender: TObject);
+procedure TConfig.btnAcceptClick(Sender: TObject);
 begin
-  bitAplicarClick(Self);
-  if cfgFile.MsjErr<>'' then exit;  //hubo error
-  self.Close;   //porque es modal
+  btnApplyClick(Self);
+  if cfgFile.strErr<>'' then exit;  //there was an error
+  self.Close;   //because it's modal
 end;
-procedure TConfig.bitAplicarClick(Sender: TObject);
+procedure TConfig.btnApplyClick(Sender: TObject);
 begin
-  LeerDeVentana;       //Escribe propiedades de los frames
-  if cfgFile.MsjErr<>'' then begin
-    msgerr(cfgFile.MsjErr);
+  Win2Props;       //Write properties of the frames
+  if cfgFile.strErr<>'' then begin
+    MsgErr(cfgFile.strErr);
     exit;
   end;
-  writeIniFile;   //guarda propiedades en disco
-  if edTerm<>nil then edTerm.Invalidate;     //para que refresque los cambios
-  if edPCom<>nil then edPCom.Invalidate;     //para que refresque los cambios
+  IniFileWrite;   //save properties on disk
+  if edTerm<>nil then edTerm.Invalidate;//to refresh the changes
+  if edPCom<>nil then edPCom.Invalidate; //to refresh the changes
 end;
-procedure TConfig.bitCancelClick(Sender: TObject);
+procedure TConfig.btnCancelClick(Sender: TObject);
 begin
   self.Hide;
 end;
 procedure TConfig.doConfig(Id: string='');
-//Muestra el formulario, de modo que permita configurar la sesión actual
+//Show the form, so that you can configure the current session
 var
   it: TTreeNode;
 begin
-  if Id<> '' then begin  /////se pide mostrar un Id en especial
-    //oculta los demás
+  if Id<> '' then begin  { it asks to show a special Id
+     hide others }
     it := TTreeNodeFromId(Id,TreeView1);
     if it <> nil then it.Selected:=true;
     TreeView1SelectionChanged(self);
-  end else begin ////////muestra todos
+  end else begin //show all
     for it in TreeView1.Items do begin
       it.Visible:=true;
     end;
@@ -161,51 +161,49 @@ begin
   Showmodal;
 end;
 
-function TConfig.ContienePrompt(const linAct: string): integer;
-{Verifica si una cadena contiene al prompt. La verificación es simple, compara solo
-el inicio de de la cadena.
-Si la cadena contiene al prompt, devuelve la longitud del prompt hallado, de otra forma
-devuelve cero.
-Se usa para el resaltador de sintaxis y el manejo de pantalla.}
+function TConfig.ContiainsPrompt(const strAct: string): integer;
+{Check if a string contains the prompt. Verification is simple, compare only the beginning of the chain.
+If the string contains the prompt, it returns the length of the prompt found, otherwise returns zero
+It is used for syntax highlighting and screen handling.}
 var
   l: Integer;
   p: SizeInt;
 begin
-   l := length(fcPanCom.Prompt);  //El prompt lo define la configuración
+   l := length(fcPanCom.Prompt);{ The prompt is defined by the configuration }
    if l=0 then exit(0);
-   if copy(linAct,1,l) = fcPanCom.Prompt then begin
-     Result := length(fcPanCom.Prompt);  //el tamaño del prompt
+   if copy(strAct,1,l) = fcPanCom.Prompt then begin
+     Result := length(fcPanCom.Prompt);  //the size of the prompt
    end else begin
      Result := 0;
    end;
 end;
 
-procedure TConfig.LeerDeVentana;
-//Lee las propiedades de la ventana de configuración.
+procedure TConfig.Win2Props;
+//Read the properties of the configuration window.
 begin
-  cfgFile.WindowToProperties;   //puede generar error
+  cfgFile.WindowToProperties;   // can generate error
 end;
-procedure TConfig.MostEnVentana;
-//Muestra las propiedades en la ventana de configuración.
+procedure TConfig.Props2Win;
+//Displays the properties in the configuration window.
 begin
-  cfgFile.PropertiesToWindow;  //puede generar error
+  cfgFile.PropertiesToWindow;  // can generate error
 end;
-procedure TConfig.LeerArchivoIni;
+procedure TConfig.IniFileRead;
 begin
   cfgFile.FileToProperties;
 end;
 
-procedure TConfig.writeIniFile;
-//Escribe el archivo de configuración
+procedure TConfig.IniFileWrite;
+//Write the configuration file
 begin
   cfgFile.PropertiesToFile;
 end;
 
 procedure TConfig.SetLanguage(lang: string);
-//Rutina de traducción
+//Translation routine
 begin
   fcGeneral.SetLanguage(lang);
-  fcVista.SetLanguage(lang);
+  fcView.SetLanguage(lang);
   fcPanCom.SetLanguage(lang);
   fcPanComEd.SetLanguage(lang);
 

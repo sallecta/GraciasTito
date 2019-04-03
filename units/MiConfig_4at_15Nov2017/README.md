@@ -103,13 +103,13 @@ Después de crear las asociaciones, solo resta llamar a los métodos:
 * PropertiesToFile 
 * WindowToProperties 
 
-Para realizar el movimiento de datos. Así por ejemplo, lo normal es leer todas las propiedades al Initiate la aplicación, entonces se debe llamar a FileToProperties() en el evento OnCreate o en el evento OnShow (recomendado).
+Para realizar el movimiento de datos. Así por ejemplo, lo normal es leer todas las propiedades al iniciar la aplicación, entonces se debe llamar a FileToProperties() en el evento OnCreate o en el evento OnShow (recomendado).
 
 También es común que al terminar la aplicación se llame a PropertiesToFile() para mantener el valor de las variables asociadas.
  
 Todo este manejo de las propiedades, se puede hacer en el formulario principal, pero lo recomendable es crear un formulario especial o diálogo, de configuración, de modo que incluya los botones ACPETAR y CANCELAR. En este caso, solo cuando se acepten los cambios se debe llamar a WindowToProperties().
 
-Para Show el código de una implementación de este tipo, se recomienda leer los proyectos de ejemplo que vienen en la librería.
+Para ver el código de una implementación de este tipo, se recomienda leer los proyectos de ejemplo que vienen en la librería.
  
 ### Asociando solamente propiedades a un archivo:
  
@@ -150,7 +150,7 @@ Comunmente, los errores pueden producirse cuando se colocan valores erróneos en
 * PropertiesToFile 
 * WindowToProperties 
 
-El objeto TMiConfigINI tiene un campo de cadena, llamado "MsjErr", cuyo objetivo es almacenar el error producido en la última operación.
+El objeto TMiConfigINI tiene un campo de cadena, llamado "strErr", cuyo objetivo es almacenar el error producido en la última operación.
 
 Así, es común usar el siguiente código en el evento OnClick, del botón ACEPTAR de las ventanas de configuración:
 
@@ -158,8 +158,8 @@ Así, es común usar el siguiente código en el evento OnClick, del botón ACEPT
 procedure TConfig.BitAceptarClick(Sender: TObject);
 begin
   iniFile.WindowToProperties;
-  if iniFile.MsjErr<>'' then begin
-    MsgErr(iniFile.MsjErr);
+  if iniFile.strErr<>'' then begin
+    MsgErr(iniFile.strErr);
     exit;
   end;
   self.Close;

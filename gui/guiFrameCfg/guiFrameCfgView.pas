@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TfraCfgVista }
+  { TfraCfgView }
 
-  TfraCfgVista = class(TFrame)
+  TfraCfgView = class(TFrame)
     chkVerEjes: TCheckBox;
     chkVerCoorPunt: TCheckBox;
     spnIncrWheel: TFloatSpinEdit;
@@ -32,13 +32,13 @@ type
 implementation
 {$R *.lfm}
 
-procedure TfraCfgVista.chkVerEjesChange(Sender: TObject);
+procedure TfraCfgView.chkVerEjesChange(Sender: TObject);
 begin
   spnLongEje.Enabled := chkVerEjes.Checked;
   label1.Enabled:= chkVerEjes.Checked;
 end;
 
-procedure TfraCfgVista.Initiate(cfgFile: TMiConfigBasic);
+procedure TfraCfgView.Initiate(cfgFile: TMiConfigBasic);
 begin
   cfgFile.Asoc_Bol(self.Name + '/VerEjesCoor', @VerEjesCoor , chkVerEjes, true);
   cfgFile.Asoc_Dbl(self.Name + '/LongEjeCoor', @LongEjeCoor , spnLongEje, 100);
@@ -47,7 +47,7 @@ begin
   chkVerEjesChange(self);
 end;
 
-procedure TfraCfgVista.SetLanguage(lang: string);
+procedure TfraCfgView.SetLanguage(lang: string);
 begin
 
 end;

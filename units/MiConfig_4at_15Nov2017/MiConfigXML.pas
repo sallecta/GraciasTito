@@ -55,11 +55,11 @@ function TMiConfigXML.LoadXMLFile(filName: string; var xmlCfg: TXMLConfig): bool
 {Carga el archivo "filName" en xmlCfg. Si hay error, actualiza "MsjError" y
 devuelve FALSE. Función creada para uso interno de la clase.}
 begin
-  msjErr := '';
+  strErr := '';
   Result := true;
   if not FileExists(filName) then begin
     ctlErr := nil;
-    MsjErr := dic('XML file does not exist.');  //errro
+    strErr := dic('XML file does not exist.');  //errro
     exit(false);  //para que no intente leer
   end;
   try
@@ -67,7 +67,7 @@ begin
     xmlCfg.Filename := filName;  //lee archivo XML, al asignar propiedad
   except
     ctlErr := nil;
-    MsjErr := dic('Error reading XML file: %s', [filName]);
+    strErr := dic('Error reading XML file: %s', [filName]);
     xmlCfg.Free;
     exit(false);
   end;
@@ -139,14 +139,14 @@ begin
        if r.lVar = 4 then begin  //tamaño común de las variable enumeradas
          r.AsInt32 := xmlCfg.GetValue(r.etiqVar + '/Val', r.defInt);
        end else begin  //tamaño no implementado
-         msjErr := dic('Enumerated type no handled.');
+         strErr := dic('Enumerated type no handled.');
          exit;
        end;
     end else begin
       if r.lVar = 4 then begin
         xmlCfg.SetValue(r.etiqVar + '/Val', r.AsInt32) ;
       end else begin  //tamaño no implementado
-        msjErr := dic('Enumerated type no handled.');
+        strErr := dic('Enumerated type no handled.');
         exit;
       end;
     end;
@@ -167,13 +167,13 @@ begin
       xmlCfg.SetValue(r.etiqVar + '/Val', list.Text);  //escribe como texto
     end;
   else  //no se ha implementado bien
-    msjErr := dic('Design error.');
+    strErr := dic('Design error.');
     exit;
   end;
 end;
 function TMiConfigXML.FileToProperties: boolean;
 {Lee de disco las propiedades registradas
-Si encuentra error devuelve FALSE, y el mensaje de error en "MsjErr", y el elemento
+Si encuentra error devuelve FALSE, y el mensaje de error en "strErr", y el elemento
 con error en "ctlErr".}
 var
   r: TParElem;
@@ -182,7 +182,7 @@ begin
   if not LoadXMLFile(fileName, xmlCfg) then exit(false);
   for r in listParElem do begin
     FileProperty(xmlCfg, r, true);
-    if msjErr<>'' then begin
+    if strErr<>'' then begin
       ctlErr := r;  //elemento que produjo el error
       xmlCfg.Free;  //libera
       exit(false);  //sale con error
@@ -197,7 +197,7 @@ begin
 end;
 function TMiConfigXML.FileToPropertiesCat(xmlFil: string; cat: integer): boolean;
 {Lee de disco las propiedades registradas con una categoría específica.
-Si encuentra error devuelve FALSE, y el mensaje de error en "MsjErr", y el elemento
+Si encuentra error devuelve FALSE, y el mensaje de error en "strErr", y el elemento
 con error en "ctlErr".
 Es similar a FileToProperties(), pero no genera eventos. Se creó  pensando usarse
 en casos como una rutina independiente para cargar solo ciertas propiedades de un
@@ -210,7 +210,7 @@ begin
   for r in listParElem do begin
     if r.categ<>cat then continue;  //ignora los de otra categoría
     FileProperty(xmlCfg, r, true);
-    if msjErr<>'' then begin
+    if strErr<>'' then begin
       ctlErr := r;  //elemento que produjo el error
       xmlCfg.Free;  //libera
       exit(false);  //sale con error
@@ -227,19 +227,19 @@ eventos.}
 var
   r: TParElem;
 begin
-  msjErr := '';
+  strErr := '';
   for r in listParElem do begin
     if r.categ<>cat then continue;  //ignora los de otra categoría
     PropertyWindow(r, true);
-    if msjErr<>'' then begin
+    if strErr<>'' then begin
       ctlErr := r;  //guarda la referencia al elemento, en caso de que haya error
     end;
   end;
-  Result := (msjErr='');
+  Result := (strErr='');
 end;
 function TMiConfigXML.PropertiesToFile: boolean;
 {Guarda en disco las propiedades registradas
-Si encuentra error devuelve FALSE, y el mensaje de error en "MsjErr", y el elemento
+Si encuentra error devuelve FALSE, y el mensaje de error en "strErr", y el elemento
 con error en "ctlErr".}
 var
   r: TParElem;
@@ -248,7 +248,7 @@ begin
   if FileExists(fileName) then begin  //ve si existe
      if FileIsReadOnly(fileName) then begin
        ctlErr := nil;
-       MsjErr := dic('XML file is only read.');
+       strErr := dic('XML file is only read.');
        exit(false);
      end;
   end;
@@ -258,15 +258,15 @@ begin
     xmlCfg.Clear;
   except
     ctlErr := nil;
-    MsjErr := dic('Error writing XML file: %s', [fileName]);
+    strErr := dic('Error writing XML file: %s', [fileName]);
     xmlCfg.Free;
     exit(false);
   end;
-  msjErr := '';
+  strErr := '';
   for r in listParElem do begin
     if r.OnPropertyToFile<>nil then r.OnPropertyToFile;  //se ejecuta antes
     FileProperty(xmlCfg, r, false);
-    if msjErr<>'' then begin
+    if strErr<>'' then begin
       ctlErr := r;   //elemento que produjo el error
       xmlCfg.Free;   //libera
       exit(false);   //sale con error
