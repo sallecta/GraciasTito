@@ -1,4 +1,4 @@
-{Formulario para controlar la View de un objeto "frameGrafEditor"}
+{}
 unit guiFormPerspective;
 {$mode objfpc}{$H+}
 interface
@@ -10,9 +10,9 @@ type
   { TFormPerspective }
 
   TFormPerspective = class(TForm)
-    btnFijar: TButton;
-    btnLeer: TButton;
-    btnLimpiar: TButton;
+    btnSetPerspective: TButton;
+    btnReadPerspective: TButton;
+    btnClearPerspective: TButton;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -20,17 +20,17 @@ type
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
-    spnYdesp: TSpinEdit;
-    spnXdesp: TSpinEdit;
+    spnYpos: TSpinEdit;
+    spnXpos: TSpinEdit;
     spnAlfa: TFloatSpinEdit;
-    spnXcam: TFloatSpinEdit;
+    spnXoffest: TFloatSpinEdit;
     spnFi: TFloatSpinEdit;
-    spnYcam: TFloatSpinEdit;
+    spnYoffest: TFloatSpinEdit;
     spnZoom: TFloatSpinEdit;
     Timer1: TTimer;
-    procedure btnFijarClick(Sender: TObject);
-    procedure btnLeerClick(Sender: TObject);
-    procedure btnLimpiarClick(Sender: TObject);
+    procedure btnSetPerspectiveClick(Sender: TObject);
+    procedure btnReadPerspectiveClick(Sender: TObject);
+    procedure btnClearPerspectiveClick(Sender: TObject);
     procedure spnAlfaClick(Sender: TObject);
     procedure spnAlfaMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -38,7 +38,7 @@ type
   private
     fraEditor: TfraPaintBox;
   public
-    procedure Exec(fraEditor0: TfraPaintBox);
+    procedure Exec(argFraEditor: TfraPaintBox);
   end;
 
 var
@@ -47,34 +47,34 @@ var
 implementation
 {$R *.lfm}
 
-procedure TFormPerspective.btnLeerClick(Sender: TObject);
+procedure TFormPerspective.btnReadPerspectiveClick(Sender: TObject);
 begin
-  spnXdesp.Value:= fraEditor.xDes;
-  spnYdesp.Value:= fraEditor.yDes;
+  spnXpos.Value:= fraEditor.xDes;
+  spnYpos.Value:= fraEditor.yDes;
 
-  spnXcam.Value := fraEditor.xCam;
-  spnYcam.Value := fraEditor.yCam;
+  spnXoffest.Value := fraEditor.xCam;
+  spnYoffest.Value := fraEditor.yCam;
 
   spnAlfa.Value := fraEditor.Alfa;
   spnFi.Value   := fraEditor.Fi;
   spnZoom.Value := fraEditor.Zoom;
 
 end;
-procedure TFormPerspective.btnLimpiarClick(Sender: TObject);
+procedure TFormPerspective.btnClearPerspectiveClick(Sender: TObject);
 begin
   spnAlfa.Value := 0;
   spnFi.Value := 0;
   spnZoom.Value := 1;
-  btnFijarClick(self);
+  btnSetPerspectiveClick(self);
   fraEditor.PaintBox1.Invalidate;
 end;
-procedure TFormPerspective.btnFijarClick(Sender: TObject);
+procedure TFormPerspective.btnSetPerspectiveClick(Sender: TObject);
 begin
-  fraEditor.xDes := spnXdesp.Value;
-  fraEditor.yDes := spnYdesp.Value;
+  fraEditor.xDes := spnXpos.Value;
+  fraEditor.yDes := spnYpos.Value;
 
-  fraEditor.xCam  := spnXcam.Value;
-  fraEditor.yCam  := spnYcam.Value;
+  fraEditor.xCam  := spnXoffest.Value;
+  fraEditor.yCam  := spnYoffest.Value;
 
   fraEditor.Alfa:=spnAlfa.Value;
   fraEditor.Fi:=spnFi.Value;
@@ -84,22 +84,22 @@ end;
 
 procedure TFormPerspective.spnAlfaClick(Sender: TObject);
 begin
-  btnFijarClick(self);
+  btnSetPerspectiveClick(self);
 end;
 procedure TFormPerspective.spnAlfaMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  btnFijarClick(self);
+  btnSetPerspectiveClick(self);
 end;
 
 procedure TFormPerspective.Timer1Timer(Sender: TObject);
 begin
-//  btnLeerClick(self);  //actualiza
+//  btnReadPerspectiveClick(self);  
 end;
 
-procedure TFormPerspective.Exec(fraEditor0: TfraPaintBox);
+procedure TFormPerspective.Exec(argFraEditor: TfraPaintBox);
 begin
-  fraEditor:= fraEditor0;
+  fraEditor:= argFraEditor;
   self.Show;
 end;
 

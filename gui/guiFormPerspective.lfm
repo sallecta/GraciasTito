@@ -1,19 +1,19 @@
 object FormPerspective: TFormPerspective
-  Left = 167
+  Left = 621
   Height = 210
-  Top = 441
+  Top = 429
   Width = 283
   Caption = 'frmControlVista'
   ClientHeight = 210
   ClientWidth = 283
   LCLVersion = '2.0.0.4'
-  object btnLimpiar: TButton
+  object btnClearPerspective: TButton
     Left = 16
     Height = 32
     Top = 80
     Width = 122
     Caption = 'Lim&piar Perspectiva'
-    OnClick = btnLimpiarClick
+    OnClick = btnClearPerspectiveClick
     TabOrder = 0
   end
   object Label2: TLabel
@@ -75,22 +75,22 @@ object FormPerspective: TFormPerspective
     Caption = 'Zoom:'
     ParentColor = False
   end
-  object btnFijar: TButton
+  object btnSetPerspective: TButton
     Left = 16
     Height = 32
     Top = 152
     Width = 122
     Caption = '&Fijar Perspectiva'
-    OnClick = btnFijarClick
+    OnClick = btnSetPerspectiveClick
     TabOrder = 4
   end
-  object btnLeer: TButton
+  object btnReadPerspective: TButton
     Left = 16
     Height = 32
     Top = 24
     Width = 122
     Caption = '&Leer Perspectiva.'
-    OnClick = btnLeerClick
+    OnClick = btnReadPerspectiveClick
     TabOrder = 5
   end
   object Label5: TLabel
@@ -117,7 +117,7 @@ object FormPerspective: TFormPerspective
     Caption = 'yCam:'
     ParentColor = False
   end
-  object spnYcam: TFloatSpinEdit
+  object spnYoffest: TFloatSpinEdit
     Left = 208
     Height = 29
     Top = 88
@@ -139,7 +139,7 @@ object FormPerspective: TFormPerspective
     Caption = 'xCam:'
     ParentColor = False
   end
-  object spnXcam: TFloatSpinEdit
+  object spnXoffest: TFloatSpinEdit
     Left = 208
     Height = 29
     Top = 64
@@ -153,7 +153,7 @@ object FormPerspective: TFormPerspective
     TabOrder = 7
     Value = 0
   end
-  object spnXdesp: TSpinEdit
+  object spnXpos: TSpinEdit
     Left = 208
     Height = 29
     Top = 8
@@ -163,7 +163,7 @@ object FormPerspective: TFormPerspective
     MinValue = -1000
     TabOrder = 8
   end
-  object spnYdesp: TSpinEdit
+  object spnYpos: TSpinEdit
     Left = 208
     Height = 29
     Top = 33
