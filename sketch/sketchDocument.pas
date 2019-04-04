@@ -38,10 +38,10 @@ type
     name     : string;
     parent      : TProject;      //Referencia al objeto padre.
     objetosGraf: TCadObjetos_list;  //Lista de elementos gráficos
-    objetos : TlistObjGraf; //Lista de objetos
+    objects : TEditorObjList; //Lista de objects
   public  //Manejo de las vistas
     View: TfraPaintBox;   //una sola View por el momento
-    OnChangePersp: TEveCambiaPerspec;  //Cambia x_des,y_des,x_cam,y_cam,alfa,fi o zoom
+    OnChangePersp: TEveCambiaPerspec;  //Cambia x_offs,y_offs,x_cam,y_cam,alfa,fi o zoom
     OnMouseMoveVirt: TEveMouseVisGraf;
     OnChangeState: TEvChangeState;
   public  //Inicialización
@@ -67,7 +67,7 @@ type
     notes    : string;
     unidades : Tunidades;
     OnModify : procedure of object; //Proyecto modificado
-    OnChangePersp: TEveCambiaPerspec;  //Cambia x_des, y_des, x_cam, alfa, ...
+    OnChangePersp: TEveCambiaPerspec;  //Cambia x_offs, y_offs, x_cam, alfa, ...
     OnMouseMoveVirt: TEveMouseVisGraf;
     OnChangeState: TEvChangeState;
     property Modified: boolean read fModific write SetModific;
@@ -110,8 +110,8 @@ end;
 constructor TDocPage.Create;
 begin
   objetosGraf := TCadObjetos_list.Create(true);
-  objetos := TlistObjGraf.Create(true);   //contenedor
-  View:= TfraPaintBox.Create(nil, objetos);  //crea una View
+  objects := TEditorObjList.Create(true);   //contenedor
+  View:= TfraPaintBox.Create(nil, objects);  //crea una View
 
 //  View.Parent := TabSheet1;
 //  View.Visible:=true;
@@ -130,7 +130,7 @@ end;
 destructor TDocPage.Destroy;
 begin
   View.Destroy;
-  objetos.Destroy;
+  objects.Destroy;
   objetosGraf.Destroy;
   inherited Destroy;
 end;

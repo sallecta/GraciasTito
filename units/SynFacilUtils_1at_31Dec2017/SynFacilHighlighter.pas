@@ -1163,7 +1163,7 @@ begin
     end;
   end else if tTokenStart.hay  then begin  //configuración indicando nombre de token
     {Se usará la misma función AddIniSectToTok(), para encontrar al token, pero
-     formalmente debería usarse una función especial para ubicar al token usnado
+     formalmente debería usarse una función especial para PlaceAt al token usnado
      su nombre}
     AddIniSectToTok(tTokenStart.val, 0, blq);
   end;

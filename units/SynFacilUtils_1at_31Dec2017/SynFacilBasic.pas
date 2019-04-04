@@ -227,7 +227,7 @@ type
     tnComment : integer;  //id para los comentarios
     {Se crea el contenedor adicional Attrib[], para los atributos, porque aunque ya se
     tiene Attribute[] en TSynCustomHighlighter, este está ordenado Proj defecto y no
-    ayuda en ubicar a los attributos por su índice}
+    ayuda en PlaceAt a los attributos por su índice}
     Attrib: array of TSynHighlighterAttributes;
     function NewTokAttrib(TypeName: string; out TokID: integer
       ): TSynHighlighterAttributes;

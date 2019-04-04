@@ -1267,8 +1267,8 @@ begin
   if OnlyRef then begin
     Lists.Add(Alist);  //solo guarda la referencia
   end else begin
-    //No implementado. Es problemático incluir referencias de objetos no administrados.
-    //Lo mejor sería usar una lista adicional, sin administración de objetos.
+    //No implementado. Es problemático incluir referencias de objects no administrados.
+    //Lo mejor sería usar una lista adicional, sin administración de objects.
 //    for it in Alist.Items do begin
 //      Items.Add(it);
 //    end;

@@ -381,7 +381,7 @@ end;
 
 procedure TForm1.RefreshPanelView;
 begin
-  //  fraMotEdicion.motEdi.Refresh;
+  //  fraMotEdicion.Editor.Refresh;
 end;
 
 procedure TForm1.Refresh;

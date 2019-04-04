@@ -13,50 +13,50 @@ interface
 
 uses
   Classes, Forms, ExtCtrls,
-  ObjGraficos, VisGraf3D, DefObjGraf;
+  sketchDxf, sketchEditor, sketchCore;
 type
-  TOnObjetosElim = procedure of object;
+  TOnObjectsRemove = procedure of object;
 
-  { TfraGrafEditor }
+  { TfraEditor }
 
-  TfraGrafEditor = class(TFrame)
+  TfraEditor = class(TFrame)
   published
     PaintBox1: TPaintBox;
   private
-    function GetAlfa: Single;
-    function GetFi: Single;
-    function GetxCam: Single;
-    function GetyCam: Single;
+    function Get_Alfa: Single;
+    function Get_Fi: Single;
+    function Get_X_Cam: Single;
+    function Get_Y_Cam: Single;
     function GetZoom: Single;
-    procedure motEdiModif;
-    procedure SetAlfa(AValue: Single);
-    procedure SetFi(AValue: Single);
-    procedure SetxCam(AValue: Single);
-    procedure SetxDesp(AValue: integer);
-    function GetxDesp: integer;
-    procedure SetyCam(AValue: Single);
-    procedure SetyDesp(AValue: integer);
-    function GetyDesp: integer;
+    procedure SetEditorModified;
+    procedure Set_Alfa(AValue: Single);
+    procedure Set_Fi(AValue: Single);
+    procedure Set_X_Cam(AValue: Single);
+    procedure Set_X_offs(AValue: integer);
+    function Get_X_Offs: integer;
+    procedure Set_Y_Cam(AValue: Single);
+    procedure Set_Y_Offs(AValue: integer);
+    function Get_Y_Offs: integer;
     procedure SetZoom(AValue: Single);
   public
-    objetos : TlistObjGraf; //Lista de objetos
-    motEdi  : TVisGraf3D;  //motor de edición
-    Modif   : Boolean;      //bandera para indicar Diagrama Modificado
-    OnObjetosElim: TOnObjetosElim;   //cuando se elminan uno o más objetos
-    procedure AgregarObjGrafico(og: TObjGraf; AutoPos: boolean=true);
-    procedure EliminarObjGrafico(obj: TObjGraf);
-    procedure EliminarTodosObj;
-    procedure ElimSeleccion;
-    function AgregaObjeto: TMiObjeto;
-  public //Propiedades reflejadas
-    property xDesp: integer read GetxDesp write SetxDesp;
-    property yDesp: integer read GetyDesp write SetyDesp;
-    property xCam: Single read GetxCam write SetxCam;
-    property yCam: Single read GetyCam write SetyCam;
-    property Alfa: Single read GetAlfa write SetAlfa;
-    property Fi: Single read GetFi write SetFi;
+    objects : TEditorObjList;
+    Editor  : TView3D;
+    Modified   : Boolean;
+    OnObjectsRemove: TOnObjectsRemove;   //when one or more objects are elminated
+    procedure GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean=true);
+    procedure GraphicObjectDelete(argObj: TGraphicObj);
+    procedure GraphicObjectsDeleteAll;
+    procedure DeleteSelected;
+    function ObjectAdd: TMyObject;
+  public
+    property xDesp: integer read Get_X_Offs write Set_X_offs;
+    property yDesp: integer read Get_Y_Offs write Set_Y_Offs;
+    property xCam: Single read Get_X_Cam write Set_X_Cam;
+    property yCam: Single read Get_Y_Cam write Set_Y_Cam;
+    property Alfa: Single read Get_Alfa write Set_Alfa;
+    property Fi: Single read Get_Fi write Set_Fi;
     property Zoom: Single read GetZoom write SetZoom;
-  public  //Inicialización
+  public
     constructor Create(AOwner: TComponent) ; override;
     destructor Destroy; override;
   end;
@@ -64,148 +64,147 @@ type
 implementation
 {$R *.lfm}
 
-procedure TfraGrafEditor.AgregarObjGrafico(og: TObjGraf; AutoPos: boolean = true);
-//Agrega un objeto grafico al editor. El objeto gráfico debe haberse creado previamente,
-//y ser de tipo TObjGraf o un descendiente. "AutoPos", permite posicionar automáticamente
-//al objeto en pantalla, de modo que se evite ponerlo siempre en la misma posición.
+procedure TfraEditor.GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean = true);
+{Add a graphic object to the editor. The graphic object must have been created previously,
+and be of type TGraphicObj or a descendant. "AutoPos", allows automatic positioning
+to the object on the screen, so that you avoid putting it always in the same position.}
 var
   x: single;
   y: single;
 begin
-  Modif := True;        //Marca el editor como modificado
+  Modified := True;        //Marca el editor como modificado
   //Posiciona tratando de que siempre aparezca en pantalla
   if AutoPos Then begin  //Se calcula posición
-    x := motEdi.v2d.Xvirt(100, 100) + 30 * objetos.Count Mod 400;
-    y := motEdi.v2d.Yvirt(100, 100) + 30 * objetos.Count Mod 400;
-    og.Ubicar(x,y);
+    x := Editor.v2d.Xvirt(100, 100) + 30 * objects.Count Mod 400;
+    y := Editor.v2d.Yvirt(100, 100) + 30 * objects.Count Mod 400;
+    argGraphicObject.PlaceAt(x,y);
   end;
   //configura eventos para ser controlado por este editor
-  og.OnSelec   := @motEdi.ObjGraf_Select;     //referencia a procedimiento de selección
-  og.OnDeselec := @motEdi.ObjGraf_Unselec;    //referencia a procedimiento de "de-selección"
-  og.OnCamPunt := @motEdi.ObjGraf_SetPointer; //procedimiento para cambiar el puntero
-//  Refresh(s)   ;             //Refresca objeto
-  objetos.Add(og);               //agrega elemento
+  argGraphicObject.OnSelect   := @Editor.GraphicObject_Select;//reference to selection procedure
+  argGraphicObject.OnDeselect := @Editor.GraphicObject_Unselect;
+  argGraphicObject.OnCamPoint := @Editor.GraphicObject_SetPointer;
+  objects.Add(argGraphicObject);
 end;
-procedure TfraGrafEditor.EliminarObjGrafico(obj: TObjGraf);  //elimina un objeto grafico
+procedure TfraEditor.GraphicObjectDelete(argObj: TGraphicObj);  //elimina un objeto grafico
 begin
-  Modif := True;  //Marca documento como modificado
-  obj.Deselec;  //por si acaso
-  objetos.Remove(obj);
-  obj := nil;
-  if OnObjetosElim<>nil then OnObjetosElim;
+  Modified := True;
+  argObj.Deselect;
+  objects.Remove(argObj);
+  argObj := nil;
+  if OnObjectsRemove<>nil then OnObjectsRemove;
 End;
-procedure TfraGrafEditor.EliminarTodosObj;
-//Elimina todos los objetos gráficos existentes
+procedure TfraEditor.GraphicObjectsDeleteAll;
+//Remove all existing graphic objects
 begin
-  if objetos.Count=0 then exit;  //no hay qué eliminar
-  //elimina
-  motEdi.DeseleccionarTodos;  //por si acaso hay algun simbolo seleccionado
-  objetos.Clear;          //limpia la lista de objetos
-  motEdi.RestaurarEstado;
-  Modif := true;          //indica que se modificó
-  if OnObjetosElim<>nil then OnObjetosElim;
+  if objects.Count=0 then exit;
+  //Remove
+  Editor.SelectNone;
+  objects.Clear;
+  Editor.RestoreState;
+  Modified := true;
+  if OnObjectsRemove<>nil then OnObjectsRemove;
 End;
-procedure TfraGrafEditor.ElimSeleccion;
-//Elimina la selección.
+procedure TfraEditor.DeleteSelected;
+// Remove the selection.
 var
-  v: TObjGraf;
-  tmp: TOnObjetosElim;
+  gobj: TGraphicObj;
+  tmp: TOnObjectsRemove;
 begin
-  tmp := OnObjetosElim;  //guarda evento
-  OnObjetosElim := nil; //para evitar llamar muchas veces
-  For v In motEdi.seleccion  do  //explora todos
-    EliminarObjGrafico(v);
-  OnObjetosElim := tmp;  //restaura
-  if OnObjetosElim<>nil then OnObjetosElim;  //llama evento
-  motEdi.Refresh;
+  tmp := OnObjectsRemove;  //save event
+  OnObjectsRemove := nil; //to avoid calling many times
+  For gobj In Editor.seleccion  do  //explore all
+    GraphicObjectDelete(gobj);
+  OnObjectsRemove := tmp;  //restore
+  if OnObjectsRemove<>nil then OnObjectsRemove;
+  Editor.Refresh;
 end;
 
-function TfraGrafEditor.AgregaObjeto: TMiObjeto;
-//Agrega un objeto de tipo TMiObjeto al editor.
-var o: TMiObjeto;
+function TfraEditor.ObjectAdd: TMyObject;
+//Add an object of type TMiObject to the editor.
+var obj: TMyObject;
 begin
-  o := TMiObjeto.Create(motEdi.v2d);
-  AgregarObjGrafico(o);
-  Result := o;
+  obj := TMyObject.Create(Editor.v2d);
+  GraphicObjectAdd(obj);
+  Result := obj;
 end;
 
-function TfraGrafEditor.GetxDesp: integer;
+function TfraEditor.Get_X_Offs: integer;
 begin
-  Result := motEdi.v2d.x_des;
+  Result := Editor.v2d.x_offs;
 end;
-procedure TfraGrafEditor.SetxDesp(AValue: integer);
+procedure TfraEditor.Set_X_offs(AValue: integer);
 begin
-  motEdi.v2d.x_des:=AValue;
+  Editor.v2d.x_offs:=AValue;
 end;
-function TfraGrafEditor.GetyDesp: integer;
+function TfraEditor.Get_Y_Offs: integer;
 begin
-  Result := motEdi.v2d.y_des;
+  Result := Editor.v2d.y_offs;
 end;
-procedure TfraGrafEditor.SetyDesp(AValue: integer);
+procedure TfraEditor.Set_Y_Offs(AValue: integer);
 begin
-  motEdi.v2d.y_des:=AValue;
+  Editor.v2d.y_offs:=AValue;
 end;
-function TfraGrafEditor.GetxCam: Single;
+function TfraEditor.Get_X_Cam: Single;
 begin
-  Result := motEdi.v2d.x_cam;
+  Result := Editor.v2d.x_cam;
 end;
-procedure TfraGrafEditor.SetxCam(AValue: Single);
+procedure TfraEditor.Set_X_Cam(AValue: Single);
 begin
-  motEdi.v2d.x_cam:=AValue;
+  Editor.v2d.x_cam:=AValue;
 end;
-function TfraGrafEditor.GetyCam: Single;
+function TfraEditor.Get_Y_Cam: Single;
 begin
-  Result := motEdi.v2d.y_cam;
+  Result := Editor.v2d.y_cam;
 end;
-procedure TfraGrafEditor.SetyCam(AValue: Single);
+procedure TfraEditor.Set_Y_Cam(AValue: Single);
 begin
-  motEdi.v2d.y_cam:=AValue;
+  Editor.v2d.y_cam:=AValue;
 end;
-function TfraGrafEditor.GetZoom: Single;
+function TfraEditor.GetZoom: Single;
 begin
-  Result := motEdi.v2d.Zoom;
+  Result := Editor.v2d.Zoom;
 end;
-procedure TfraGrafEditor.motEdiModif;
-{Se ejecuta cuando el visor reporta cambios (dimensionamieno, posicionamiento, ...) en
- alguno de los objetos gráficos.}
+procedure TfraEditor.SetEditorModified;
+{It is executed when the viewer reports changes (dimensioning, positioning, etc)
+in any of the graphic objects.}
 begin
-  Modif := true;
+  Modified := true;
 end;
-procedure TfraGrafEditor.SetZoom(AValue: Single);
+procedure TfraEditor.SetZoom(AValue: Single);
 begin
-  motEdi.v2d.Zoom:=AValue;
+  Editor.v2d.Zoom:=AValue;
 end;
-function TfraGrafEditor.GetAlfa: Single;
+function TfraEditor.Get_Alfa: Single;
 begin
-  Result := motEdi.v2d.Alfa;
+  Result := Editor.v2d.Alfa;
 end;
-procedure TfraGrafEditor.SetAlfa(AValue: Single);
+procedure TfraEditor.Set_Alfa(AValue: Single);
 begin
-  motEdi.v2d.Alfa := AValue;
+  Editor.v2d.Alfa := AValue;
 end;
-function TfraGrafEditor.GetFi: Single;
+function TfraEditor.Get_Fi: Single;
 begin
-  REsult := motEdi.v2d.Fi;
+  REsult := Editor.v2d.Fi;
 end;
-procedure TfraGrafEditor.SetFi(AValue: Single);
+procedure TfraEditor.Set_Fi(AValue: Single);
 begin
-  motEdi.v2d.Fi := AValue;
+  Editor.v2d.Fi := AValue;
 end;
-{procedure TVisGraf3D.KeyDown(Sender: TObject; var Key: Word;
+{procedure TView3D.KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 //Procesa el evento KeyDown()
 //var
-//  v: TObjGraf;
+//  v: TGraphicObj;
 begin
   If Shift = [] Then begin  //********************* Teclas normales ***********************
       //If tec = 13 Then PropiedSeleccion ;  //Debe procesarlo el diagrama
-      If Key = VK_DELETE Then ElimSeleccion;  //DELETE
+      If Key = VK_DELETE Then DeleteSelected;  //DELETE
       If Key = 9 Then SeleccionarSiguiente;  //TAB
       If Key = 27 Then begin  //ESCAPE
-          DeseleccionarTodos;
+          SelectNone;
           Refresh;
       end;
-      If seleccion.Count = 0 Then     ;  //si no hay objetos seleccionados
+      If seleccion.Count = 0 Then     ;  //si no hay objects seleccionados
           If Key = 37 Then Call moverDerecha(DESPLAZ_MENOR)        ;  //derecha
           If Key = 39 Then Call moverIzquierda(DESPLAZ_MENOR)      ;  //izquierda
           If Key = 40 Then Call moverArriba(DESPLAZ_MENOR)         ;  //arriba
@@ -250,20 +249,20 @@ begin
   end;
 end;}
 
-constructor TfraGrafEditor.Create(AOwner: TComponent);
+constructor TfraEditor.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  objetos:= TlistObjGraf.Create(true);  //lista de objetos
-  motEdi := TVisGraf3D.Create(PaintBox1, objetos);
-  motEdi.v2d.Alfa:=0.7;
-  motEdi.v2d.Fi:=0.7;
-  motEdi.OnModif:=@motEdiModif;
+  objects:= TEditorObjList.Create(true);  //lista de objects
+  Editor := TView3D.Create(PaintBox1, objects);
+  Editor.v2d.Alfa:=0.7;
+  Editor.v2d.Fi:=0.7;
+  Editor.OnModify:=@SetEditorModified;
 end;
 
-destructor TfraGrafEditor.Destroy;
+destructor TfraEditor.Destroy;
 begin
-  motEdi.Destroy;
-  objetos.Destroy;
+  Editor.Destroy;
+  objects.Destroy;
   inherited;
 end;
 

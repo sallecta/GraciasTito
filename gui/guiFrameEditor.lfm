@@ -1,4 +1,4 @@
-object fraGrafEditor: TfraGrafEditor
+object fraEditor: TfraEditor
   Left = 0
   Height = 298
   Top = 0

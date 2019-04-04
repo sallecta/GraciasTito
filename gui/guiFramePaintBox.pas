@@ -12,7 +12,7 @@ uses
   Classes, Forms, ExtCtrls,
   sketchEditor, sketchCore;
 type
-  TOnObjetosElim = procedure of object;
+  TOnObjectsRemove = procedure of object;
   {Evento para movimiento del Mouse. Notar que además de las coordenaadas del ratón,
   proporciona coordenadas virtuales}
   TEveMouseVisGraf = procedure(Shift: TShiftState; xp, yp: Integer;
@@ -24,19 +24,19 @@ type
   published
     PaintBox1: TPaintBox;
   private
-    function GetAlfa: Single;
-    function GetFi: Single;
-    function GetxCam: Single;
-    function GetyCam: Single;
+    function Get_Alfa: Single;
+    function Get_Fi: Single;
+    function Get_X_Cam: Single;
+    function Get_Y_Cam: Single;
     function GetZoom: Single;
     procedure motEdi_ChangeView;
     procedure visEdi_Modif;
-    procedure SetAlfa(AValue: Single);
-    procedure SetFi(AValue: Single);
-    procedure SetxCam(AValue: Single);
+    procedure Set_Alfa(AValue: Single);
+    procedure Set_Fi(AValue: Single);
+    procedure Set_X_Cam(AValue: Single);
     procedure SetxDes(AValue: integer);
     function GetxDes: integer;
-    procedure SetyCam(AValue: Single);
+    procedure Set_Y_Cam(AValue: Single);
     procedure SetyDes(AValue: integer);
     function GetyDes: integer;
     procedure SetZoom(AValue: Single);
@@ -45,74 +45,74 @@ type
       );
     procedure visEdi_SendMessage(msg: string);
   public
-    objetos : TlistObjGraf; //Lista de objetos
-    viewEdi  : TVisGraf3D;  //motor de edición  (La idesa es que pueda haber más de uno)
-    Modif   : Boolean;      //bandera para indicar Diagrama Modificado
-    OnObjetosElim  : TOnObjetosElim;   //cuando se elminan uno o más objetos
-    OnChangePersp: procedure of object; //Cambia x_des,y_des,x_cam,y_cam,alfa,fi o zoom
+    objects : TEditorObjList; //Lista de objects
+    viewEdi  : TView3D;  //motor de edición  (La idesa es que pueda haber más de uno)
+    Modified   : Boolean;      //bandera para indicar Diagrama Modificado
+    OnObjectsRemove  : TOnObjectsRemove;   //cuando se elminan uno o más objects
+    OnChangePersp: procedure of object; //Cambia x_offs,y_offs,x_cam,y_cam,alfa,fi o zoom
     OnMouseMoveVirt: TEveMouseVisGraf;
     OnChangeState  : TEvChangeState;  //Cambia el state del Visor
     OnSendMessage  : TEvSendMessage;  //Envía un mensaje. Usado para respuesta a comandos
-    procedure EliminarTodosObj;
+    procedure GraphicObjectsDeleteAll;
   public //Propiedades reflejadas
     property xDes: integer read GetxDes write SetxDes;
     property yDes: integer read GetyDes write SetyDes;
-    property xCam: Single read GetxCam write SetxCam;
-    property yCam: Single read GetyCam write SetyCam;
-    property Alfa: Single read GetAlfa write SetAlfa;
-    property Fi: Single read GetFi write SetFi;
+    property xCam: Single read Get_X_Cam write Set_X_Cam;
+    property yCam: Single read Get_Y_Cam write Set_Y_Cam;
+    property Alfa: Single read Get_Alfa write Set_Alfa;
+    property Fi: Single read Get_Fi write Set_Fi;
     property Zoom: Single read GetZoom write SetZoom;
     procedure ExecuteCommand(command: string);
     function StateAsStr: string; //Cadena de descripción de state
   public  //Inicialización
     procedure InitView;
-    constructor Create(AOwner: TComponent; ListObjGraf: TlistObjGraf);
+    constructor Create(AOwner: TComponent; ListObjGraf: TEditorObjList);
     destructor Destroy; override;
   end;
 
 implementation
 {$R *.lfm}
 
-procedure TfraPaintBox.EliminarTodosObj;
-//Elimina todos los objetos gráficos existentes
+procedure TfraPaintBox.GraphicObjectsDeleteAll;
+//Elimina todos los objects gráficos existentes
 begin
-  if objetos.Count=0 then exit;  //no hay qué eliminar
+  if objects.Count=0 then exit;  //no hay qué eliminar
   //elimina
-  viewEdi.DeseleccionarTodos;  //por si acaso hay algun simbolo seleccionado
-  objetos.Clear;          //limpia la lista de objetos
+  viewEdi.SelectNone;  //por si acaso hay algun simbolo seleccionado
+  objects.Clear;          //limpia la lista de objects
   viewEdi.RestoreState;
-  Modif := true;          //indica que se modificó
-  if OnObjetosElim<>nil then OnObjetosElim;
+  Modified := true;          //indica que se modificó
+  if OnObjectsRemove<>nil then OnObjectsRemove;
 End;
 function TfraPaintBox.GetxDes: integer;
 begin
-  Result := viewEdi.v2d.x_des;
+  Result := viewEdi.v2d.x_offs;
 end;
 procedure TfraPaintBox.SetxDes(AValue: integer);
 begin
-  viewEdi.v2d.x_des:=AValue;
+  viewEdi.v2d.x_offs:=AValue;
 end;
 function TfraPaintBox.GetyDes: integer;
 begin
-  Result := viewEdi.v2d.y_des;
+  Result := viewEdi.v2d.y_offs;
 end;
 procedure TfraPaintBox.SetyDes(AValue: integer);
 begin
-  viewEdi.v2d.y_des:=AValue;
+  viewEdi.v2d.y_offs:=AValue;
 end;
-function TfraPaintBox.GetxCam: Single;
+function TfraPaintBox.Get_X_Cam: Single;
 begin
   Result := viewEdi.v2d.x_cam;
 end;
-procedure TfraPaintBox.SetxCam(AValue: Single);
+procedure TfraPaintBox.Set_X_Cam(AValue: Single);
 begin
   viewEdi.v2d.x_cam:=AValue;
 end;
-function TfraPaintBox.GetyCam: Single;
+function TfraPaintBox.Get_Y_Cam: Single;
 begin
   Result := viewEdi.v2d.y_cam;
 end;
-procedure TfraPaintBox.SetyCam(AValue: Single);
+procedure TfraPaintBox.Set_Y_Cam(AValue: Single);
 begin
   viewEdi.v2d.y_cam:=AValue;
 end;
@@ -134,9 +134,9 @@ begin
 end;
 procedure TfraPaintBox.visEdi_Modif;
 {Se ejecuta cuando el visor reporta cambios (dimensionamieno, posicionamiento, ...) en
- alguno de los objetos gráficos.}
+ alguno de los objects gráficos.}
 begin
-  Modif := true;
+  Modified := true;
 end;
 procedure TfraPaintBox.SetZoom(AValue: Single);
 begin
@@ -159,19 +159,19 @@ begin
   if OnSendMessage<>nil then OnSendMessage(msg);
 end;
 
-function TfraPaintBox.GetAlfa: Single;
+function TfraPaintBox.Get_Alfa: Single;
 begin
   Result := viewEdi.v2d.Alfa;
 end;
-procedure TfraPaintBox.SetAlfa(AValue: Single);
+procedure TfraPaintBox.Set_Alfa(AValue: Single);
 begin
   viewEdi.v2d.Alfa := AValue;
 end;
-function TfraPaintBox.GetFi: Single;
+function TfraPaintBox.Get_Fi: Single;
 begin
   REsult := viewEdi.v2d.Fi;
 end;
-procedure TfraPaintBox.SetFi(AValue: Single);
+procedure TfraPaintBox.Set_Fi(AValue: Single);
 begin
   viewEdi.v2d.Fi := AValue;
 end;
@@ -186,13 +186,13 @@ begin
   viewEdi.v2d.x_cam:=((PaintBox1.Width div 2)-10)/viewEdi.v2d.Zoom;
   viewEdi.v2d.y_cam:=((PaintBox1.Height div 2)-10)/viewEdi.v2d.Zoom;
 end;
-constructor TfraPaintBox.Create(AOwner: TComponent; ListObjGraf: TlistObjGraf);
+constructor TfraPaintBox.Create(AOwner: TComponent; ListObjGraf: TEditorObjList);
 begin
   inherited Create(AOwner);
-  objetos := ListObjGraf;  //recibe lista de objetos
-  //objetos:= TlistObjGraf.Create(true);  //lista de objetos
-  viewEdi := TVisGraf3D.Create(PaintBox1, objetos);
-  viewEdi.OnModif      :=@visEdi_Modif;
+  objects := ListObjGraf;  //recibe lista de objects
+  //objects:= TEditorObjList.Create(true);  //lista de objects
+  viewEdi := TView3D.Create(PaintBox1, objects);
+  viewEdi.OnModify      :=@visEdi_Modif;
   viewEdi.OnChangeView :=@motEdi_ChangeView;
   viewEdi.OnMouseMove  :=@visEdi_MouseMove;
   viewEdi.OnChangeState:=@visEdi_ChangeState;
@@ -201,7 +201,7 @@ end;
 destructor TfraPaintBox.Destroy;
 begin
   viewEdi.Destroy;
-  //objetos.Destroy;
+  //objects.Destroy;
   inherited;
 end;
 

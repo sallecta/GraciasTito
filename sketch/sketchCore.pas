@@ -7,7 +7,7 @@ Description
 ===========
 Defines the primary graphic objects that will be used by higher level objects in
 a graphic object editor.
-The TObjGraf object is the base object from which the most specific objects
+The TGraphicObj object is the base object from which the most specific objects
 should be derived that will be drawn on the screen.
 It also includes the definition of control points, which allow to resize the
 object; and buttons that can be included in the graphic objects.
@@ -16,11 +16,11 @@ applications. The most specific ones should be put in another unit.
 It is not recommended to modify this unit to adapt the graphic objects to the
 application.
 If you want to handle another kind of general objects, it is better to create
-another general class of TObjGraf.
+another general class of TGraphicObj.
 
 The class hierarchy is:
 
-TObjVisible ----------------------------------------> TObjGraf ---> Derive objects here
+TObjVisible ----------------------------------------> TGraphicObj ---> Derive objects here
               |                                          |
                --> TPtoCtrl --(They are included in)------
               |                                          |
@@ -34,12 +34,12 @@ uses
   Classes, Controls, SysUtils, Fgl, Graphics, GraphType, Types, ExtCtrls, MotGraf3D;
 
 const
-  ANCHO_MIN = 20;    //Ancho mínimo de objetos gráficos en pixels (Coord Virtuales)
-  ALTO_MIN = 20;     //Alto mínimo de objetos gráficos en Twips (Coord Virtuales)
+  ANCHO_MIN = 20;    //Ancho mínimo de objects gráficos en pixels (Coord Virtuales)
+  ALTO_MIN = 20;     //Alto mínimo de objects gráficos en Twips (Coord Virtuales)
 
 type
   { TObjVsible }
-  //Clase base para todos los objetos visibles
+  //Clase base para todos los objects visibles
   TObjVsible = class
   protected
     fx,fy,fz  : Single;    //coordenadas virtuales
@@ -52,8 +52,8 @@ type
     Selected  : Boolean;   //indica si el objeto está seleccionado
     Visible   : boolean;   //indica si el objeto es visible
     procedure Crear(mGraf: TMotGraf; ancho0, alto0: Integer);  //no es constructor
-    procedure Ubicar(const xv, yv, zv: Single);  //Fija posición
-    procedure Ubicar(const P: TMotPoint);  //Fija posición
+    procedure PlaceAt(const xv, yv, zv: Single);  //Fija posición
+    procedure PlaceAt(const P: TMotPoint);  //Fija posición
     function LoSelec(xp, yp: Integer): Boolean;
     function StartMove(xr, yr: Integer): Boolean;
     property x: Single read fx;
@@ -136,20 +136,20 @@ type
 
   TogButtons = specialize TFPGObjectList<TogButton>;       //Para gestionar los botones
 
-  TObjGraf = class;
-  TEventSelec = procedure(obj: TObjGraf) of object; //Procedimiento-evento para seleccionar
+  TGraphicObj = class;
+  TEventSelec = procedure(obj: TGraphicObj) of object; //Procedimiento-evento para seleccionar
   TEventCPunt = procedure(TipPunt: Integer) of object; //Procedimiento-evento para cambiar puntero
 
-  { TObjGraf }
-  {Este es el Objeto padre de todos los objetos gráficos visibles que son administrados por el
+  { TGraphicObj }
+  {Este es el Objeto padre de todos los objects gráficos visibles que son administrados por el
    motor de edición}
-  TObjGraf = class(TObjVsible)
+  TGraphicObj = class(TObjVsible)
   private
   protected
     pcx        : TPtoCtrl;      //variable para Punto de Control
     PtosControl: TPtosControl;  //Lista de puntos de control
     Buttons    : TogButtons;    //Lista para contener botones
-    procedure ReubicElemen; virtual;
+    procedure RelocateElements; virtual;
     procedure ReConstGeom; virtual; //Reconstruye la geometría del objeto
     function SelecPtoControl(xp, yp: integer): TPtoCtrl;
   public
@@ -168,14 +168,14 @@ type
     Resizing    : boolean;  //indica que el objeto está dimensionándose
     Erased      : boolean;   //bandera para eliminar al objeto
     //Eventos de la clase
-    OnSelec  : TEventSelec;
-    OnDeselec: TEventSelec;
-    OnCamPunt: TEventCPunt;
+    OnSelect  : TEventSelec;
+    OnDeselect: TEventSelec;
+    OnCamPoint: TEventCPunt;
     function XCent: Single;  //Coordenada Xcentral del objeto
     function YCent: Single;  //Coordenada Ycentral del objeto
-    procedure Ubicar(x0, y0: Single);
+    procedure PlaceAt(x0, y0: Single);
     procedure Selec;         //Método único para seleccionar al objeto
-    procedure Deselec;       //Método único para quitar la selección del objeto
+    procedure Deselect;       //Método único para quitar la selección del objeto
     procedure Delete;        //Método para eliminar el objeto
     procedure Mover(xr, yr : Integer; nobjetos : Integer); virtual;
     function LoSelecciona(xr, yr:integer): Boolean; virtual;
@@ -196,7 +196,7 @@ type
     destructor Destroy; override;
   end;
 
-  TlistObjGraf = specialize TFPGObjectList<TObjGraf>;
+  TEditorObjList = specialize TFPGObjectList<TGraphicObj>;
 
 implementation
 const
@@ -210,14 +210,14 @@ begin
   height :=alto0;
   visible := true;
 end;
-procedure TObjVsible.Ubicar(const xv, yv, zv: Single);
+procedure TObjVsible.PlaceAt(const xv, yv, zv: Single);
 {Ubica en coordenadas virtuales}
 begin
   fx := xv;
   fy := yv;
   fz := zv;
 end;
-procedure TObjVsible.Ubicar(const P: TMotPoint);
+procedure TObjVsible.PlaceAt(const P: TMotPoint);
 {Ubica en coordenadas virtuales}
 begin
   fx := P.x;
@@ -321,8 +321,8 @@ begin
    end;
 end;
 
-{ TObjGraf }
-function TObjGraf.SelecPtoControl(xp, yp:integer): TPtoCtrl;
+{ TGraphicObj }
+function TGraphicObj.SelecPtoControl(xp, yp:integer): TPtoCtrl;
 //Indica si selecciona a algún punto de control y devuelve la referencia.
 var pdc: TPtoCtrl;
 begin
@@ -330,39 +330,39 @@ begin
   for pdc in PtosControl do
       if pdc.LoSelec(xp,yp) then begin SelecPtoControl := pdc; Exit; end;
 end;
-function TObjGraf.XCent: Single;
+function TGraphicObj.XCent: Single;
 begin
    Result := fx + width / 2;
 end;
-function TObjGraf.YCent: Single;
+function TGraphicObj.YCent: Single;
 begin
    Result := fy + height / 2;
 end;
-procedure TObjGraf.Selec;
+procedure TGraphicObj.Selec;
 begin
    if Selected then exit;    //ya está Selected
    Selected := true; //se marca como Selected
    //Llama al evento que selecciona el objeto. El editor debe responder
-   if Assigned(OnSelec) then OnSelec(self);   //llama al evento
+   if Assigned(OnSelect) then OnSelect(self);   //llama al evento
    { TODO : Aquí se debe activar los controles para dimensionar el objeto }
 end;
-procedure TObjGraf.Deselec;
+procedure TGraphicObj.Deselect;
 begin
    if not Selected then exit;    //ya está Selected
    Selected := false; //se marca como selccionado
    //Llama al evento que selecciona el objeto. El editor debe responder
-   if Assigned(OnDeselec) then OnDeselec(self);  //llama al evento
+   if Assigned(OnDeselect) then OnDeselect(self);  //llama al evento
    { TODO : Aquí se debe desactivar los controles para dimensionar el objeto }
 end;
-procedure TObjGraf.Delete;
+procedure TGraphicObj.Delete;
 begin
   //Marca para eliminarse
   Erased := true;
 end;
-procedure TObjGraf.Mover(xr, yr: Integer; nobjetos: Integer);
+procedure TGraphicObj.Mover(xr, yr: Integer; nobjetos: Integer);
 {Metodo que funciona como evento MouseMove del objeto. Lo normales que produzca un
  desplazamiento del objeto.
-"nobjetos" es la cantidad de objetos que se mueven. Usualmente es sólo uno}
+"nobjetos" es la cantidad de objects que se mueven. Usualmente es sólo uno}
 var dx , dy: Single;
 begin
 //     If ArrastBoton Then Exit;       //Arrastrando botón  { TODO : Revisar }
@@ -381,14 +381,14 @@ begin
         else  //ningún elemento del objeto lo ha procesado, pasamos a mover todo el objeto
            begin
               fx := fx + dx; fy := fy + dy;
-              ReubicElemen;  //reubica los elementos
+              RelocateElements;  //reubica los elementos
               Proceso := False;
            End;
         Xant := xr; Yant := yr;
      End;
 end;
 
-function TObjGraf.LoSelecciona(xr, yr:integer): Boolean;
+function TGraphicObj.LoSelecciona(xr, yr:integer): Boolean;
 //Devuelve verdad si la coordenada de pantalla xr,yr cae en un punto tal
 //que "lograria" la seleccion de la forma.
 var xv , yv : Single; //corodenadas virtuales
@@ -402,7 +402,7 @@ begin
       if SelecPtoControl(xr,yr) <> NIL then LoSelecciona := True;
     end;
 End;
-procedure TObjGraf.Dibujar;
+procedure TGraphicObj.Dibujar;
 const tm = 3;
 var
   pdc  : TPtoCtrl;
@@ -422,8 +422,8 @@ begin
      for pdc in PtosControl do pdc.Dibujar;   //Dibuja puntos de control
   End;
 end;
-procedure TObjGraf.StartMove(xr, yr: Integer);
-//Procedimiento para procesar el evento StartMove de los objetos gráficos
+procedure TGraphicObj.StartMove(xr, yr: Integer);
+//Procedimiento para procesar el evento StartMove de los objects gráficos
 //Se ejecuta al inicio de movimiento al objeto
 begin
   Xant := xr; Yant := yr;
@@ -439,7 +439,7 @@ begin
    end;
   { TODO : Verificar por qué, a veces se puede Initiate el movimiento del objeto cuando el puntero está en modo de dimensionamiento. }
 end;
-procedure TObjGraf.MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
+procedure TGraphicObj.MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
 //Metodo que funciona como evento "MouseDown"
 begin
 //  CapturoEvento := NIL;
@@ -449,7 +449,7 @@ begin
     Proceso := True;{ TODO : Verificar si es útil la bandera "Proceso" }
   End;
 End;
-procedure TObjGraf.MouseUp(Sender: TObject; Button: TMouseButton;
+procedure TGraphicObj.MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; solto_objeto: Boolean);
 //Metodo que funciona como evento MouseUp
 //la bandera "solto_objeto" indica que se ha soltado el objeto despues de estarlo arrastrando
@@ -472,32 +472,32 @@ begin
     //Restaura puntero si estaba dimensionándose por si acaso
     if Resizing then begin
        if not pcx.LoSelec(xp,yp) then //se salio del foco
-          if Assigned(OnCamPunt) then OnCamPunt(crDefault);  //pide retomar el puntero
+          if Assigned(OnCamPoint) then OnCamPoint(crDefault);  //pide retomar el puntero
        Resizing := False;    //quita bandera, por si estaba Resizing
        exit;
     end;
 end;
-procedure TObjGraf.MouseMove(Sender: TObject; Shift: TShiftState; xp, yp: Integer);
+procedure TGraphicObj.MouseMove(Sender: TObject; Shift: TShiftState; xp, yp: Integer);
 //Respuesta al evento MouseMove. Se debe recibir cuando el Mouse pasa por encima del objeto
 var pc: TPtoCtrl;
 begin
     if not Selected then Exit;
     //Aquí se supone que tomamos el control porque está Selected
     //Procesa el cambio de puntero.
-    if Assigned(OnCamPunt) then begin
+    if Assigned(OnCamPoint) then begin
         pc := SelecPtoControl(xp,yp);
         if pc<> NIL then
-           OnCamPunt(pc.tipPuntero)  //cambia a supuntero
+           OnCamPoint(pc.tipPuntero)  //cambia a supuntero
         else
-           OnCamPunt(crDefault);
+           OnCamPoint(crDefault);
     end;
 end;
-procedure TObjGraf.MouseWheel(Sender: TObject; Shift: TShiftState;
+procedure TGraphicObj.MouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
 
 end;
-constructor TObjGraf.Create(mGraf: TMotGraf);
+constructor TGraphicObj.Create(mGraf: TMotGraf);
 begin
   inherited Create;
   erased := false;
@@ -506,37 +506,37 @@ begin
   height := 100;    //height por defecto
   fx := 100;
   fy := 100;
-  PtosControl:= TPtosControl.Create(True);   //Crea lista con administración de objetos
-  Buttons    := TogButtons.Create(True);     //Crea lista con administración de objetos
+  PtosControl:= TPtosControl.Create(True);   //Crea lista con administración de objects
+  Buttons    := TogButtons.Create(True);     //Crea lista con administración de objects
   Selected := False;
   Marcado := False;
   Proceso := false;
   DibSimplif := false;
   Highlight := true;
 end;
-procedure TObjGraf.ReubicElemen;
+procedure TGraphicObj.RelocateElements;
 begin
-  //Deberúa ubicar puntos de control, pero eso es tarea de la implementación
+  //Deberúa PlaceAt puntos de control, pero eso es tarea de la implementación
 
 end;
-procedure TObjGraf.ReConstGeom;
+procedure TGraphicObj.ReConstGeom;
 begin
-  ReubicElemen;   //Reubicación de elementos
+  RelocateElements;   //Reubicación de elementos
 end;
-destructor TObjGraf.Destroy;
+destructor TGraphicObj.Destroy;
 begin
   Buttons.Free;        //Libera Buttons fy Lista
   PtosControl.Free;    //Libera Puntos de Control fy lista
   inherited Destroy;
 end;
-procedure TObjGraf.Ubicar(x0, y0: Single);
+procedure TGraphicObj.PlaceAt(x0, y0: Single);
 //Ubica al objeto en unas coordenadas específicas
 begin
   fx := x0;
   fy := y0;
-  ReubicElemen;   //reubica sus elementos
+  RelocateElements;   //reubica sus elementos
 end;
-function TObjGraf.AddButton(ancho0, alto0: Integer; tipo0: TTipBot;
+function TGraphicObj.AddButton(ancho0, alto0: Integer; tipo0: TTipBot;
   EvenBTclk0: TEvenBTclk): TogButton;
 //Agrega un botón al objeto.
 begin
@@ -545,7 +545,7 @@ begin
   Result.height := alto0;
   Buttons.Add(Result);
 end;
-function TObjGraf.AddPtoControl(tipDesplaz0: TPosicPCtrol; ProcDimen: TEvPtoCtrlMoveXY): TPtoCtrl;
+function TGraphicObj.AddPtoControl(tipDesplaz0: TPosicPCtrol; ProcDimen: TEvPtoCtrlMoveXY): TPtoCtrl;
 //Agrega un punto de control
 begin
   Result := TPtoCtrl.Crear(v2d, tipDesplaz0, ProcDimen);

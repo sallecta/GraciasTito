@@ -25,13 +25,13 @@ type
     Zoom    : Single;     //factor de ampliación
 
 
-    {Desplazamiento para ubicar el centro virtual de la pantalla (0,0)
+    {Desplazamiento para PlaceAt el centro virtual de la pantalla (0,0)
     Se indica en pixeles. Si por ejemplo, se fija:
-    x_Des = 10 y y_Des = 10
+    x_offs = 10 y y_offs = 10
     Hará que cuando se dibuje algo virtualmente en (0,0), aparecerá desplazado
     10 pixeles a la derecha del borde izquierdo y 10 pixeles arriba del borde inferior}
-    x_des      : integer;
-    y_des      : Integer;
+    x_offs      : integer;
+    y_offs      : Integer;
   private
     gControl: TGraphicControl;   //Control gráfico, en donde se va a dibujar
     cv      : Tcanvas;           //referencia al lienzo
@@ -61,14 +61,14 @@ end;
 function TMotGraf.XPant(x:Single): Integer; inline;   //INLINE Para acelerar las llamadas
 //Función de la geometría del motor. Da la transformación lineal de la coordenada x.
 begin
-//   XPant := Round((x - x_cam) * Zoom + x_des);
-  Result := Round(x+x_des);
+//   XPant := Round((x - x_cam) * Zoom + x_offs);
+  Result := Round(x+x_offs);
 end;
 function TMotGraf.YPant(y:Single): Integer; inline;  //INLINE Para acelerar las llamadas
 //Función de la geometría del motor. Da la transformación lineal de la coordenada y.
 begin
-//   YPant := Round((y - y_cam) * Zoom + y_des);
-  Result := Round(gControl.Height-(y+y_des));
+//   YPant := Round((y - y_cam) * Zoom + y_offs);
+  Result := Round(gControl.Height-(y+y_offs));
 end;
 procedure TMotGraf.XYpant(xv, yv: Single; var xp, yp: Integer);
 //Devuelve las coordenadas de pantalla para un punto virtual (x,y,z).
@@ -93,8 +93,8 @@ constructor TMotGraf.Create(gContrl0: TGraphicControl);
 begin
   gControl := gContrl0;
   cv := gControl.Canvas;
-  x_des := 10;
-  y_des := 10;
+  x_offs := 10;
+  y_offs := 10;
 end;
 destructor TMotGraf.Destroy;
 begin

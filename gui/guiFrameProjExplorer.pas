@@ -200,7 +200,7 @@ var
   nodPag: TTreeNode;
   nodProj: TTreeNode;
   nodGeomet, nodVista, nodObjGraf: TTreeNode;
-  og : TObjGraf;
+  argGraphicObject : TGraphicObj;
 begin
   //muestra su título
   Label2.Caption:=self.Caption;
@@ -223,12 +223,12 @@ begin
      nodPag := arbNaveg.Items.AddChild(nodProj, Page.name);
      nodPag.ImageIndex   := IMIDX_PAGINA;
      nodPag.SelectedIndex:= IMIDX_PAGINA;
-     //Agrega campos de objetos gráficos
-     nodGeomet := arbNaveg.items.AddChild(nodPag, 'Objetos Gráficos');
+     //Agrega campos de objects gráficos
+     nodGeomet := arbNaveg.items.AddChild(nodPag, 'objects Gráficos');
      nodGeomet.ImageIndex   := IMIDX_OBJGRA;
      nodGeomet.SelectedIndex:= IMIDX_OBJGRA;
 
-     for og in Page.View.objetos do begin
+     for argGraphicObject in Page.View.objects do begin
        nodObjGraf := arbNaveg.items.AddChild(nodGeomet, 'Objeto');
      end;
      //Agrega campo de View

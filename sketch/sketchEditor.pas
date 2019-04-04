@@ -5,9 +5,9 @@ By Tito Hinostroza 01/04/2017
 
 Description
 ============
-Defines the class TVisGraf3D that implements a viewer-editor of graphic objects.
+Defines the class TView3D that implements a viewer-editor of graphic objects.
 To work you must associate with a PaintBox control (where the objects will appreciate)
-graphics) and a list of objects of type TlistObjGraf, defined in the unit
+graphics) and a list of objects of type TEditorObjList, defined in the unit
 ogDefObjGraf.
 This unit is based on the ogEditGraf library, where it would be equivalent to
 the ogMotEdicion unit, with the difference that here, the main class, does not include
@@ -15,9 +15,9 @@ to the container of objects but only a referecncia, and that the focus here is o
 of states before of events.
 The idea is that this class provides a higher level layer on the graphic engine
 to show and edit objects with the mouse and by commands.
-In summary, the TvisGraf3D class must meet the following requirements:
+In summary, the TView3D class must meet the following requirements:
 
-1. Be associated with a list of objects "TlistObjGraf". Does not include the container,
+1. Be associated with a list of objects "TEditorObjList". Does not include the container,
    but it is only a viewer-editor.
 2. Must intercept mouse events, for editing. This is one of
    the main functions of this class.
@@ -26,7 +26,7 @@ In summary, the TvisGraf3D class must meet the following requirements:
 4. Objects must only be modified through this class. They should not be done
    directly from outside. This will allow taking control of the actions for
    implement the Undo and Redo.
-5. The changes in the objects must be informed, through the OnModif event.
+5. The changes in the objects must be informed, through the OnModify event.
 6. This class must restrict access to the graphics engine. The idea is that it can adapt
    without problems to other graphics engines.
 
@@ -73,7 +73,7 @@ type
       //Estados del editor visual
        EP_NORMAL      //No se está realizando ninguna operación
       ,EP_SELECMULT   //Esta en modo de selección múltiple
-      ,EP_MOV_OBJS    //Indica que se esta moviendo una o mas objetos
+      ,EP_MOV_OBJS    //Indica que se esta moviendo una o mas objects
       ,EP_DESP_PANT   //desplazamiento de pantalla
       ,EP_DESP_ANG    //Indica desplazamiento de ángulos de View
       ,EP_DIMEN_OBJ   //Indica que se está dimensionando un objeto
@@ -87,21 +87,21 @@ type
   TEvChangeState = procedure(ViewState: TViewState) of object;
   TEvSendMessage = procedure(msg: string) of object;
 
-  { TVisGraf3D }
-  TVisGraf3D = class
+  { TView3D }
+  TView3D = class
   private
     FState: TViewState;
-    procedure AgregarObjGrafico(og: TObjGraf; AutoPos: boolean=true);
-    procedure EliminarObjGrafico(obj: TObjGraf);  //elimina un objeto grafico
-    procedure ElimSeleccion;
+    procedure GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean=true);
+    procedure GraphicObjectDelete(obj: TGraphicObj);  //elimina un objeto grafico
+    procedure DeleteSelected;
     procedure proc_COMM_RECTAN(EventTyp: TVisEventTyp; Button: TMouseButton;
       Shift: TShiftState; xp, yp: Integer; txt: string);
     procedure SetState(AValue: TViewState);
     procedure v2d_ChangeView;
   protected
     PBox         : TPaintBox;   //Control de Salida
-    CapturoEvento: TObjGraf;    //referencia a objeto que capturo el movimiento
-    ultMarcado   : TObjGraf;    //nombre del objeto marcado
+    CapturoEvento: TGraphicObj;    //referencia a objeto que capturo el movimiento
+    ultMarcado   : TGraphicObj;    //nombre del objeto marcado
     ParaMover    : Boolean;     //bandera de control para el inicio del movimiento
     procedure PBox_MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
                         xp, yp: Integer); virtual;
@@ -122,26 +122,26 @@ type
     OnDblClick  : TNotifyEvent;
     OnObjectsMoved: procedure of object;
     OnChangeView: procedure of object;
-    OnModif     : procedure of object;  //Este visor indica los cambios con este evento
+    OnModify     : procedure of object;  //Este visor indica los cambios con este evento
     OnChangeState: TEvChangeState;      //Cambia el state del Visor
     OnSendMessage: TEvSendMessage;      //Envía un mensaje. Usado para respuesta a comandos
   public
     xvPtr       : Single;   //coordenadas cirtuales del puntero
     yvPtr       : Single;   //coordenadas cirtuales del puntero
     zvPtr       : Single;   //coordenadas cirtuales del puntero
-    objetos     : TlistObjGraf; //referencia a la lisat de objetos
-    seleccion   : TlistObjGraf;
+    objects     : TEditorObjList; //referencia a la lisat de objects
+    seleccion   : TEditorObjList;
     v2d         : TMotGraf;    //salida gráfica
     incWheel    : Single;      //Incremento de ámgulo con la rueda del mouse
     ShowAxes : boolean;     //Para mostrar los ejec coordenados.
     AxesDistance : integer;     //Longitud de ejes coordenados
     ShowRotPoint: boolean;     //Para mostrar el punto de giro.
     ShowGrid  : boolean;     //Para mostrar la cuadrícula.
-    function Seleccionado: TObjGraf;
-    function ObjPorNombre(nom: string): TObjGraf;
+    function Seleccionado: TGraphicObj;
+    function ObjPorNombre(nom: string): TGraphicObj;
     procedure Refresh;
     procedure SeleccionarTodos;
-    procedure DeseleccionarTodos();
+    procedure SelectNone();
   protected
     x1Sel    : integer;
     y1Sel    : integer;
@@ -158,7 +158,7 @@ type
     y_cam_a: Single;
     procedure AmpliarClick(factor: real=FACTOR_AMPLIA_ZOOM; xr: integer=0;
       yr: integer=0);
-    function AnteriorVisible(c: TObjGraf): TObjGraf;
+    function AnteriorVisible(c: TGraphicObj): TGraphicObj;
     procedure DibujRecSeleccion;
 
     function enRecSeleccion(X, Y: Single): Boolean;
@@ -169,21 +169,21 @@ type
     procedure moverIzquierda(desp: Double=DESPLAZ_MENOR);
     procedure Desplazar(dx, dy: integer);
     function NumeroVisibles: Integer;
-    function PrimerVisible: TObjGraf;
+    function PrimerVisible: TGraphicObj;
     function RecSeleccionNulo: Boolean;
     procedure ReducirClick(factor: Real=FACTOR_AMPLIA_ZOOM; x_zoom: Real=0;
       y_zoom: Real=0);
-    function SeleccionaAlguno(xp, yp: Integer): TObjGraf;
+    function SeleccionaAlguno(xp, yp: Integer): TGraphicObj;
     procedure SeleccionarAnterior;
     procedure SeleccionarSiguiente;
-    function SiguienteVisible(c: TObjGraf): TObjGraf;
-    function UltimoVisible: TObjGraf;
-    function VerificarMovimientoRaton(X, Y: Integer): TObjGraf;
+    function SiguienteVisible(c: TGraphicObj): TGraphicObj;
+    function UltimoVisible: TGraphicObj;
+    function VerificarMovimientoRaton(X, Y: Integer): TGraphicObj;
     procedure VerificarParaMover(xp, yp: Integer);
   public  //Se hace público porque se necesita acceder desde fuera
-    procedure ObjGraf_Select(obj: TObjGraf);     //Respuesta a Evento
-    procedure ObjGraf_Unselec(obj: TObjGraf);    //Respuesta a Evento
-    procedure ObjGraf_SetPointer(Punt: integer);  //Respuesta a Evento
+    procedure GraphicObject_Select(obj: TGraphicObj);     //Respuesta a Evento
+    procedure GraphicObject_Unselec(obj: TGraphicObj);    //Respuesta a Evento
+    procedure GraphicObject_SetPointer(Punt: integer);  //Respuesta a Evento
   private  //Rutinas de procesamiento de estados
     {Contenedor que asocia el state a su procedimiento manejador. Se usar para acceder
      rápidamente a la rutina manejadora, ya que algunos eventos (como PBox_MouseMove), se
@@ -215,7 +215,7 @@ type
                             Shift: TShiftState; xp, yp: Integer; txt: string);
   public //Inicialización
     procedure RestoreState(msg: string='');
-    constructor Create(PB0: TPaintBox; objectList: TlistObjGraf);
+    constructor Create(PB0: TPaintBox; objectList: TEditorObjList);
     destructor Destroy; override;
   end;
 
@@ -223,17 +223,17 @@ implementation
 uses
   guiFormConfig;
 
-procedure TVisGraf3D.SetState(AValue: TViewState);
+procedure TView3D.SetState(AValue: TViewState);
 begin
   if FState=AValue then Exit;
   FState:=AValue;
   if OnChangeState<>nil then OnChangeState(FState);
 end;
-procedure TVisGraf3D.v2d_ChangeView;
+procedure TView3D.v2d_ChangeView;
 begin
   if OnChangeView<>nil then OnChangeView;
 end;
-procedure TVisGraf3D.PBox_MouseDown(Sender: TObject;
+procedure TView3D.PBox_MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
 begin
     if OnMouseDown<>nil then OnMouseDown(Sender, Button, Shift, Xp, Yp);
@@ -246,7 +246,7 @@ begin
 
     CallEventState(State, vmeMouseDown, Button, Shift, xp, yp, ''); //Procesa de acuerdo al state
 end;
-procedure TVisGraf3D.PBox_MouseUp(Sender: TObject; Button: TMouseButton;
+procedure TView3D.PBox_MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer);
 begin
    //Verifica si la selección es NULA
@@ -256,7 +256,7 @@ begin
      if OnClickDer<> nil then OnClickDer(xp,yp);  //evento
    if OnMouseUp<>nil then OnMouseUp(Sender, Button, Shift, xp, yp);
 end;
-procedure TVisGraf3D.PBox_MouseMove(Sender: TObject; Shift: TShiftState;
+procedure TView3D.PBox_MouseMove(Sender: TObject; Shift: TShiftState;
   X,  Y: Integer);
 begin
   zvPtr := 0;   //fijamos el plano de trabajo en z=0
@@ -265,9 +265,9 @@ begin
   if ParaMover = True Then VerificarParaMover(X, Y);
   CallEventState(State, vmeMouseMove, mbExtra1, Shift, x, y, ''); //Procesa de acuerdo al state
 end;
-procedure TVisGraf3D.PBox_Paint(Sender: TObject);
+procedure TView3D.PBox_Paint(Sender: TObject);
 var
-  o:TObjGraf;
+  o:TGraphicObj;
   x, y, xCuad1, xCuad2, yCuad1, yCuad2: Single;
   nCuad, ix, distCub, paso: Integer;
 begin
@@ -312,8 +312,8 @@ begin
         y := y + paso;
       end;
     end;
-    //Dibuja objetos
-    for o In objetos do begin
+    //Dibuja objects
+    for o In objects do begin
       o.Dibujar;
     end;
     //Dibuja eje
@@ -341,7 +341,7 @@ begin
 //    v2d.Line(xvPtr, yvPtr, zvPtr-30,
 //             xvPtr, yvPtr, zvPtr+30);
 end;
-procedure TVisGraf3D.PBox_MouseWheel(Sender: TObject; Shift: TShiftState;
+procedure TView3D.PBox_MouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 var
   d: Single;
@@ -360,17 +360,17 @@ begin
   end;
   Refresh;
 end;
-procedure TVisGraf3D.PBox_DblClick(Sender: TObject);
+procedure TView3D.PBox_DblClick(Sender: TObject);
 begin
   if OnDblClick<>nil then OnDblClick(Sender);
 end;
-procedure TVisGraf3D.PBox_Resize(Sender: TObject);
+procedure TView3D.PBox_Resize(Sender: TObject);
 {Se aprovecha para fijar el punto de rotación al centro del control.}
 begin
-  v2d.x_des := PBox.Width div 2;
-  v2d.y_des := PBox.Height div 2;
+  v2d.x_offs := PBox.Width div 2;
+  v2d.y_offs := PBox.Height div 2;
 end;
-procedure TVisGraf3D.ExecuteCommand(command: string);
+procedure TView3D.ExecuteCommand(command: string);
 {Solicita ejecutar, un comando al visor. Esta debe ser el úncio medio, además de los
 eventos del ratón, por el cual se comunica acciones al visor. Visto de este modo,
 ExecuteCommand(), es similar a las rutinas manejadores de eventos: PBOX_???(), con la
@@ -382,20 +382,20 @@ begin
   CallEventState(State, vmeEjecComm, mbExtra1, [], 0, 0, command); //Procesa de acuerdo al state
 end;
 
-procedure TVisGraf3D.Refresh();  //   Optional s: TObjGraf = Nothing
+procedure TView3D.Refresh();  //   Optional s: TGraphicObj = Nothing
 begin
   PBox.Invalidate;
 end;
-function TVisGraf3D.SeleccionaAlguno(xp, yp: Integer): TObjGraf;
-//Rutina principal para determinar la selección de objetos. Si (xp,yp)
+function TView3D.SeleccionaAlguno(xp, yp: Integer): TGraphicObj;
+//Rutina principal para determinar la selección de objects. Si (xp,yp)
 //selecciona a algún objeto, devuelve la referencia, sino devuelve "NIL"
 var
   i: Integer;
-  s: TObjGraf;
+  s: TGraphicObj;
 begin
   //Verifica primero entre los que están seleccionados
   Result := NIL; //valor por defecto
-  //Explora objetos priorizando los que están encima
+  //Explora objects priorizando los que están encima
   For i := seleccion.Count-1 downTo 0 do begin
     s := seleccion[i];
     If not s.SelLocked and s.LoSelecciona(xp, yp) Then begin
@@ -403,21 +403,21 @@ begin
         Exit;
     End;
   end;
-  //Explora objetos priorizando los que están encima
-  For i := objetos.Count-1 downTo 0 do begin
-    s := objetos[i];
+  //Explora objects priorizando los que están encima
+  For i := objects.Count-1 downTo 0 do begin
+    s := objects[i];
     If not s.SelLocked and s.LoSelecciona(xp, yp) Then begin
         Result := s;
         Exit;
     End;
   end;
 End;
-procedure TVisGraf3D.VerificarParaMover(xp, yp: Integer);
+procedure TView3D.VerificarParaMover(xp, yp: Integer);
 {Si se empieza el movimiento, selecciona primero algun elemento que
 pudiera estar debajo del puntero y actualiza "EstPuntero".
 Solo se debe ejecutar una vez al inicio del movimiento, para ello se
 usa la bandera ParaMover, que debe ponerse a FALSE aquí.}
-var s: TObjGraf;
+var s: TGraphicObj;
 begin
     for s In seleccion  do begin  //da prioridad a los elementos seleccionados
       if s.PosLocked then continue;
@@ -429,7 +429,7 @@ begin
           Exit;
       end;
     end;
-    for s In objetos do begin
+    for s In objects do begin
       if s.PosLocked then continue;
       s.StartMove(xp, yp);    //llama al evento inic_mover para cada objeto
       if s.Proceso Then begin   //este objeto proceso el evento
@@ -441,16 +441,16 @@ begin
       end;
     end;
     //Ningún objeto ha capturado, el evento, asumimos que se debe realizar
-    //el desplazamiento simple de los objetos seleccionados
+    //el desplazamiento simple de los objects seleccionados
 //Debug.Print "   VerifParaMover: EP_MOV_OBJS"
     State := EP_MOV_OBJS;
     CapturoEvento := nil;      //ningún objeto capturo el evento
     ParaMover := False;        //para que ya no se llame otra vez
 End;
-function TVisGraf3D.VerificarMovimientoRaton(X, Y: Integer): TObjGraf;
-//Anima la marcación de los objetos cuando el ratón pasa encima de ellos
+function TView3D.VerificarMovimientoRaton(X, Y: Integer): TGraphicObj;
+//Anima la marcación de los objects cuando el ratón pasa encima de ellos
 //Devuelve referencia al objeto por el que pasa el cirsor
-var s: TObjGraf;
+var s: TGraphicObj;
 begin
 
     s := SeleccionaAlguno(X, Y);    //verifica si selecciona a un objeto
@@ -490,70 +490,70 @@ begin
 
 End;
 //***********Funciones para administrar los elementos visibles y seleccion por teclado**********
-function TVisGraf3D.NumeroVisibles: Integer;
-//devuelve el número de objetos visibles
+function TView3D.NumeroVisibles: Integer;
+//devuelve el número de objects visibles
 var
-  v: TObjGraf;
+  v: TGraphicObj;
   tmp: Integer;
 begin
   tmp := 0;
-  For v in objetos do begin
+  For v in objects do begin
     if v.visible then Inc(tmp);
   end;
   Result := tmp;
 end;
-function TVisGraf3D.PrimerVisible: TObjGraf;
+function TView3D.PrimerVisible: TGraphicObj;
  //devuelve el primer objeto visible
 var
   i: integer;
 begin
-  for i:=0 to objetos.Count-1 do begin
-    if objetos[i].visible then begin
-      Result := objetos[i];
+  for i:=0 to objects.Count-1 do begin
+    if objects[i].visible then begin
+      Result := objects[i];
       exit;
     end;
   end;
 End;
-function TVisGraf3D.UltimoVisible: TObjGraf;
+function TView3D.UltimoVisible: TGraphicObj;
  //devuelve el último objeto visible
 var
   i: Integer;
 begin
-  for i:=objetos.Count-1 downto 0 do begin
-    if objetos[i].visible then begin
-      Result := objetos[i];
+  for i:=objects.Count-1 downto 0 do begin
+    if objects[i].visible then begin
+      Result := objects[i];
       exit;
     end;
   end;
 end;
-function TVisGraf3D.SiguienteVisible(c: TObjGraf): TObjGraf;
+function TView3D.SiguienteVisible(c: TGraphicObj): TGraphicObj;
 //devuelve el siguiente objeto visible en el orden de creación
 var
   i: Integer;
 begin
-    //busca su orden dentro de los objetos
-    For i := 0 To objetos.Count-1 do begin
-      if objetos[i] = c Then break;
+    //busca su orden dentro de los objects
+    For i := 0 To objects.Count-1 do begin
+      if objects[i] = c Then break;
     end;
     //calcula el siguiente elemento
     repeat
       Inc(i);
-      If i >= objetos.Count Then begin  //se ha llegado al final del conjunto
+      If i >= objects.Count Then begin  //se ha llegado al final del conjunto
         Result := PrimerVisible;
         Exit;
       end;
-    until objetos[i].visible;
+    until objects[i].visible;
     //selecciona el siguiente visible
-    Result := objetos[i];
+    Result := objects[i];
 end;
-function TVisGraf3D.AnteriorVisible(c: TObjGraf): TObjGraf;
+function TView3D.AnteriorVisible(c: TGraphicObj): TGraphicObj;
 //devuelve el anterior objeto visible en el orden de creación
 var
   i: Integer;
 begin
-    //busca su orden dentro de los objetos
-    For i := 0 To objetos.Count-1 do begin
-      If objetos[i] = c Then break;
+    //busca su orden dentro de los objects
+    For i := 0 To objects.Count-1 do begin
+      If objects[i] = c Then break;
     end;
     //calcula el elemento anterior
     repeat
@@ -562,50 +562,50 @@ begin
         Result := UltimoVisible;
         Exit;
       End;
-    until objetos[i].visible;
+    until objects[i].visible;
     //selecciona el siguiente visible
-    Result := objetos[i];
+    Result := objects[i];
 End;
-procedure TVisGraf3D.SeleccionarSiguiente;
+procedure TView3D.SeleccionarSiguiente;
 //Selecciona el siguiente elemento visible en el orden de creación.
 //Si no hay ninguno seleccionado, selecciona el primero
 var
-  s: TObjGraf;
+  s: TGraphicObj;
 begin
     if NumeroVisibles() = 0 Then exit;
     if seleccion.Count = 1 Then begin  //hay uno seleccionado
         s := seleccion[0];   //toma el seleccionado
         s := SiguienteVisible(s);
-        DeseleccionarTodos;
+        SelectNone;
         s.Selec;
     end else begin     //hay cero o más de uno seleccionado
         s := PrimerVisible;  //selecciona el primero
-        DeseleccionarTodos;
+        SelectNone;
         s.Selec;
     end;
     Refresh;
 end;
-procedure TVisGraf3D.SeleccionarAnterior;
+procedure TView3D.SeleccionarAnterior;
 //Selecciona el anterior elemento visible en el orden de creación.
 //Si no hay ninguno seleccionado, selecciona el ultimo
 var
-  s: TObjGraf;
+  s: TGraphicObj;
 begin
     if NumeroVisibles() = 0 Then exit;
     if seleccion.Count = 1 then begin     //hay uno seleccionado
         s := seleccion[0];    //toma el seleccionado
         s := AnteriorVisible(s);
-        DeseleccionarTodos;
+        SelectNone;
         s.Selec;
     end else begin               //hay cero o más de uno seleccionado
         s := UltimoVisible;   //selecciona el ultimo
-        DeseleccionarTodos;
+        SelectNone;
         s.Selec;
     end;
     Refresh;
 end;
 //******************* Funciones de visualización **********************
-procedure TVisGraf3D.AmpliarClick(factor: real = FACTOR_AMPLIA_ZOOM;
+procedure TView3D.AmpliarClick(factor: real = FACTOR_AMPLIA_ZOOM;
                         xr: integer = 0; yr: integer = 0);
 var anc_p: Real ;  //ancho de pantalla
     alt_p: Real ;  //alto de pantalla
@@ -622,7 +622,7 @@ begin
     End;
     Refresh;
 End;
-procedure TVisGraf3D.ReducirClick(factor: Real = FACTOR_AMPLIA_ZOOM;
+procedure TView3D.ReducirClick(factor: Real = FACTOR_AMPLIA_ZOOM;
                         x_zoom: Real = 0; y_zoom: Real = 0);
 begin
     If v2d.zoom > ZOOM_MIN_CONSULT Then
@@ -630,19 +630,19 @@ begin
     Refresh;
 End;
 /////////////////////////  Funciones de selección /////////////////////////////
-procedure TVisGraf3D.SeleccionarTodos;
-var s: TObjGraf;
+procedure TView3D.SeleccionarTodos;
+var s: TGraphicObj;
 begin
-    For s In objetos do s.Selec; //selecciona todos
+    For s In objects do s.Selec; //selecciona todos
 End;
-procedure TVisGraf3D.DeseleccionarTodos();
-var s: TObjGraf;
+procedure TView3D.SelectNone();
+var s: TGraphicObj;
 begin
-  For s In objetos do //no se explora "seleccion" porque se modifica con "s.Deselec"
-    if s.Selected then s.Deselec;
-//  seleccion.Clear; //No se puede limpiar simplemente la lista. Se debe llamar a s.Deselec
+  For s In objects do //no se explora "seleccion" porque se modifica con "s.Deselect"
+    if s.Selected then s.Deselect;
+//  seleccion.Clear; //No se puede limpiar simplemente la lista. Se debe llamar a s.Deselect
 End;
-function  TVisGraf3D.Seleccionado: TObjGraf;
+function  TView3D.Seleccionado: TGraphicObj;
 //Devuelve el objeto seleccionado. Si no hay ninguno seleccionado, devuelve NIL.
 begin
   Result := nil;   //valor por defecto
@@ -650,20 +650,20 @@ begin
   //hay al menos uno
   Result := seleccion[seleccion.Count-1];  //devuelve el único o último
 End;
-function  TVisGraf3D.ObjPorNombre(nom: string): TObjGraf;
+function  TView3D.ObjPorNombre(nom: string): TGraphicObj;
 //Devuelve la referecnia a un objeto, dado el nombre. Si no encuentra, devuelve NIL.
-var s: TObjGraf;
+var s: TGraphicObj;
 begin
   Result := nil;   //valor por defecto
   if nom = '' then exit;
-  For s In objetos do
+  For s In objects do
     if s.nombre = nom then begin
        Result := s;
        break;
     end;
 End;
 
-procedure TVisGraf3D.moverAbajo(desp: Double = DESPLAZ_MENOR) ;  //abajo
+procedure TView3D.moverAbajo(desp: Double = DESPLAZ_MENOR) ;  //abajo
 //Genera un desplazamiento en la pantalla haciendolo independiente del
 //factor de ampliación actual
 var
@@ -673,7 +673,7 @@ begin
     Desplazar(0, round(desp / z));
     Refresh;
 end;
-procedure TVisGraf3D.moverArriba(desp: Double = DESPLAZ_MENOR) ;  //arriba
+procedure TView3D.moverArriba(desp: Double = DESPLAZ_MENOR) ;  //arriba
 //Genera un desplazamiento en la pantalla haciendolo independiente del
 //factor de ampliación actual
 var
@@ -683,7 +683,7 @@ begin
     Desplazar(0, round(-desp / z));
     Refresh;
 end;
-procedure TVisGraf3D.moverDerecha(desp: Double = DESPLAZ_MENOR) ;  //derecha
+procedure TView3D.moverDerecha(desp: Double = DESPLAZ_MENOR) ;  //derecha
 //Genera un desplazamiento en la pantalla haciendolo independiente del
 //factor de ampliación actual
 var
@@ -693,7 +693,7 @@ begin
     Desplazar(round(desp / z), 0);
     Refresh;
 end;
-procedure TVisGraf3D.moverIzquierda(desp: Double = DESPLAZ_MENOR) ;  //izquierda
+procedure TView3D.moverIzquierda(desp: Double = DESPLAZ_MENOR) ;  //izquierda
 //Genera un desplazamiento en la pantalla haciendolo independiente del
 //factor de ampliación actual
 var
@@ -703,55 +703,55 @@ begin
     Desplazar(round(-desp / z), 0);
     Refresh;
 end;
-procedure TVisGraf3D.Desplazar(dx, dy: integer);
+procedure TView3D.Desplazar(dx, dy: integer);
 begin
 //Procedimiento "estandar" para hacer un desplazamiento de la pantalla
 //Varía los parámetros de la perspectiva "x_cam" e "y_cam"
     v2d.Desplazar(dx, dy);
 end;
-//Modificación de objetos
-procedure TVisGraf3D.AgregarObjGrafico(og: TObjGraf; AutoPos: boolean = true);
+//Modificación de objects
+procedure TView3D.GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean = true);
 //Agrega un objeto grafico al editor. El objeto gráfico debe haberse creado previamente,
-//y ser de tipo TObjGraf o un descendiente. "AutoPos", permite posicionar automáticamente
+//y ser de tipo TGraphicObj o un descendiente. "AutoPos", permite posicionar automáticamente
 //al objeto en pantalla, de modo que se evite ponerlo siempre en la misma posición.
 var
   x: single;
   y: single;
 begin
-  if OnModif<>nil then OnModif;
+  if OnModify<>nil then OnModify;
   //Posiciona tratando de que siempre aparezca en pantalla
   if AutoPos Then begin  //Se calcula posición
-    x := v2d.Xvirt(100, 100) + 30 * objetos.Count Mod 400;
-    y := v2d.Yvirt(100, 100) + 30 * objetos.Count Mod 400;
-    og.Ubicar(x,y);
+    x := v2d.Xvirt(100, 100) + 30 * objects.Count Mod 400;
+    y := v2d.Yvirt(100, 100) + 30 * objects.Count Mod 400;
+    argGraphicObject.PlaceAt(x,y);
   end;
   //configura eventos para ser controlado por este editor
-  og.OnSelec   := @ObjGraf_Select;     //referencia a procedimiento de selección
-  og.OnDeselec := @ObjGraf_Unselec;    //referencia a procedimiento de "de-selección"
-  og.OnCamPunt := @ObjGraf_SetPointer; //procedimiento para cambiar el puntero
+  argGraphicObject.OnSelect   := @GraphicObject_Select;     //referencia a procedimiento de selección
+  argGraphicObject.OnDeselect := @GraphicObject_Unselec;    //referencia a procedimiento de "de-selección"
+  argGraphicObject.OnCamPoint := @GraphicObject_SetPointer; //procedimiento para cambiar el puntero
 //  Refresh(s)   ;             //Refresca objeto
-  objetos.Add(og);               //agrega elemento
+  objects.Add(argGraphicObject);               //agrega elemento
 end;
-procedure TVisGraf3D.EliminarObjGrafico(obj: TObjGraf);  //elimina un objeto grafico
+procedure TView3D.GraphicObjectDelete(obj: TGraphicObj);  //elimina un objeto grafico
 begin
-  obj.Deselec;  //por si acaso
-  objetos.Remove(obj);
+  obj.Deselect;  //por si acaso
+  objects.Remove(obj);
   obj := nil;
-  if OnModif<>nil then OnModif;
+  if OnModify<>nil then OnModify;
 End;
-procedure TVisGraf3D.ElimSeleccion;
+procedure TView3D.DeleteSelected;
 //Elimina la selección.
 var
-  v: TObjGraf;
+  v: TGraphicObj;
 begin
   For v In seleccion  do  //explora todos
-    EliminarObjGrafico(v);
-  if OnModif<>nil then OnModif;
+    GraphicObjectDelete(v);
+  if OnModify<>nil then OnModify;
   Refresh;
 end;
 
 /////////////////////////   Funciones del Rectángulo de Selección /////////////////////////
-procedure TVisGraf3D.DibujRecSeleccion();
+procedure TView3D.DibujRecSeleccion();
 //Dibuja por métodos gráficos el rectángulo de selección en pantalla
 begin
     v2d.SetPen(clGreen, 1, psDot);
@@ -760,7 +760,7 @@ begin
     x1Sel_a := x1Sel; y1Sel_a := y1Sel;
     x2Sel_a := x2Sel; y2Sel_a := y2Sel;
 End;
-procedure TVisGraf3D.InicRecSeleccion(X, Y: Integer);
+procedure TView3D.InicRecSeleccion(X, Y: Integer);
 //Inicia el rectángulo de selección, con las coordenadas
 begin
     x1Sel:= X; y1Sel := Y;
@@ -770,7 +770,7 @@ begin
     x2Sel_a := x2Sel;
     y2Sel_a := y2Sel;
 End;
-function TVisGraf3D.RecSeleccionNulo: Boolean;
+function TView3D.RecSeleccionNulo: Boolean;
  //Indica si el rectángulo de selección es de tamaño NULO o despreciable
 begin
     If (x1Sel = x2Sel) And (y1Sel = y2Sel) Then
@@ -778,7 +778,7 @@ begin
     Else
         RecSeleccionNulo := False;
 End;
-function TVisGraf3D.enRecSeleccion(X, Y: Single): Boolean;
+function TView3D.enRecSeleccion(X, Y: Single): Boolean;
 //Devuelve verdad si (x,y) esta dentro del rectangulo de seleccion.
 var xMin, xMax: Integer;   //coordenadas mínimas y máximas del recuadro
     yMin, yMax: Integer;
@@ -810,39 +810,39 @@ begin
     Else
         enRecSeleccion := False;
 End;
-////////////////// Eventos para atender requerimientos de objetos "TObjGraf" ///////////////////////
-procedure TVisGraf3D.ObjGraf_Select(obj: TObjGraf);
+////////////////// Eventos para atender requerimientos de objects "TGraphicObj" ///////////////////////
+procedure TView3D.GraphicObject_Select(obj: TGraphicObj);
 //Agrega un objeto gráfico a la lista "selección". Este método no debe ser llamado directamente.
 //Si se quiere seleccionar un objeto se debe usar la forma objeto.Selec.
 begin
 //    If obj.Seleccionado Then Exit;  //Ya está seleccionado. No debe ser necesario
   seleccion.Add(obj);      { TODO : Verificar si se puede manejar bien el programa sin usar la propiedad "NombreObj"}
 End;
-procedure TVisGraf3D.ObjGraf_Unselec(obj: TObjGraf);
+procedure TView3D.GraphicObject_Unselec(obj: TGraphicObj);
 //Quita un objeto gráfico de la lista "selección". Este método no debe ser llamado directamente.
-//Si se quiere quitar la seleccion a un objeto se debe usar la forma objeto.Deselec.
+//Si se quiere quitar la seleccion a un objeto se debe usar la forma objeto.Deselect.
 begin
 //    If not obj.Seleccionado Then Exit;
   seleccion.Remove(obj);
 End;
-procedure TVisGraf3D.ObjGraf_SetPointer(Punt: integer);
-//Procedimiento que cambia el puntero del mouse. Es usado para proporcionar la los objetos "TObjGraf"
+procedure TView3D.GraphicObject_SetPointer(Punt: integer);
+//Procedimiento que cambia el puntero del mouse. Es usado para proporcionar la los objects "TGraphicObj"
 //la posibilidad de cambiar el puntero.
 begin
   PBox.Cursor := Punt;        //define cursor
 end;
 //Rutinas de procesamiento de estados
-function TVisGraf3D.StateAsStr: string;
+function TView3D.StateAsStr: string;
 {Debe el esatdo como una cadena descriptiva. Es necesario actualizar la desciprción
 para cada state nuevoq ue se vaya agregando.}
 begin
   case State of
   EP_NORMAL      : Result := 'Normal';
   EP_SELECMULT   : Result := 'Selecc. Múltiple';
-  EP_MOV_OBJS    : Result := 'Moviendo Objetos';
+  EP_MOV_OBJS    : Result := 'Moviendo objects';
   EP_DESP_PANT   : Result := 'Desplaz. Pantalla';
   EP_DESP_ANG    : Result := 'Rotando Pantalla';
-  EP_DIMEN_OBJ   : Result := 'Dimension.Objetos';
+  EP_DIMEN_OBJ   : Result := 'Dimension.objects';
   EP_RAT_ZOOM    : Result := 'Zoom con ratón';
   EP_COMM_LINE   : Result := 'Modo línea';
   EP_COMM_RECTAN : Result := 'Modo Rectángulo';
@@ -850,13 +850,13 @@ begin
     Result := '<< Desconocido >>';
   end;
 end;
-procedure TVisGraf3D.RegisterState(State0: TViewState;
+procedure TView3D.RegisterState(State0: TViewState;
   EventHandler: TVisEventHandler);
 {Registra un nuevo state del Ratón}
 begin
   EventOfState[State0] := EventHandler;
 end;
-procedure TVisGraf3D.ClearEventState;
+procedure TView3D.ClearEventState;
 var
   sta: TViewState;
 begin
@@ -864,12 +864,12 @@ begin
     EventOfState[sta] := nil;
   end;
 end;
-procedure TVisGraf3D.SendData(Data: string);
+procedure TView3D.SendData(Data: string);
 {Solicita enviar datos al comadno actual (que debe ser el state actual).}
 begin
   CallEventState(State, vmeEjecComm, mbExtra1, [], 0, 0, Data);  //para Initiate
 end;
-procedure TVisGraf3D.CallEventState(State0: TViewState;
+procedure TView3D.CallEventState(State0: TViewState;
   EventTyp: TVisEventTyp; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; txt: string);
 {Llama al evento apropiado para el state indicado}
@@ -937,55 +937,55 @@ begin
   if y=MaxInt then exit(false);
   exit(true);
 end;
-procedure TVisGraf3D.proc_NORMAL(EventTyp: TVisEventTyp; Button: TMouseButton;
+procedure TView3D.proc_NORMAL(EventTyp: TVisEventTyp; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; txt: string);
 {Procesa eventos, en el esatdo NORMAL. Este es el state estable o Proj defecto.
 Desde aquí se pasan a todos los demás estados.}
 var
-  o: TObjGraf;
-  s: TObjGraf;
-  ogs: TObjGraf;  //objeto seleccionado
+  o: TGraphicObj;
+  s: TGraphicObj;
+  ogs: TGraphicObj;  //objeto seleccionado
 begin
   if EventTyp = vmeMouseDown then begin  ////////// Botón Pulsado
      ogs := SeleccionaAlguno(xp, yp);  //verifica si selecciona a un objeto
      if          Shift = [ssRight] then begin     //Botón derecho
          if ogs = nil Then begin  //Ninguno seleccionado
-             DeseleccionarTodos;
+             SelectNone;
              Refresh;
              State := EP_SELECMULT;  //inicia seleccion multiple
              InicRecSeleccion(x_pulso, y_pulso);
          end else begin //Selecciona a uno, pueden haber otros seleccionados
              if ogs.Selected Then  begin  //Se marcó sobre un seleccionado
-//                   if Shift = [] Then DeseleccionarTodos;
+//                   if Shift = [] Then SelectNone;
                  ogs.MouseDown(Self, Button, Shift, xp, yp);  //Pasa el evento
                  exit;
              end;
              //Se selecciona a uno que no tenía selección
              if Shift = [ssRight] Then  //Sin Control ni Shift
-               DeseleccionarTodos;
+               SelectNone;
              ogs.MouseDown(Self, Button, Shift, xp, yp);  //Pasa el evento
              Refresh;
               //ParaMover = True       ;  //listo para mover
          end;
      end else If Shift = [ssLeft] then begin      //Botón izquierdo
          if ogs = NIL Then  begin  //No selecciona a ninguno
-             DeseleccionarTodos;
+             SelectNone;
              Refresh;
              State := EP_SELECMULT;  //inicia seleccion multiple
              InicRecSeleccion(x_pulso, y_pulso);
          end Else begin     //selecciona a uno, pueden haber otros seleccionados
              If ogs.Selected Then begin //Se marcó sobre un seleccionado
                  //No se quita la selección porque puede que se quiera mover
-                 //varios objetos seleccionados. Si no se mueve, se quitará la
+                 //varios objects seleccionados. Si no se mueve, se quitará la
                  //selección en PBox_MouseUp
-                 //If Shift = 0 Then Call DeseleccionarTodos
+                 //If Shift = 0 Then Call SelectNone
                  ogs.MouseDown(Self, Button, Shift, xp, yp);  //Pasa el evento
                  ParaMover := True;  //listo para mover
                  Exit;               //Se sale sin desmarcar
              end;
              //Se selecciona a uno que no tenía selección
              if Shift = [ssLeft] Then  //Sin Control ni Shift
-                DeseleccionarTodos;
+                SelectNone;
              ogs.MouseDown(Self, Button, Shift, xp, yp);  //Pasa el evento
              ParaMover := True;            //listo para mover
          end;
@@ -1021,16 +1021,16 @@ begin
           End If*)
       end else If Button = mbLeft Then begin //----- solto izquierdo -----------
           If o = NIL Then    //No selecciona a ninguno
-//                DeseleccionarTodos
+//                SelectNone
           else begin         //Selecciona a alguno
-              If Shift = [] Then DeseleccionarTodos;
+              If Shift = [] Then SelectNone;
               o.Selec;   //selecciona
               o.MouseUp(self, Button, Shift, xp, yp, false);
               Refresh;
               //Verifica si el objeto está pidiendo que lo eliminen
 //Este código se comentó porque no se le encontró ninguna utilidad
 //                if o.Erased then begin
-//                  EliminarObjGrafico(o);
+//                  GraphicObjectDelete(o);
 //                  Refresh;
 //                end;
           End;
@@ -1052,46 +1052,46 @@ begin
       end;
   end;
 end;
-procedure TVisGraf3D.proc_SELECMULT(EventTyp: TVisEventTyp;
+procedure TView3D.proc_SELECMULT(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
-  o: TObjGraf;
-  s: TObjGraf;
+  o: TGraphicObj;
+  s: TGraphicObj;
 begin
   if EventTyp = vmeMouseDown then begin
   end else if EventTyp = vmeMouseMove then begin
     x2Sel := xp;
     y2Sel := xp;
     //verifica los que se encuentran seleccionados
-    if objetos.Count < 100 Then begin//sólo anima para pocos objetos
-        for s In objetos do begin
+    if objects.Count < 100 Then begin//sólo anima para pocos objects
+        for s In objects do begin
           if s.SelLocked then continue;
           if enRecSeleccion(s.XCent, s.YCent) And Not s.Selected Then begin
             s.Selec;
           End;
           if Not enRecSeleccion(s.XCent, s.YCent) And s.Selected Then begin
-            s.Deselec;
+            s.Deselect;
           end;
         end;
     End;
     Refresh
   end else if EventTyp = vmeMouseUp then begin
-    if objetos.Count > 100 Then begin  //Necesita actualizar porque la selección múltiple es diferente
-      for o in objetos do
+    if objects.Count > 100 Then begin  //Necesita actualizar porque la selección múltiple es diferente
+      for o in objects do
         if enRecSeleccion(o.XCent, o.YCent) And Not o.Selected Then o.Selec;
     end;
     State := EP_NORMAL;
   end;
 end;
-procedure TVisGraf3D.proc_MOV_OBJS(EventTyp: TVisEventTyp;
+procedure TView3D.proc_MOV_OBJS(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
-  s: TObjGraf;
-  o: TObjGraf;
+  s: TGraphicObj;
+  o: TGraphicObj;
 begin
   if EventTyp = vmeMouseDown then begin
   end else if EventTyp = vmeMouseMove then begin
-    if OnModif<>nil then OnModif;  //cambio
+    if OnModify<>nil then OnModify;  //cambio
     for s in seleccion do
         s.Mover(xp,yp, seleccion.Count);
     Refresh;
@@ -1101,11 +1101,11 @@ begin
         o.MouseUp(self, Button, Shift, xp, yp, State = EP_MOV_OBJS);
     State := EP_NORMAL;  //fin de movimiento
     Refresh;
-    //Genera eventos. Los objetos movidos se pueden determinar a partir de la selección.
+    //Genera eventos. Los objects movidos se pueden determinar a partir de la selección.
     if OnObjectsMoved<>nil then OnObjectsMoved;
   end;
 end;
-procedure TVisGraf3D.proc_DESP_PANT(EventTyp: TVisEventTyp;
+procedure TView3D.proc_DESP_PANT(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   dx, dy: Single;
@@ -1123,7 +1123,7 @@ begin
     State := EP_NORMAL;
   end;
 end;
-procedure TVisGraf3D.proc_DESP_ANG(EventTyp: TVisEventTyp;
+procedure TView3D.proc_DESP_ANG(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   dx, dy: Single;
@@ -1140,7 +1140,7 @@ begin
     State := EP_NORMAL;
   end;
 end;
-procedure TVisGraf3D.proc_DIMEN_OBJ(EventTyp: TVisEventTyp;
+procedure TView3D.proc_DIMEN_OBJ(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 begin
   if EventTyp = vmeMouseDown then begin
@@ -1157,7 +1157,7 @@ begin
     ParaMover := False;        //por si aca
   end;
 end;
-procedure TVisGraf3D.proc_RAT_ZOOM(EventTyp: TVisEventTyp;
+procedure TView3D.proc_RAT_ZOOM(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 begin
   if EventTyp = vmeMouseDown then begin
@@ -1168,7 +1168,7 @@ begin
     State := EP_NORMAL;
   end;
 end;
-procedure TVisGraf3D.proc_COMM_LINE(EventTyp: TVisEventTyp;
+procedure TView3D.proc_COMM_LINE(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 const
   {Usamos constante con tipo porque no hay STATIC en FreePascal, y como este
@@ -1212,7 +1212,7 @@ begin
     end;
     else exit;  //Sale para los otros eventos, sino puede generar errro
     end;
-    AgregarObjGrafico(lin);
+    GraphicObjectAdd(lin);
     Refresh;
     OnSendMessage('>> Ingrese siguiente punto ([C]errar):');
     paso := 2;
@@ -1222,7 +1222,7 @@ begin
       //Esperamos coordenadas finales
       if txt = 'CANCEL' then begin
         //Se debe eliminar la última recta
-        EliminarObjGrafico(lin);   //Mejor sería, si se hace con un UNDO
+        GraphicObjectDelete(lin);   //Mejor sería, si se hace con un UNDO
         Refresh;
         RestoreState('>> Comando:');   //Termina
         paso := 0;   //reinicia
@@ -1246,7 +1246,7 @@ begin
       lin := TObjGrafDXF.Create(v2d);
       lin.SetP0(xLin, yLin, 0); //Esperamos coordenadas
       lin.SetP1(xvPtr, yvPtr, 0);
-      AgregarObjGrafico(lin);
+      GraphicObjectAdd(lin);
       Refresh;
       OnSendMessage('>> Ingrese siguiente punto ([C]errar):');
 //        //Terminó el comando
@@ -1255,7 +1255,7 @@ begin
 //        lin := nil;
     end;
     vmeMouseMove: begin
-      //En esta fase, se debe hacer la animación por si se usa el Mouse para ubicar
+      //En esta fase, se debe hacer la animación por si se usa el Mouse para PlaceAt
         //el siguiente punto.
       lin.SetP1(xvPtr, yvPtr, 0);
       Refresh;
@@ -1269,7 +1269,7 @@ begin
       lin := TObjGrafDXF.Create(v2d);
       lin.SetP0(xvPtr, yvPtr, 0); //Esperamos coordenadas
       lin.SetP1(xvPtr, yvPtr, 0);
-      AgregarObjGrafico(lin);
+      GraphicObjectAdd(lin);
       Refresh;
       OnSendMessage('>> Ingrese siguiente punto:');
 
@@ -1281,7 +1281,7 @@ begin
     end;
   end;
 end;
-procedure TVisGraf3D.proc_COMM_RECTAN(EventTyp: TVisEventTyp;
+procedure TView3D.proc_COMM_RECTAN(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 const
   {Usamos constante con tipo porque no hay STATIC en FreePascal, y como este
@@ -1312,14 +1312,14 @@ begin
         lin := TObjGrafDXF.Create(v2d);
         lin.SetP0(xLin, yLin, 0); //Especifica el primer punto
         lin.SetP1(xvPtr, yvPtr, 0); //Especifica el primer punto
-        AgregarObjGrafico(lin);
+        GraphicObjectAdd(lin);
         Refresh;
         OnSendMessage('>> Ingrese siguiente punto:');
         paso := 2;
       end else if paso = 2 then begin
         if txt = 'CANCEL' then begin
           //Se debe eliminar la última recta
-          EliminarObjGrafico(lin);   //Mejor sería, si se hace con un UNDO
+          GraphicObjectDelete(lin);   //Mejor sería, si se hace con un UNDO
           Refresh;
           RestoreState('>> Comando:');   //Termina
           paso := 0;   //reinicia
@@ -1341,7 +1341,7 @@ begin
     end;
   vmeMouseMove: begin
     if paso = 2 then begin
-        //En esta fase, se debe hacer la animación por si se usa el Mouse para ubicar
+        //En esta fase, se debe hacer la animación por si se usa el Mouse para PlaceAt
         //el siguiente punto.
         lin.SetP1(xvPtr, yvPtr, 0);
         Refresh;
@@ -1353,7 +1353,7 @@ begin
         lin := TObjGrafDXF.Create(v2d);
         lin.SetP0(xvPtr, yvPtr, 0); //Esperamos coordenadas
         lin.SetP1(xvPtr, yvPtr, 0);
-        AgregarObjGrafico(lin);
+        GraphicObjectAdd(lin);
         Refresh;
         OnSendMessage('>> Ingrese siguiente punto:');
         paso := 2;
@@ -1366,7 +1366,7 @@ begin
         lin := TObjGrafDXF.Create(v2d);
         lin.SetP0(xvPtr, yvPtr, 0); //Esperamos coordenadas
         lin.SetP1(xvPtr, yvPtr, 0);
-        AgregarObjGrafico(lin);
+        GraphicObjectAdd(lin);
         Refresh;
         OnSendMessage('>> Ingrese siguiente punto:');
 
@@ -1379,7 +1379,7 @@ begin
   end;
 end;
 //Inicialización
-procedure TVisGraf3D.RestoreState(msg: string='');
+procedure TView3D.RestoreState(msg: string='');
 {Resatura el state del Visor, poniéndolo en state EP_NORMAL.
 Si se indica "msg", se genera el evento OnSendMessage().}
 begin
@@ -1390,15 +1390,15 @@ begin
   PBox.Cursor := CUR_DEFEC;        //define cursor
   if msg<>'' then OnSendMessage(msg);
 end;
-constructor TVisGraf3D.Create(PB0: TPaintBox; objectList: TlistObjGraf);
+constructor TView3D.Create(PB0: TPaintBox; objectList: TEditorObjList);
 {Metodo de inicialización de la clase Visor. Debe indicarse el PaintBox de
-salida donde se controlarán los objetos gráficos.
-y también debe recibir la lista de objetos a administrar.}
+salida donde se controlarán los objects gráficos.
+y también debe recibir la lista de objects a administrar.}
 var
-  og: TMiObjeto;
+  argGraphicObject: TMyObject;
 begin
   PBox := PB0;  //asigna control de salida
-  objetos := objectList;
+  objects := objectList;
   //Intercepta eventos
   PBox.OnMouseUp   := @PBox_MouseUp;
   PBox.OnMouseDown := @PBox_MouseDown;
@@ -1411,8 +1411,8 @@ begin
   v2d := TMotGraf.Create(PBox);    //Inicia motor gráfico
   v2d.SetFont('MS Sans Serif');  //define tipo de letra
   v2d.OnChangeView:=@v2d_ChangeView;
-  seleccion := TlistObjGraf.Create(FALSE);  {crea lista sin posesión", porque la
-                                             administración la hará "objetos".}
+  seleccion := TEditorObjList.Create(FALSE);  {crea lista sin posesión", porque la
+                                             administración la hará "objects".}
   RestoreState;
   incWheel  := 0.1;
   ClearEventState;   //Limpia tabla de eventos de state, por seguridad
@@ -1428,10 +1428,10 @@ begin
   RegisterState(EP_COMM_LINE, @proc_COMM_LINE);
   RegisterState(EP_COMM_RECTAN, @proc_COMM_RECTAN);
   ///////////!!!!!!!!!!!!!!!!!!!!!!
-og := TMiObjeto.Create(v2d);
-AgregarObjGrafico(og);
+argGraphicObject := TMyObject.Create(v2d);
+GraphicObjectAdd(argGraphicObject);
 end;
-destructor TVisGraf3D.Destroy;
+destructor TView3D.Destroy;
 begin
   seleccion.Free;
   v2d.Free;      //Libera

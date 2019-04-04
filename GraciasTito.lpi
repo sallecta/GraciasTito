@@ -139,7 +139,7 @@
       <Unit18>
         <Filename Value="gui/guiFrameEditor.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="fraGrafEditor"/>
+        <ComponentName Value="fraEditor"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit18>

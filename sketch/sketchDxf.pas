@@ -1,6 +1,6 @@
 {
 Define graphic objects.
-All of them must descend from TObjGraf, so that they can be treated
+All of them must descend from TGraphicObj, so that they can be treated
 by the "ogMotEdicion" engine}
 
 unit sketchDxf;
@@ -21,17 +21,17 @@ TDXFentType = (
 
 TObjGrafDXF = class;
 TObjGrafDXF_list = specialize TFPGObjectList<TObjGrafDXF>;
-{ TMiObjeto }
-TMiObjeto = class(TObjGraf)  //objeto gráfico que dibujaremos
-  procedure Dibujar; override;  //Dibuja el objeto gráfico
+{ TMyObject }
+TMyObject = class(TGraphicObj)  //graphic object that we will draw
+  procedure Dibujar; override;  //Draw the graphic object
   constructor Create(mGraf: TMotGraf); override;
 private
-  procedure ReubicElemen; override;
+  procedure RelocateElements; override;
 end;
 
 { TObjGrafDXF }
 {Se define al objeto para que sea compatible con archivos DXF.}
-TObjGrafDXF = class(TObjGraf)  //objeto gráfico DXF
+TObjGrafDXF = class(TGraphicObj)  //objeto gráfico DXF
 private
   pc0, pc1, pcM: TPtoCtrl;
   procedure PtoCtrl0_Move(xvTar, yvTar, dx, dy: Single);
@@ -57,14 +57,14 @@ public  //Campos equivalentes a los de una entidad DXF
   P0: TMotPoint;
   P1: TMotPoint;
   radius: double;
-  vertexs: TObjGrafDXF_list;   {Lista de Vertex. Solo se instancia para objetos
+  vertexs: TObjGrafDXF_list;   {Lista de Vertex. Solo se instancia para objects
                                complejos. OJO!!! Es muy pesado guardar una lista de
                                TObjGrafDXF. Debería optimizarse}
   blkName: string;    //usado cuando es de tipo etyInsert.
 public
   procedure SetP0(const xv,yv,zv: Single);
   procedure SetP1(const xv,yv,zv: Single);
-  procedure ReubicElemen; override;
+  procedure RelocateElements; override;
 public
   procedure Dibujar; override;  //Dibuja el objeto gráfico
   function LoSelecciona(xp, yp:integer): Boolean; override;
@@ -74,23 +74,23 @@ end;
 
 implementation
 
-{ TMiObjeto }
-constructor TMiObjeto.Create(mGraf: TMotGraf);
+{ TMyObject }
+constructor TMyObject.Create(mGraf: TMotGraf);
 begin
   inherited;
-  ReConstGeom;     //Se debe llamar después de crear los puntos de control para poder ubicarlos
-  nombre := 'Objeto';
+  ReConstGeom;     //It must be called after creating the control points to be able to locate them
+  nombre := 'miObjeto';
 end;
-procedure TMiObjeto.ReubicElemen;
-//Reubica elementos, del objeto. Es llamado cuando se cambia la posición del objeto, con
-//o sin cambio de las dimensiones.
+procedure TMyObject.RelocateElements;
+{Relocate elements, from the object. It is called when the position of the object is changed, with
+or without change of dimensions. }
 var
   x2: Single;
 begin
   inherited;
   x2 := x + width;
 end;
-procedure TMiObjeto.Dibujar();
+procedure TMyObject.Dibujar();
 begin
   //Dibuja etiqueta
 //  v2d.SetPen(clGray, 1);
@@ -125,14 +125,14 @@ begin
   P0.x:=xv;
   P0.y:=yv;
   P0.z:=zv;
-  ReubicElemen;
+  RelocateElements;
 end;
 procedure TObjGrafDXF.SetP1(const xv, yv, zv: Single);
 begin
   P1.x:=xv;
   P1.y:=yv;
   P1.z:=zv;
-  ReubicElemen;
+  RelocateElements;
 end;
 constructor TObjGrafDXF.Create(mGraf: TMotGraf);
 begin
@@ -145,12 +145,12 @@ begin
   ReConstGeom;     //Se debe llamar después de crear los puntos de control para poder ubicarlos
   nombre := 'Objeto';
 end;
-procedure TObjGrafDXF.ReubicElemen;
+procedure TObjGrafDXF.RelocateElements;
 begin
   //Ubica puntos de control
-  pc0.Ubicar(P0);
-  pc1.Ubicar(P1);
-  pcM.Ubicar((P0.x + P1.x)/2, (P0.y + P1.y)/2, (P0.z + P1.z)/2 );
+  pc0.PlaceAt(P0);
+  pc1.PlaceAt(P1);
+  pcM.PlaceAt((P0.x + P1.x)/2, (P0.y + P1.y)/2, (P0.z + P1.z)/2 );
 end;
 procedure TObjGrafDXF.Dibujar;
 var

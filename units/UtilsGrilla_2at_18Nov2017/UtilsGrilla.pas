@@ -132,7 +132,7 @@ type
      UtilGrilla.AsignarGrilla(MiGrilla);
 
   , haciendo que la grilla tome los encabezados que se definieron en "UtilGrilla". De esta
-  forma se pueden tener diversos objetos TUtilGrilla, para usarse en un solo objeto
+  forma se pueden tener diversos objects TUtilGrilla, para usarse en un solo objeto
   TStringGrid.
   }
   TUtilGrillaBase = class
