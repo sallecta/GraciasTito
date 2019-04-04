@@ -43,7 +43,7 @@ type
   TObjVsible = class
   protected
     fx,fy,fz  : Single;    //coordenadas virtuales
-    v2d       : TMotGraf;  //motor gráfico
+    VirtScreen       : TVirtScreen;  //motor gráfico
     Xant,Yant : Integer;   //coordenadas anteriores
   public
     Id        : Integer;   //Identificador del Objeto. No usado por la clase. Se deja para facilidad de identificación.
@@ -51,7 +51,7 @@ type
     Height    : Single;    //alto
     Selected  : Boolean;   //indica si el objeto está seleccionado
     Visible   : boolean;   //indica si el objeto es visible
-    procedure Crear(mGraf: TMotGraf; ancho0, alto0: Integer);  //no es constructor
+    procedure Crear(mGraf: TVirtScreen; ancho0, alto0: Integer);  //no es constructor
     procedure PlaceAt(const xv, yv, zv: Single);  //Fija posición
     procedure PlaceAt(const P: TMotPoint);  //Fija posición
     function LoSelec(xp, yp: Integer): Boolean;
@@ -92,7 +92,7 @@ type
   public
     //El tipo de desplazamiento, por lo general debe depender  nicamente de la posicion
     property tipDesplaz: TPosicPCtrol read fTipDesplaz write SetTipDesplaz;
-    constructor Crear(mGraf: TMotGraf; tipDesplaz0: TPosicPCtrol;
+    constructor Crear(mGraf: TVirtScreen; tipDesplaz0: TPosicPCtrol;
       ProcMove: TEvPtoCtrlMoveXY);
     procedure Dibujar();
     procedure StartMove(xr, yr: Integer; x0, y0: Single);
@@ -126,7 +126,7 @@ type
   TogButton = class(TObjVsible)
     state     : Boolean;   //Permite Show el state del botón o el check
     drawBack   : boolean;   //indica si debe dibujar el fondo
-    constructor Create(mGraf: TMotGraf; tipo0: TTipBot; EvenBTclk0: TEvenBTclk);
+    constructor Create(mGraf: TVirtScreen; tipo0: TTipBot; EvenBTclk0: TEvenBTclk);
     procedure Dibujar;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
   private
@@ -192,7 +192,7 @@ type
       ): TPtoCtrl;
     function AddButton(ancho0, alto0: Integer; tipo0: TTipBot;
       EvenBTclk0: TEvenBTclk): TogButton;
-    constructor Create(mGraf: TMotGraf); virtual;
+    constructor Create(mGraf: TVirtScreen); virtual;
     destructor Destroy; override;
   end;
 
@@ -203,9 +203,9 @@ const
   ANC_PCT2 = 5;       //mitad del ancho de punto de control
 
 { TObjVsible }
-procedure TObjVsible.Crear(mGraf: TMotGraf; ancho0, alto0: Integer);
+procedure TObjVsible.Crear(mGraf: TVirtScreen; ancho0, alto0: Integer);
 begin
-  v2d := mGraf;
+  VirtScreen := mGraf;
   width:=ancho0;
   height :=alto0;
   visible := true;
@@ -229,7 +229,7 @@ function TObjVsible.LoSelec(xp, yp: Integer): Boolean;
 //Indica si las coordenadas de ratón seleccionan al objeto en su posición actual
 var xv, yv: Single;    //coordenadas virtuales
 begin
-    v2d.XYvirt(xp, yp, 0, xv, yv);
+    VirtScreen.XYvirt(xp, yp, 0, xv, yv);
     LoSelec := False;    //valor por defecto
     If (xv > fx - 2) And (xv < fx + width + 2) And
        (yv > fy - 2) And (yv < fy + height + 2) Then
@@ -253,7 +253,7 @@ begin
 end;
 
 { TogButton }
-constructor TogButton.Create(mGraf: TMotGraf; tipo0: TTipBot;
+constructor TogButton.Create(mGraf: TVirtScreen; tipo0: TTipBot;
   EvenBTclk0: TEvenBTclk);
 begin
    inherited Crear(mGraf, 16, 16);    //crea
@@ -267,43 +267,43 @@ procedure TogButton.Dibujar;
 begin
 {  case tipo of
   BOT_CERRAR: begin
-       if drawBack then v2d.DibBorBoton(fx,fy,width,height);
-       v2d.DibVnormal(fx+2,fy+2,10,5);
-       v2d.DibVnormal(fx+2,fy+12,10,-5);
+       if drawBack then VirtScreen.DibBorBoton(fx,fy,width,height);
+       VirtScreen.DibVnormal(fx+2,fy+2,10,5);
+       VirtScreen.DibVnormal(fx+2,fy+12,10,-5);
      end;
   BOT_EXPAND:
       if state then begin
-        if drawBack then v2d.DibBorBoton(fx,fy,width,height);
-//         v2d.DibVnormal(fx+2,fy+7,10,-5);
-//         v2d.DibVnormal(fx+2,fy+11,10,-5);
-         v2d.FijaColor(COL_GRIS, COL_GRIS, 1);
-         v2d.DrawTrianUp(fx+2,fy+4,width-4,height-10);
+        if drawBack then VirtScreen.DibBorBoton(fx,fy,width,height);
+//         VirtScreen.DibVnormal(fx+2,fy+7,10,-5);
+//         VirtScreen.DibVnormal(fx+2,fy+11,10,-5);
+         VirtScreen.FijaColor(COL_GRIS, COL_GRIS, 1);
+         VirtScreen.DrawTrianUp(fx+2,fy+4,width-4,height-10);
       end else begin
-         if drawBack then v2d.DibBorBoton(fx,fy,width,height);
-//         v2d.DibVnormal(fx+2,fy+2,10,5);
-//         v2d.DibVnormal(fx+2,fy+6,10,5);
-        v2d.FijaColor(COL_GRIS, COL_GRIS, 1);
-        v2d.DrawTrianDown(fx+2,fy+5,width-4,height-10);
+         if drawBack then VirtScreen.DibBorBoton(fx,fy,width,height);
+//         VirtScreen.DibVnormal(fx+2,fy+2,10,5);
+//         VirtScreen.DibVnormal(fx+2,fy+6,10,5);
+        VirtScreen.FijaColor(COL_GRIS, COL_GRIS, 1);
+        VirtScreen.DrawTrianDown(fx+2,fy+5,width-4,height-10);
       end;
   BOT_CHECK: begin  //botón check
      if state then begin   //dibuja solo borde
-        v2d.DibBorBoton(fx,fy,15,15);
+        VirtScreen.DibBorBoton(fx,fy,15,15);
      end else begin         //dibuja con check
-        v2d.DibBorBoton(fx,fy,15,15);
-        v2d.DibCheck(fx+2,fy+2,10,8);
+        VirtScreen.DibBorBoton(fx,fy,15,15);
+        VirtScreen.DibCheck(fx+2,fy+2,10,8);
      end;
     end;
   BOT_REPROD: begin  //botón reproducir
      if state then begin   //dibuja solo borde
-       v2d.FijaColor(clBlack, TColor($E5E5E5), 1);
-       v2d.RectRedonR(fx,fy,fx+width, fy+height);
-       v2d.FijaColor(clBlack, clBlack, 1);
-       v2d.RectangR(fx+6,fy+6,fx+width-6, fy+height-6);
+       VirtScreen.FijaColor(clBlack, TColor($E5E5E5), 1);
+       VirtScreen.RectRedonR(fx,fy,fx+width, fy+height);
+       VirtScreen.FijaColor(clBlack, clBlack, 1);
+       VirtScreen.RectangR(fx+6,fy+6,fx+width-6, fy+height-6);
      end else begin         //dibuja con check
-       v2d.FijaColor(clBlack, TColor($E5E5E5), 1);
-       v2d.RectRedonR(fx,fy,fx+width, fy+height);
-       v2d.FijaColor(clBlack, clBlack, 1);
-       v2d.poligono(fx+6, fy+3,
+       VirtScreen.FijaColor(clBlack, TColor($E5E5E5), 1);
+       VirtScreen.RectRedonR(fx,fy,fx+width, fy+height);
+       VirtScreen.FijaColor(clBlack, clBlack, 1);
+       VirtScreen.poligono(fx+6, fy+3,
                     fx+18, fy + height/2,
                     fx+6, fy + height - 4);
      end;
@@ -368,7 +368,7 @@ begin
 //     If ArrastBoton Then Exit;       //Arrastrando botón  { TODO : Revisar }
 //     If ArrastFila Then Exit;        //Arrastrando botón  { TODO : Revisar }
      If Selected Then begin
-        v2d.ObtenerDesplazXY( xr, yr, Xant, Yant, dx, dy);
+        VirtScreen.ObtenerDesplazXY( xr, yr, Xant, Yant, dx, dy);
         if Proceso then   //algún elemento del objeto ha procesado el evento de movimiento
            begin
               if pcx <> NIL then begin
@@ -393,7 +393,7 @@ function TGraphicObj.LoSelecciona(xr, yr:integer): Boolean;
 //que "lograria" la seleccion de la forma.
 var xv , yv : Single; //corodenadas virtuales
 begin
-    v2d.XYvirt(xr, yr, 0, xv, yv);
+    VirtScreen.XYvirt(xr, yr, 0, xv, yv);
     LoSelecciona := False; //valor por defecto
     //verifica área de selección
     If (xv > fx - 1) And (xv < fx + width + 1) And (yv > fy - 1) And (yv < fy + height + 1) Then
@@ -412,13 +412,13 @@ begin
   for bot in Buttons do bot.Dibujar;     //Dibuja Buttons
   //---------------dibuja remarcado --------------
   If Marcado and Highlight Then begin
-    v2d.SetPen(clBlue, 2, psSolid);   //RGB(128, 128, 255)
-    v2d.rectangXY(fx - tm, fy - tm, fx + width + tm, fy + height + tm,0);
+    VirtScreen.SetPen(clBlue, 2, psSolid);   //RGB(128, 128, 255)
+    VirtScreen.rectangXY(fx - tm, fy - tm, fx + width + tm, fy + height + tm,0);
   End;
   //---------------dibuja marca de seleccion--------------
   If Selected Then begin
-//    v2d.FijaLapiz(psSolid, 1, clGreen);
-//    v2d.rectang(fx, fy, fx + width, fy + height);
+//    VirtScreen.FijaLapiz(psSolid, 1, clGreen);
+//    VirtScreen.rectang(fx, fy, fx + width, fy + height);
      for pdc in PtosControl do pdc.Dibujar;   //Dibuja puntos de control
   End;
 end;
@@ -497,11 +497,11 @@ procedure TGraphicObj.MouseWheel(Sender: TObject; Shift: TShiftState;
 begin
 
 end;
-constructor TGraphicObj.Create(mGraf: TMotGraf);
+constructor TGraphicObj.Create(mGraf: TVirtScreen);
 begin
   inherited Create;
   erased := false;
-  v2d := mGraf;   //asigna motor gráfico
+  VirtScreen := mGraf;   //asigna motor gráfico
   width := 100;   //width por defecto
   height := 100;    //height por defecto
   fx := 100;
@@ -540,7 +540,7 @@ function TGraphicObj.AddButton(ancho0, alto0: Integer; tipo0: TTipBot;
   EvenBTclk0: TEvenBTclk): TogButton;
 //Agrega un botón al objeto.
 begin
-  Result := TogButton.Create(v2d, tipo0, EvenBTclk0);
+  Result := TogButton.Create(VirtScreen, tipo0, EvenBTclk0);
   Result.width := ancho0;
   Result.height := alto0;
   Buttons.Add(Result);
@@ -548,7 +548,7 @@ end;
 function TGraphicObj.AddPtoControl(tipDesplaz0: TPosicPCtrol; ProcDimen: TEvPtoCtrlMoveXY): TPtoCtrl;
 //Agrega un punto de control
 begin
-  Result := TPtoCtrl.Crear(v2d, tipDesplaz0, ProcDimen);
+  Result := TPtoCtrl.Crear(VirtScreen, tipDesplaz0, ProcDimen);
   PtosControl.Add(Result);
 end;
  //////////////////////////////  TPtoCtrl  //////////////////////////////
@@ -572,7 +572,7 @@ begin
   else        tipPuntero := crDefault ;
   end;
 end;
-constructor TPtoCtrl.Crear(mGraf: TMotGraf; tipDesplaz0: TPosicPCtrol;
+constructor TPtoCtrl.Crear(mGraf: TVirtScreen; tipDesplaz0: TPosicPCtrol;
   ProcMove: TEvPtoCtrlMoveXY);
 begin
   inherited Crear(mGraf, 2*ANC_PCT2, 2*ANC_PCT2);    //crea
@@ -588,10 +588,10 @@ var
   d: Single;
 begin
     if not visible then exit;    //validación
-    v2d.SetPen(TColor($FF8000), 1);
-    v2d.FijaRelleno(TColor($FF8000));
-    d := ANC_PCT2 / v2d.Zoom;  //corrige para que slaga siempre con el mismso tamaño
-    v2d.rectangXYr(fx - d, fy - d, fx + d, fy + d, fz);
+    VirtScreen.SetPen(TColor($FF8000), 1);
+    VirtScreen.FijaRelleno(TColor($FF8000));
+    d := ANC_PCT2 / VirtScreen.Zoom;  //corrige para que slaga siempre con el mismso tamaño
+    VirtScreen.rectangXYr(fx - d, fy - d, fx + d, fy + d, fz);
 end;
 procedure TPtoCtrl.StartMove(xr, yr: Integer; x0, y0: Single);
 //Procedimiento para procesar el evento StartMove del punto de control
@@ -608,7 +608,7 @@ procedure TPtoCtrl.Mover(xr, yr: Integer);
 var dx, dy: Single;
 begin
     if not visible then exit;    //validación
-    v2d.ObtenerDesplazXY(xr, yr, Xant, Yant, dx, dy);
+    VirtScreen.ObtenerDesplazXY(xr, yr, Xant, Yant, dx, dy);
     if OnPtoCtrlMoveXY <>nil then OnPtoCtrlMoveXY(xvTar, yvTar, dx, dy);
     xvTar := xvTar + dx;
     yvTar := yvTar + dy;
@@ -624,7 +624,7 @@ var xp0, yp0 : Integer; //corodenadas virtuales
 begin
     LoSelec := False;
     if not visible then exit;    //validación
-    v2d.XYpant(fx, fy, fz, xp0, yp0);   //obtiene sus coordenadas en pantalla
+    VirtScreen.XYpant(fx, fy, fz, xp0, yp0);   //obtiene sus coordenadas en pantalla
     //compara en coordenadas de pantalla
     If (xp >= xp0 - ANC_PCT2) And (xp <= xp0 + ANC_PCT2) And
        (yp >= yp0 - ANC_PCT2) And (yp <= yp0 + ANC_PCT2) Then

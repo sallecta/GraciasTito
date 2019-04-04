@@ -27,8 +27,8 @@ type
     xp,yp : Int16;
   end;
 
-  { TMotGraf }
-  TMotGraf = class
+  { TVirtScreen }
+  TVirtScreen = class
   private
     fAlfa: Single;
     fFi: Single;
@@ -112,7 +112,7 @@ implementation
 const
   ZOOM_MIN = 0.05;
   ZOOM_MAX = 50;
-procedure TMotGraf.Clear;
+procedure TVirtScreen.Clear;
 begin
   gControl.Canvas.Brush.Color := backColor;
   gControl.Canvas.FillRect(0,0,gControl.Width,gControl.Height);
@@ -121,7 +121,7 @@ end;
 //Las siguientes funciones son por así decirlo, "estandar".
 //Cuando se creen otras clases de dispositivo interfase gráfica deberían tener también estas
 //funciones que son siempre necesarias.
-procedure TMotGraf.Set_Alfa(AValue: Single);
+procedure TVirtScreen.Set_Alfa(AValue: Single);
 begin
   if fAlfa=AValue then Exit;
   fAlfa:=AValue;
@@ -130,7 +130,7 @@ begin
   cosa := cos(fAlfa);
   if OnChangeView<>nil then OnChangeView;
 end;
-procedure TMotGraf.Set_Fi(AValue: Single);
+procedure TVirtScreen.Set_Fi(AValue: Single);
 begin
   if fFi=AValue then Exit;
   fFi:=AValue;
@@ -139,7 +139,7 @@ begin
   cosi := cos(fFi);
   if OnChangeView<>nil then OnChangeView;
 end;
-procedure TMotGraf.SetZoom(AValue: Single);
+procedure TVirtScreen.SetZoom(AValue: Single);
 begin
   if fZoom=AValue then Exit;
   if AValue<ZOOM_MIN then exit;
@@ -147,7 +147,7 @@ begin
   fZoom:=AValue;
   if OnChangeView<>nil then OnChangeView;
 end;
-function TMotGraf.XPant(xv, yv, zv: Single): Integer;   //INLINE Para acelerar las llamadas
+function TVirtScreen.XPant(xv, yv, zv: Single): Integer;   //INLINE Para acelerar las llamadas
 //Función de la geometría del motor. Da la transformación lineal de la coordenada x.
 //Obtiene el punto X en la pantalla donde realmente aparece un punto X,Y,Z
 var
@@ -160,7 +160,7 @@ begin
   Result:= Round(x_offs + x2c * fZoom);
 end;
 
-function TMotGraf.YPant(xv, yv, zv: Single): Integer;  //INLINE Para acelerar las llamadas
+function TVirtScreen.YPant(xv, yv, zv: Single): Integer;  //INLINE Para acelerar las llamadas
 //Función de la geometría del motor. Da la transformación lineal de la coordenada y.
 //Obtiene el punto Y en la pantalla donde realmente aparece un punto X,Y,Z
 var
@@ -172,18 +172,18 @@ begin
   y2c := ((yv - y_cam) * cosa + (xv - x_cam) * sena) * cosi + zv * seni;
   Ypant := Round(gControl.Height - (y_offs + y2c * fZoom));
 end;
-procedure TMotGraf.XYpant(xv, yv, zv: Single; var xp, yp: Integer);
+procedure TVirtScreen.XYpant(xv, yv, zv: Single; var xp, yp: Integer);
 begin
   xp := XPant(xv, yv, zv);
   yp := YPant(xv, yv, zv);
 end;
-procedure TMotGraf.XYpant(var P: TMotPoint);
+procedure TVirtScreen.XYpant(var P: TMotPoint);
 {Actualiza las coordenadas xp, yp  de un registro TMotPoint}
 begin
   P.xp := XPant(P.x, P.y, P.z);
   P.yp := YPant(P.x, P.y, P.z);
 end;
-function TMotGraf.Xvirt(xp, yp: Integer): Single;
+function TVirtScreen.Xvirt(xp, yp: Integer): Single;
 //Obtiene la coordenada X virtual (del punto X,Y,Z ) a partir de unas coordenadas de
 //pantalla.
 var
@@ -194,7 +194,7 @@ begin
   //caso z= 0, con inclinación. Equivalente a seleccionar en el plano XY
   Xvirt := (x2c * cosa * cosi + sena * y2c) / cosi + x_cam;
 end;
-function TMotGraf.Yvirt(xp, yp: Integer): Single;
+function TVirtScreen.Yvirt(xp, yp: Integer): Single;
 //Obtiene la coordenada Y virtual (del punto X,Y,Z ) a partir de unas coordenadas de
 //pantalla.
 var
@@ -205,7 +205,7 @@ begin
   //caso z= 0, con inclinación. Equivalente a seleccionar en el plano XY
   Yvirt := (cosa * y2c - x2c * sena * cosi) / cosi + y_cam;
 end;
-procedure TMotGraf.XYvirt(xp, yp: Integer; zv: Single; var xv, yv: Single);
+procedure TVirtScreen.XYvirt(xp, yp: Integer; zv: Single; var xv, yv: Single);
 //Devuelve las coordenadas virtuales xv,yv a partir de unas coordenadas de pantalla
 //(o del ratón). Debe indicarse el valor de Z. Equivale a intersecar un plano
 //paralelo al plano XY con la línea de mira del ratón en pantalla.
@@ -226,7 +226,7 @@ begin
   //xv = x2c + x_cam
   //yv = y2c + y_cam
 end;
-procedure TMotGraf.Desplazar(dx, dy: Integer);
+procedure TVirtScreen.Desplazar(dx, dy: Integer);
 //Desplaza el escenario (el punto de rotación siempre está en el centro de la pantalla)
 begin
    //desplazamineto en y
@@ -236,7 +236,7 @@ begin
    x_cam := x_cam - dx * cosa;
    y_cam := y_cam + dx * sena;
 end;
-procedure TMotGraf.ObtenerDesplazXY(xp, yp: Integer; Xant, Yant: Integer;
+procedure TVirtScreen.ObtenerDesplazXY(xp, yp: Integer; Xant, Yant: Integer;
   var dx, dy: Single);
 {Obtiene los desplazamientos dx, dy virtuales, para los objects gráficos en base a
 los movimientos del ratón.
@@ -252,22 +252,22 @@ begin
    dy := (cosa * dy0 - dx0 * sena * cosi) / cosi;
 end;
 //Configuración
-procedure TMotGraf.SetPenColor(AValue: TColor);
+procedure TVirtScreen.SetPenColor(AValue: TColor);
 begin
   cv.Pen.Color:=AValue;
 end;
-function TMotGraf.GetPenColor: TColor;
+function TVirtScreen.GetPenColor: TColor;
 begin
   Result := cv.Pen.Color;
 end;
-procedure TMotGraf.SetPen(color: Tcolor; ancho: Integer; estilo: TFPPenStyle);
+procedure TVirtScreen.SetPen(color: Tcolor; ancho: Integer; estilo: TFPPenStyle);
 //Establece el lápiz actual de dibujo
 begin
   cv.pen.Color := color;
   cv.pen.Width := ancho;
   cv.Pen.Style := estilo;
 end;
-//procedure TMotGraf.FijaLapiz(ancho: Integer; color: Tcolor; estilo: TFPPenStyle
+//procedure TVirtScreen.FijaLapiz(ancho: Integer; color: Tcolor; estilo: TFPPenStyle
 //  );
 ////Establece el lápiz actual de dibujo
 //begin
@@ -275,13 +275,13 @@ end;
 //   cv.pen.Width := ancho;
 //   cv.pen.Color := color;
 //end;
-procedure TMotGraf.FijaRelleno(ColorR: TColor);
+procedure TVirtScreen.FijaRelleno(ColorR: TColor);
 //Establece el relleno actual
 begin
    cv.Brush.Style := bsSolid;  //estilo sólido
    cv.Brush.Color:=ColorR;
 end;
-procedure TMotGraf.FijaColor(colLin, colRel: TColor; ancho: Integer);
+procedure TVirtScreen.FijaColor(colLin, colRel: TColor; ancho: Integer);
 //Fija un color de línea y un color de relleno. La línea se fija a estilo sólido
 //y el relleno también
 begin
@@ -293,29 +293,29 @@ begin
     cv.Brush.Color:=colRel;
 end;
 //Funciones de dibujo
-procedure TMotGraf.Line(const x1, y1, z1, x2, y2, z2: Double);
+procedure TVirtScreen.Line(const x1, y1, z1, x2, y2, z2: Double);
 begin
   cv.Line(XPant(x1, y1, z1), YPant(x1, y1, z1),
           XPant(x2, y2, z2), YPant(x2, y2, z2));
 end;
-procedure TMotGraf.Line(var P1, P2: TMotPoint);
+procedure TVirtScreen.Line(var P1, P2: TMotPoint);
 begin
  XYpant(P1);   //actualiza coordenadas de pantalla
  XYpant(P2);   //actualiza coordenadas de pantalla
  cv.Line(P1.xp, P1.yp, P2.xp, P2.yp);
 end;
-procedure TMotGraf.rectangXY(x1, y1: Single; x2, y2: Single; z: Single);
+procedure TVirtScreen.rectangXY(x1, y1: Single; x2, y2: Single; z: Single);
 //Dibuja un rectángulo, paralelo al plano XY
 begin
   //Se pasa un punto más a la polilínea.
  polilinea3(x1, y1, z, x2, y1, z, x2, y2, z, x1, y2, z, x1, y1, z);
 End;
-procedure TMotGraf.rectangXYr(x1, y1: Single; x2, y2: Single; z: Single);
+procedure TVirtScreen.rectangXYr(x1, y1: Single; x2, y2: Single; z: Single);
 //Dibuja un rectángulo relleno, paralelo al plano XY
 begin
  poligono3(x1, y1, z, x2, y1, z, x2, y2, z, x1, y2, z);
 End;
-procedure TMotGraf.poligono3(x1,y1,z1: Single;
+procedure TVirtScreen.poligono3(x1,y1,z1: Single;
                   x2,y2,z2: Single;
                   x3,y3,z3: Single;
                   x4: Single = -10000; y4: Single = -10000; z4: Single = -10000;
@@ -346,7 +346,7 @@ begin
  cv.Polygon(@ptos[1], nptos);   //dibuja borde
 end;
 
-procedure TMotGraf.polilinea3(x1, y1, z1: Single; x2, y2, z2: Single; x3, y3,
+procedure TVirtScreen.polilinea3(x1, y1, z1: Single; x2, y2, z2: Single; x3, y3,
   z3: Single; x4: Single; y4: Single; z4: Single; x5: Single; y5: Single;
   z5: Single; x6: Single; y6: Single; z6: Single);
 //Dibuja un polígono sin rellenar en 3D..
@@ -373,12 +373,12 @@ begin
  end;
  cv.Polyline(@ptos[1], nptos);   //dibuja borde
 end;
-procedure TMotGraf.rectang0(x1, y1, x2, y2: Integer);
+procedure TVirtScreen.rectang0(x1, y1, x2, y2: Integer);
 //Dibuja un rectángulo sin "transformación"
 begin
     cv.Frame(x1, y1, x2, y2);
 End;
-procedure TMotGraf.Barra0(x1, y1, x2, y2: Integer; colFon: TColor);
+procedure TVirtScreen.Barra0(x1, y1, x2, y2: Integer; colFon: TColor);
 //Rellena un área rectangular, no rellena el borde derecho e inferior.
 //Es más rápido que rellenar con Rectangle()
 begin
@@ -386,19 +386,19 @@ begin
     cv.FillRect(x1,y1,x2,y2); //fondo
 end;
 //funciones para texto
-procedure TMotGraf.SetFont(Letra: string);
+procedure TVirtScreen.SetFont(Letra: string);
 //Permite definir el tipo de letra actual
 begin
   if Letra = '' then cv.Font.Name:= 'MS Sans Serif';
   //'Times New Roman'
 end;
-procedure TMotGraf.SetText(color: TColor; tam: single);
+procedure TVirtScreen.SetText(color: TColor; tam: single);
 //método sencillo para cambiar propiedades del texto
 begin
    cv.Font.Color := color;
    cv.Font.Size := round(tam * fZoom);
 end;
-procedure TMotGraf.SetText(negrita:Boolean = False; cursiva: Boolean = False;
+procedure TVirtScreen.SetText(negrita:Boolean = False; cursiva: Boolean = False;
             subrayado: Boolean = False);
 //Establece las características completas del texto
 begin
@@ -406,7 +406,7 @@ begin
    cv.Font.Italic := cursiva;
    cv.Font.Underline := subrayado;
 End;
-procedure TMotGraf.SetText(color: TColor; tam: single; //; nDegrees As Single, _
+procedure TVirtScreen.SetText(color: TColor; tam: single; //; nDegrees As Single, _
             Letra: String;
             negrita:Boolean = False;
             cursiva: Boolean = False;
@@ -420,7 +420,7 @@ begin
    cv.Font.Italic := cursiva;
    cv.Font.Underline := subrayado;
 End;
-procedure TMotGraf.Texto(x1, y1, z1: Single; txt: String);
+procedure TVirtScreen.Texto(x1, y1, z1: Single; txt: String);
 //Escribe un texto
 begin
    cv.Brush.Style := bsClear;  //Fondo transparente
@@ -430,7 +430,7 @@ begin
 //   cv.Font.Size := tmp;  //restaura
 //   cv.Brush.Style := bsSolid;  //devuelve estilo de fondo
 End;
-procedure TMotGraf.TextRect(x1,y1,x2,y2: Single; x0, y0: Single; const Text: string;
+procedure TVirtScreen.TextRect(x1,y1,x2,y2: Single; x0, y0: Single; const Text: string;
                        const Style: TTextStyle);
 //Escribe un texto
 var
@@ -447,7 +447,7 @@ begin
 //   cv.Font.Size := tmp;  //restaura
    cv.Brush.Style := bsSolid;  //devuelve estilo de fondo
 End;
-procedure TMotGraf.TextoR(x1, y1, ancho, alto: Single; txt: String);
+procedure TVirtScreen.TextoR(x1, y1, ancho, alto: Single; txt: String);
 //Escribe un texto
 var r:TRect;
     //s:TTextStyle;
@@ -464,11 +464,11 @@ begin
    cv.TextRect(r,r.Left,r.Top,txt);
    cv.Brush.Style := bsSolid;  //devuelve estilo de fondo
 End;
-function TMotGraf.TextWidth(const txt: string): single;
+function TVirtScreen.TextWidth(const txt: string): single;
 begin
   Result := cv.TextWidth(txt) * fZoom;
 end;
-procedure TMotGraf.FijarVentana(ScaleWidth, ScaleHeight: Real;
+procedure TVirtScreen.FijarVentana(ScaleWidth, ScaleHeight: Real;
                xMin, xMax, yMin, yMax: Real);
 //Fija las coordenadas de pantalla de manera que se ajusten a las nuevas que se dan
 //Recibe coordenadas virtuales
@@ -501,7 +501,7 @@ begin
    y_cam := yMin + y_offs / fZoom - dycen;
 End;
 
-constructor TMotGraf.Create(gContrl0: TGraphicControl);
+constructor TVirtScreen.Create(gContrl0: TGraphicControl);
 begin
   gControl := gContrl0;
   cv := gControl.Canvas;
@@ -514,7 +514,7 @@ begin
 
   backColor := clWhite;
 end;
-destructor TMotGraf.Destroy;
+destructor TVirtScreen.Destroy;
 begin
   inherited Destroy;
 end;

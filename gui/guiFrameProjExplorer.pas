@@ -15,7 +15,7 @@ type
   TEvClickDerPro = procedure(Proj: TProject) of object;
   TEvClickDerPag = procedure(Page: TDocPage) of object;
   TEvClickDerObj = procedure(obj: TCadObjetos_list) of object;
-  TEvClickDerVis = procedure(View: TfraPaintBox) of object;
+  TEvClickDerVis = procedure(View: TFrPaintBox) of object;
 
   { TfraExploreProject }
 

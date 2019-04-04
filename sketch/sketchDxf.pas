@@ -24,7 +24,7 @@ TObjGrafDXF_list = specialize TFPGObjectList<TObjGrafDXF>;
 { TMyObject }
 TMyObject = class(TGraphicObj)  //graphic object that we will draw
   procedure Dibujar; override;  //Draw the graphic object
-  constructor Create(mGraf: TMotGraf); override;
+  constructor Create(mGraf: TVirtScreen); override;
 private
   procedure RelocateElements; override;
 end;
@@ -68,14 +68,14 @@ public
 public
   procedure Dibujar; override;  //Dibuja el objeto gráfico
   function LoSelecciona(xp, yp:integer): Boolean; override;
-  constructor Create(mGraf: TMotGraf); override;
+  constructor Create(mGraf: TVirtScreen); override;
 //  destructor Destroy; override;
 end;
 
 implementation
 
 { TMyObject }
-constructor TMyObject.Create(mGraf: TMotGraf);
+constructor TMyObject.Create(mGraf: TVirtScreen);
 begin
   inherited;
   ReConstGeom;     //It must be called after creating the control points to be able to locate them
@@ -93,13 +93,13 @@ end;
 procedure TMyObject.Dibujar();
 begin
   //Dibuja etiqueta
-//  v2d.SetPen(clGray, 1);
-  v2d.SetText(clWhite, 11,'', false);
-  v2d.Texto(x + 2, Y + Height + 20, 0, nombre);
+//  VirtScreen.SetPen(clGray, 1);
+  VirtScreen.SetText(clWhite, 11,'', false);
+  VirtScreen.Texto(x + 2, Y + Height + 20, 0, nombre);
   //muestra un rectángulo
-  v2d.SetPen(clWhite, 1, psSolid);
-  v2d.FijaRelleno(clBlack);
-  v2d.rectangXYr(x, y+10, x+width, y+height,0);
+  VirtScreen.SetPen(clWhite, 1, psSolid);
+  VirtScreen.FijaRelleno(clBlack);
+  VirtScreen.rectangXYr(x, y+10, x+width, y+height,0);
   inherited;
 end;
 
@@ -134,7 +134,7 @@ begin
   P1.z:=zv;
   RelocateElements;
 end;
-constructor TObjGrafDXF.Create(mGraf: TMotGraf);
+constructor TObjGrafDXF.Create(mGraf: TVirtScreen);
 begin
   inherited Create(mGraf);
   //Notar que los puntos de control son estáticos, aunque tal vez sea mejor, crearlos
@@ -159,16 +159,16 @@ var
   i: Integer;
 begin
   If Marcado and Highlight Then begin
-    v2d.SetPen(TColor($FF8000), 2, psSolid);
+    VirtScreen.SetPen(TColor($FF8000), 2, psSolid);
   end else begin
-    v2d.SetPen(clWhite, 1);
+    VirtScreen.SetPen(clWhite, 1);
   end;
   case etype of
   etyLine: begin
-      v2d.Line(P0, P1);
+      VirtScreen.Line(P0, P1);
     end;
 //  etyCircle: begin
-//      v2d.Circulo(xv + ent.x0, y + ent.y0,
+//      VirtScreen.Circulo(xv + ent.x0, y + ent.y0,
 //                  ent.radius);
 //    end;
 {  etyPolyline: begin
@@ -176,11 +176,11 @@ begin
       SetLength(Ptos, vertexs.Count);   //dimensiona
       //transforma puntos
       for i:= 0 to vertexs.Count-1 do begin
-        Ptos[i].x := v2d.XPant(vertexs[i].x0);
-        Ptos[i].y := v2d.YPant(vertexs[i].y0);
+        Ptos[i].x := VirtScreen.XPant(vertexs[i].x0);
+        Ptos[i].y := VirtScreen.YPant(vertexs[i].y0);
       end;
-      //v2d.Canvas.Polygon(Ptos);   //dibuja
-      v2d.cv.Polyline(Ptos);
+      //VirtScreen.Canvas.Polygon(Ptos);   //dibuja
+      VirtScreen.cv.Polyline(Ptos);
     end;}
   end;
   //---------------dibuja marca de seleccion--------------
@@ -200,8 +200,8 @@ begin
   {No debería ser necesario actualizar las coordenadas de pantalla de P0 y P1, ya que
   si esta recta se mostró en pantalla, es porque se actualizaron sus coordenadas de
   pantalla:
-  v2d.XYpant(P0);
-  v2d.XYpant(P1);
+  VirtScreen.XYpant(P0);
+  VirtScreen.XYpant(P1);
   }
   if P0.xp = P1.xp then begin  //Caso recta vertical
      if abs(P0.xp - xp)>DSEL then exit(false);  //excede distancia horizontal

@@ -114,7 +114,7 @@ object FormPerspective: TFormPerspective
     Height = 17
     Top = 96
     Width = 35
-    Caption = 'yCam:'
+    Caption = 'Y_Cam:'
     ParentColor = False
   end
   object spnYoffest: TFloatSpinEdit
@@ -136,7 +136,7 @@ object FormPerspective: TFormPerspective
     Height = 17
     Top = 72
     Width = 35
-    Caption = 'xCam:'
+    Caption = 'X_Cam:'
     ParentColor = False
   end
   object spnXoffest: TFloatSpinEdit

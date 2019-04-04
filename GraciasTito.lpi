@@ -128,7 +128,7 @@
       <Unit16>
         <Filename Value="gui/guiFramePaintBox.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="fraPaintBox"/>
+        <ComponentName Value="FrPaintBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit16>

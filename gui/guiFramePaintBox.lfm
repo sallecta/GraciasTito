@@ -1,4 +1,4 @@
-object fraVisorGraf: TfraPaintBox
+object FrPaintBox: TFrPaintBox
   Left = 0
   Height = 298
   Top = 0

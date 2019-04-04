@@ -1,209 +1,235 @@
-{                                frameVisCplex
-Este Frame será usado para colocar nuestro editor gráfico. Incluye un PaintBox,
-como salida gráfica.
-Al ser un frame, puede incluirse en un formulario cualquiera.
-
-                                              Por Tito Hinostroza  04/01/2017
+{
+This Frame will be used to place our graphic editor. Includes a PaintBox,
+as graphic output.
+Being a frame, it can be included in any form.
 }
 unit guiFramePaintBox;
+
 {$mode objfpc}{$H+}
 interface
+
 uses
   Classes, Forms, ExtCtrls,
   sketchEditor, sketchCore;
+
 type
   TOnObjectsRemove = procedure of object;
-  {Evento para movimiento del Mouse. Notar que además de las coordenaadas del ratón,
-  proporciona coordenadas virtuales}
-  TEveMouseVisGraf = procedure(Shift: TShiftState; xp, yp: Integer;
-                                      xv, yv, zv: Single) of object;
+  {Event for Mouse movement. Note that in addition to the coordinates of the mouse,
+   provides virtual coordinates}
+  TEvMousePaintBox = procedure(Shift: TShiftState; xp, yp: integer;
+    xv, yv, zv: single) of object;
 
-  { TfraPaintBox }
+  { TFrPaintBox }
 
-  TfraPaintBox = class(TFrame)
+  TFrPaintBox = class(TFrame)
   published
     PaintBox1: TPaintBox;
   private
-    function Get_Alfa: Single;
-    function Get_Fi: Single;
-    function Get_X_Cam: Single;
-    function Get_Y_Cam: Single;
-    function GetZoom: Single;
-    procedure motEdi_ChangeView;
-    procedure visEdi_Modif;
-    procedure Set_Alfa(AValue: Single);
-    procedure Set_Fi(AValue: Single);
-    procedure Set_X_Cam(AValue: Single);
-    procedure SetxDes(AValue: integer);
-    function GetxDes: integer;
-    procedure Set_Y_Cam(AValue: Single);
-    procedure SetyDes(AValue: integer);
-    function GetyDes: integer;
-    procedure SetZoom(AValue: Single);
-    procedure visEdi_ChangeState(ViewState: TViewState);
-    procedure visEdi_MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer
-      );
-    procedure visEdi_SendMessage(msg: string);
+    function Get_Alfa: single;
+    function Get_Fi: single;
+    function Get_X_Cam: single;
+    function Get_Y_Cam: single;
+    function GetZoom: single;
+    procedure Editor_ViewChange;
+    procedure Editor_Modified;
+    procedure Set_Alfa(AValue: single);
+    procedure Set_Fi(AValue: single);
+    procedure Set_X_Cam(AValue: single);
+    procedure Set_X_Offs(AValue: integer);
+    function Get_X_Offs: integer;
+    procedure Set_Y_Cam(AValue: single);
+    procedure Set_Y_Offs(AValue: integer);
+    function Get_Y_Offs: integer;
+    procedure SetZoom(AValue: single);
+    procedure Editor_ChangeState(ViewState: TViewState);
+    procedure Editor_MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
+    procedure Editor_SendMessage(msg: string);
   public
-    objects : TEditorObjList; //Lista de objects
-    viewEdi  : TView3D;  //motor de edición  (La idesa es que pueda haber más de uno)
-    Modified   : Boolean;      //bandera para indicar Diagrama Modificado
-    OnObjectsRemove  : TOnObjectsRemove;   //cuando se elminan uno o más objects
-    OnChangePersp: procedure of object; //Cambia x_offs,y_offs,x_cam,y_cam,alfa,fi o zoom
-    OnMouseMoveVirt: TEveMouseVisGraf;
-    OnChangeState  : TEvChangeState;  //Cambia el state del Visor
-    OnSendMessage  : TEvSendMessage;  //Envía un mensaje. Usado para respuesta a comandos
+    objects: TEditorObjList;
+    Editor: TEditor;
+    Modified: boolean;
+    OnObjectsRemove: TOnObjectsRemove;
+    OnChangePersp:
+    procedure of object;
+    OnMouseMoveVirt: TEvMousePaintBox;
+    OnChangeState: TEvChangeState;
+    OnSendMessage: TEvSendMessage;
     procedure GraphicObjectsDeleteAll;
-  public //Propiedades reflejadas
-    property xDes: integer read GetxDes write SetxDes;
-    property yDes: integer read GetyDes write SetyDes;
-    property xCam: Single read Get_X_Cam write Set_X_Cam;
-    property yCam: Single read Get_Y_Cam write Set_Y_Cam;
-    property Alfa: Single read Get_Alfa write Set_Alfa;
-    property Fi: Single read Get_Fi write Set_Fi;
-    property Zoom: Single read GetZoom write SetZoom;
+  public
+    property X_Offs: integer read Get_X_Offs write Set_X_Offs;
+    property Y_Offs: integer read Get_Y_Offs write Set_Y_Offs;
+    property X_Cam: single read Get_X_Cam write Set_X_Cam;
+    property Y_Cam: single read Get_Y_Cam write Set_Y_Cam;
+    property Alfa: single read Get_Alfa write Set_Alfa;
+    property Fi: single read Get_Fi write Set_Fi;
+    property Zoom: single read GetZoom write SetZoom;
     procedure ExecuteCommand(command: string);
-    function StateAsStr: string; //Cadena de descripción de state
-  public  //Inicialización
+    function StateAsStr: string;
+  public
     procedure InitView;
     constructor Create(AOwner: TComponent; ListObjGraf: TEditorObjList);
     destructor Destroy; override;
   end;
 
 implementation
+
 {$R *.lfm}
 
-procedure TfraPaintBox.GraphicObjectsDeleteAll;
-//Elimina todos los objects gráficos existentes
+procedure TFrPaintBox.GraphicObjectsDeleteAll;
 begin
-  if objects.Count=0 then exit;  //no hay qué eliminar
-  //elimina
-  viewEdi.SelectNone;  //por si acaso hay algun simbolo seleccionado
-  objects.Clear;          //limpia la lista de objects
-  viewEdi.RestoreState;
-  Modified := true;          //indica que se modificó
-  if OnObjectsRemove<>nil then OnObjectsRemove;
-End;
-function TfraPaintBox.GetxDes: integer;
-begin
-  Result := viewEdi.v2d.x_offs;
-end;
-procedure TfraPaintBox.SetxDes(AValue: integer);
-begin
-  viewEdi.v2d.x_offs:=AValue;
-end;
-function TfraPaintBox.GetyDes: integer;
-begin
-  Result := viewEdi.v2d.y_offs;
-end;
-procedure TfraPaintBox.SetyDes(AValue: integer);
-begin
-  viewEdi.v2d.y_offs:=AValue;
-end;
-function TfraPaintBox.Get_X_Cam: Single;
-begin
-  Result := viewEdi.v2d.x_cam;
-end;
-procedure TfraPaintBox.Set_X_Cam(AValue: Single);
-begin
-  viewEdi.v2d.x_cam:=AValue;
-end;
-function TfraPaintBox.Get_Y_Cam: Single;
-begin
-  Result := viewEdi.v2d.y_cam;
-end;
-procedure TfraPaintBox.Set_Y_Cam(AValue: Single);
-begin
-  viewEdi.v2d.y_cam:=AValue;
-end;
-function TfraPaintBox.GetZoom: Single;
-begin
-  Result := viewEdi.v2d.Zoom;
-end;
-procedure TfraPaintBox.ExecuteCommand(command: string);
-begin
-  viewEdi.ExecuteCommand(command);
-end;
-function TfraPaintBox.StateAsStr: string;
-begin
-  Result := viewEdi.StateAsStr;
-end;
-procedure TfraPaintBox.motEdi_ChangeView;
-begin
-  if OnChangePersp<>nil then OnChangePersp();
-end;
-procedure TfraPaintBox.visEdi_Modif;
-{Se ejecuta cuando el visor reporta cambios (dimensionamieno, posicionamiento, ...) en
- alguno de los objects gráficos.}
-begin
-  Modified := true;
-end;
-procedure TfraPaintBox.SetZoom(AValue: Single);
-begin
-  viewEdi.v2d.Zoom:=AValue;
-end;
-procedure TfraPaintBox.visEdi_ChangeState(ViewState: TViewState);
-begin
-  if OnChangeState<>nil then OnChangeState(ViewState);
-end;
-procedure TfraPaintBox.visEdi_MouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
-var
-  xv, yv: Single;
-begin
-  viewEdi.v2d.XYvirt(X, Y, 0, xv, yv);
-  if OnMouseMoveVirt<>nil then OnMouseMoveVirt(Shift, X, Y, xv, yv, 0);
-end;
-procedure TfraPaintBox.visEdi_SendMessage(msg: string);
-begin
-  if OnSendMessage<>nil then OnSendMessage(msg);
+  if objects.Count = 0 then
+    exit;
+  Editor.SelectNone;
+  objects.Clear;
+  Editor.RestoreState;
+  Modified := True;
+  if OnObjectsRemove <> nil then
+    OnObjectsRemove;
 end;
 
-function TfraPaintBox.Get_Alfa: Single;
+function TFrPaintBox.Get_X_Offs: integer;
 begin
-  Result := viewEdi.v2d.Alfa;
+  Result := Editor.VirtScreen.x_offs;
 end;
-procedure TfraPaintBox.Set_Alfa(AValue: Single);
+
+procedure TFrPaintBox.Set_X_Offs(AValue: integer);
 begin
-  viewEdi.v2d.Alfa := AValue;
+  Editor.VirtScreen.x_offs := AValue;
 end;
-function TfraPaintBox.Get_Fi: Single;
+
+function TFrPaintBox.Get_Y_Offs: integer;
 begin
-  REsult := viewEdi.v2d.Fi;
+  Result := Editor.VirtScreen.y_offs;
 end;
-procedure TfraPaintBox.Set_Fi(AValue: Single);
+
+procedure TFrPaintBox.Set_Y_Offs(AValue: integer);
 begin
-  viewEdi.v2d.Fi := AValue;
+  Editor.VirtScreen.y_offs := AValue;
 end;
-procedure TfraPaintBox.InitView;
-{Ubica la perspectiva y los ejes, de forma que el origen (0,0) aparezza en la
-esquina inferior izquierda. Se debe llamar cuando ya el frame tenga su tamaño final}
+
+function TFrPaintBox.Get_X_Cam: single;
 begin
-  viewEdi.v2d.Alfa:=0;
-  viewEdi.v2d.Fi:=0;
-  viewEdi.v2d.Zoom:=0.5;
-  //Ubica (0,0) a 10 pixeles del ángulo inferior izquierdo
-  viewEdi.v2d.x_cam:=((PaintBox1.Width div 2)-10)/viewEdi.v2d.Zoom;
-  viewEdi.v2d.y_cam:=((PaintBox1.Height div 2)-10)/viewEdi.v2d.Zoom;
+  Result := Editor.VirtScreen.x_cam;
 end;
-constructor TfraPaintBox.Create(AOwner: TComponent; ListObjGraf: TEditorObjList);
+
+procedure TFrPaintBox.Set_X_Cam(AValue: single);
+begin
+  Editor.VirtScreen.x_cam := AValue;
+end;
+
+function TFrPaintBox.Get_Y_Cam: single;
+begin
+  Result := Editor.VirtScreen.y_cam;
+end;
+
+procedure TFrPaintBox.Set_Y_Cam(AValue: single);
+begin
+  Editor.VirtScreen.y_cam := AValue;
+end;
+
+function TFrPaintBox.GetZoom: single;
+begin
+  Result := Editor.VirtScreen.Zoom;
+end;
+
+procedure TFrPaintBox.ExecuteCommand(command: string);
+begin
+  Editor.ExecuteCommand(command);
+end;
+
+function TFrPaintBox.StateAsStr: string;
+begin
+  Result := Editor.StateAsStr;
+end;
+
+procedure TFrPaintBox.Editor_ViewChange;
+begin
+  if OnChangePersp <> nil then
+    OnChangePersp();
+end;
+
+procedure TFrPaintBox.Editor_Modified;
+begin
+  Modified := True;
+end;
+
+procedure TFrPaintBox.SetZoom(AValue: single);
+begin
+  Editor.VirtScreen.Zoom := AValue;
+end;
+
+procedure TFrPaintBox.Editor_ChangeState(ViewState: TViewState);
+begin
+  if OnChangeState <> nil then
+    OnChangeState(ViewState);
+end;
+
+procedure TFrPaintBox.Editor_MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: integer);
+var
+  xv, yv: single;
+begin
+  Editor.VirtScreen.XYvirt(X, Y, 0, xv, yv);
+  if OnMouseMoveVirt <> nil then
+    OnMouseMoveVirt(Shift, X, Y, xv, yv, 0);
+end;
+
+procedure TFrPaintBox.Editor_SendMessage(msg: string);
+begin
+  if OnSendMessage <> nil then
+    OnSendMessage(msg);
+end;
+
+function TFrPaintBox.Get_Alfa: single;
+begin
+  Result := Editor.VirtScreen.Alfa;
+end;
+
+procedure TFrPaintBox.Set_Alfa(AValue: single);
+begin
+  Editor.VirtScreen.Alfa := AValue;
+end;
+
+function TFrPaintBox.Get_Fi: single;
+begin
+  Result := Editor.VirtScreen.Fi;
+end;
+
+procedure TFrPaintBox.Set_Fi(AValue: single);
+begin
+  Editor.VirtScreen.Fi := AValue;
+end;
+
+procedure TFrPaintBox.InitView;
+{Locate the perspective and the axes, so that the origin (0,0) appears in the
+lower left corner. Call when the frame has its final size}
+begin
+  Editor.VirtScreen.Alfa := 0;
+  Editor.VirtScreen.Fi := 0;
+  Editor.VirtScreen.Zoom := 0.5;
+  //Locate (0,0) to 10 pixels from the bottom left corner
+  Editor.VirtScreen.x_cam := ((PaintBox1.Width div 2) - 10) / Editor.VirtScreen.Zoom;
+  Editor.VirtScreen.y_cam := ((PaintBox1.Height div 2) - 10) / Editor.VirtScreen.Zoom;
+end;
+
+constructor TFrPaintBox.Create(AOwner: TComponent; ListObjGraf: TEditorObjList);
 begin
   inherited Create(AOwner);
-  objects := ListObjGraf;  //recibe lista de objects
-  //objects:= TEditorObjList.Create(true);  //lista de objects
-  viewEdi := TView3D.Create(PaintBox1, objects);
-  viewEdi.OnModify      :=@visEdi_Modif;
-  viewEdi.OnChangeView :=@motEdi_ChangeView;
-  viewEdi.OnMouseMove  :=@visEdi_MouseMove;
-  viewEdi.OnChangeState:=@visEdi_ChangeState;
-  viewEdi.OnSendMessage:=@visEdi_SendMessage;
+  objects := ListObjGraf;
+  //objects:= TEditorObjList.Create(true);
+  Editor := TEditor.Create(PaintBox1, objects);
+  Editor.OnModify := @Editor_Modified;
+  Editor.OnChangeView := @Editor_ViewChange;
+  Editor.OnMouseMove := @Editor_MouseMove;
+  Editor.OnChangeState := @Editor_ChangeState;
+  Editor.OnSendMessage := @Editor_SendMessage;
 end;
-destructor TfraPaintBox.Destroy;
+
+destructor TFrPaintBox.Destroy;
 begin
-  viewEdi.Destroy;
+  Editor.Destroy;
   //objects.Destroy;
   inherited;
 end;
 
 end.
-

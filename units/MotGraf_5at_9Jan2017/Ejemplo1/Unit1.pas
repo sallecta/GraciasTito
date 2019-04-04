@@ -18,7 +18,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
   public
-    mot: TMotGraf;
+    mot: TVirtScreen;
   end;
 
 var
@@ -32,7 +32,7 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  mot:= TMotGraf.Create(PaintBox1);
+  mot:= TVirtScreen.Create(PaintBox1);
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);

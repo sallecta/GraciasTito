@@ -36,9 +36,9 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure Timer1Timer(Sender: TObject);
   private
-    fraEditor: TfraPaintBox;
+    fraEditor: TFrPaintBox;
   public
-    procedure Exec(argFraEditor: TfraPaintBox);
+    procedure Exec(argFraEditor: TFrPaintBox);
   end;
 
 var
@@ -49,11 +49,11 @@ implementation
 
 procedure TFormPerspective.btnReadPerspectiveClick(Sender: TObject);
 begin
-  spnXpos.Value:= fraEditor.xDes;
-  spnYpos.Value:= fraEditor.yDes;
+  spnXpos.Value:= fraEditor.X_Offs;
+  spnYpos.Value:= fraEditor.Y_Offs;
 
-  spnXoffest.Value := fraEditor.xCam;
-  spnYoffest.Value := fraEditor.yCam;
+  spnXoffest.Value := fraEditor.X_Cam;
+  spnYoffest.Value := fraEditor.Y_Cam;
 
   spnAlfa.Value := fraEditor.Alfa;
   spnFi.Value   := fraEditor.Fi;
@@ -70,11 +70,11 @@ begin
 end;
 procedure TFormPerspective.btnSetPerspectiveClick(Sender: TObject);
 begin
-  fraEditor.xDes := spnXpos.Value;
-  fraEditor.yDes := spnYpos.Value;
+  fraEditor.X_Offs := spnXpos.Value;
+  fraEditor.Y_Offs := spnYpos.Value;
 
-  fraEditor.xCam  := spnXoffest.Value;
-  fraEditor.yCam  := spnYoffest.Value;
+  fraEditor.X_Cam  := spnXoffest.Value;
+  fraEditor.Y_Cam  := spnYoffest.Value;
 
   fraEditor.Alfa:=spnAlfa.Value;
   fraEditor.Fi:=spnFi.Value;
@@ -97,7 +97,7 @@ begin
 //  btnReadPerspectiveClick(self);  
 end;
 
-procedure TFormPerspective.Exec(argFraEditor: TfraPaintBox);
+procedure TFormPerspective.Exec(argFraEditor: TFrPaintBox);
 begin
   fraEditor:= argFraEditor;
   self.Show;

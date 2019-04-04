@@ -24,7 +24,7 @@ type
   end;
   TCadObjetos_list = specialize TFPGObjectList<TCadObjGraf>;
 
-  TEveCambiaPerspec = procedure(View: TfraPaintBox) of object;
+  TEveCambiaPerspec = procedure(View: TFrPaintBox) of object;
   TProject = class;
 
   { TDocPage }
@@ -40,9 +40,9 @@ type
     objetosGraf: TCadObjetos_list;  //Lista de elementos gráficos
     objects : TEditorObjList; //Lista de objects
   public  //Manejo de las vistas
-    View: TfraPaintBox;   //una sola View por el momento
+    View: TFrPaintBox;   //una sola View por el momento
     OnChangePersp: TEveCambiaPerspec;  //Cambia x_offs,y_offs,x_cam,y_cam,alfa,fi o zoom
-    OnMouseMoveVirt: TEveMouseVisGraf;
+    OnMouseMoveVirt: TEvMousePaintBox;
     OnChangeState: TEvChangeState;
   public  //Inicialización
     constructor Create;
@@ -56,7 +56,7 @@ type
     FActivePage: TDocPage;
     fModific  : boolean;   //indica si ha sido modificado
     procedure pag_ChangeState(ViewState: TViewState);
-    procedure pag_CambiaPerspec(View: TfraPaintBox);
+    procedure pag_CambiaPerspec(View: TFrPaintBox);
     procedure pag_MouseMoveVirt(Shift: TShiftState; xp, yp: Integer; xv,
       yv, zv: Single);
     procedure SetActivePage(AValue: TDocPage);
@@ -68,7 +68,7 @@ type
     unidades : Tunidades;
     OnModify : procedure of object; //Proyecto modificado
     OnChangePersp: TEveCambiaPerspec;  //Cambia x_offs, y_offs, x_cam, alfa, ...
-    OnMouseMoveVirt: TEveMouseVisGraf;
+    OnMouseMoveVirt: TEvMousePaintBox;
     OnChangeState: TEvChangeState;
     property Modified: boolean read fModific write SetModific;
     procedure SaveFile;
@@ -111,15 +111,15 @@ constructor TDocPage.Create;
 begin
   objetosGraf := TCadObjetos_list.Create(true);
   objects := TEditorObjList.Create(true);   //contenedor
-  View:= TfraPaintBox.Create(nil, objects);  //crea una View
+  View:= TFrPaintBox.Create(nil, objects);  //crea una View
 
 //  View.Parent := TabSheet1;
 //  View.Visible:=true;
 //  View.Align:=alClient;
-  View.viewEdi.v2d.backColor:=clBlack;
-  View.viewEdi.ShowAxes:=true;
-  View.viewEdi.ShowRotPoint:=true;
-  View.viewEdi.ShowGrid:=true;
+  View.Editor.VirtScreen.backColor:=clBlack;
+  View.Editor.ShowAxes:=true;
+  View.Editor.ShowRotPoint:=true;
+  View.Editor.ShowGrid:=true;
 //  View.VisEdiGraf.OnChangeView:=@fraMotEdicionmotEdiChangeView;
   View.OnChangePersp:=@vistaCambiaPerspec;
   View.OnMouseMoveVirt:=@vistaMouseMoveVirt;
@@ -143,7 +143,7 @@ begin
     if OnModify<>nil then OnModify;  //evento
   end;
 end;
-procedure TProject.pag_CambiaPerspec(View: TfraPaintBox);
+procedure TProject.pag_CambiaPerspec(View: TFrPaintBox);
 {Se genera si alguna página cambia su perspectiva}
 begin
   if OnChangePersp<>nil then OnChangePersp(View);

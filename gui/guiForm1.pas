@@ -131,7 +131,7 @@ type
   private
     curProject: TProject;
     ExploreProjPage: TDocPage;     //page selected in the project explorer
-    ExploreProjView: TfraPaintBox;  //View selected in the project explorer
+    ExploreProjView: TFrPaintBox;  //View selected in the project explorer
     procedure ConfigPropertiesChanged;
     procedure curProjectActivePageViewSendMessage(msg: string);
     procedure curProject_Modified;
@@ -141,8 +141,8 @@ type
     procedure curProject_ChangeActivePage;
     procedure fraExploreProj_ClickRightPage(Page: TDocPage);
     procedure fraExploreProj_ClickRightProj(Proj: TProject);
-    procedure fraExploreProj_ClickRightView(View: TfraPaintBox);
-    procedure curProject_ChangeView(View: TfraPaintBox);
+    procedure fraExploreProj_ClickRightView(View: TFrPaintBox);
+    procedure curProject_ChangeView(View: TFrPaintBox);
     function MessageSaveChanges: integer;
     procedure RefreshEnvironment;
     procedure Refresh;
@@ -171,7 +171,7 @@ begin
   PopupPage.PopUp;
 end;
 
-procedure TForm1.fraExploreProj_ClickRightView(View: TfraPaintBox);
+procedure TForm1.fraExploreProj_ClickRightView(View: TFrPaintBox);
 begin
   ExploreProjView := View;
   PopupView.PopUp;
@@ -411,7 +411,7 @@ begin
     ' ' + 'z=' + formatfloat('0.00', zv);
 end;
 
-procedure TForm1.curProject_ChangeView(View: TfraPaintBox);
+procedure TForm1.curProject_ChangeView(View: TFrPaintBox);
 begin
   StatusBar1.Panels[1].Text :=
     'Alfa=' + formatfloat('0.00', View.Alfa) + ' ' + 'Fi=' +
@@ -568,7 +568,7 @@ begin
     exit;
   curProject.ActivePage.View.Alfa := 0;
   curProject.ActivePage.View.Fi := 0;
-  curProject.ActivePage.View.viewEdi.Refresh;
+  curProject.ActivePage.View.Editor.Refresh;
 end;
 
 procedure TForm1.acViewPropExecute(Sender: TObject);

@@ -40,7 +40,7 @@ type
     procedure SetZoom(AValue: Single);
   public
     objects : TEditorObjList;
-    Editor  : TView3D;
+    Editor  : TEditor;
     Modified   : Boolean;
     OnObjectsRemove: TOnObjectsRemove;   //when one or more objects are elminated
     procedure GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean=true);
@@ -51,8 +51,8 @@ type
   public
     property xDesp: integer read Get_X_Offs write Set_X_offs;
     property yDesp: integer read Get_Y_Offs write Set_Y_Offs;
-    property xCam: Single read Get_X_Cam write Set_X_Cam;
-    property yCam: Single read Get_Y_Cam write Set_Y_Cam;
+    property X_Cam: Single read Get_X_Cam write Set_X_Cam;
+    property Y_Cam: Single read Get_Y_Cam write Set_Y_Cam;
     property Alfa: Single read Get_Alfa write Set_Alfa;
     property Fi: Single read Get_Fi write Set_Fi;
     property Zoom: Single read GetZoom write SetZoom;
@@ -75,8 +75,8 @@ begin
   Modified := True;        //Marca el editor como modificado
   //Posiciona tratando de que siempre aparezca en pantalla
   if AutoPos Then begin  //Se calcula posición
-    x := Editor.v2d.Xvirt(100, 100) + 30 * objects.Count Mod 400;
-    y := Editor.v2d.Yvirt(100, 100) + 30 * objects.Count Mod 400;
+    x := Editor.VirtScreen.Xvirt(100, 100) + 30 * objects.Count Mod 400;
+    y := Editor.VirtScreen.Yvirt(100, 100) + 30 * objects.Count Mod 400;
     argGraphicObject.PlaceAt(x,y);
   end;
   //configura eventos para ser controlado por este editor
@@ -123,46 +123,46 @@ function TfraEditor.ObjectAdd: TMyObject;
 //Add an object of type TMiObject to the editor.
 var obj: TMyObject;
 begin
-  obj := TMyObject.Create(Editor.v2d);
+  obj := TMyObject.Create(Editor.VirtScreen);
   GraphicObjectAdd(obj);
   Result := obj;
 end;
 
 function TfraEditor.Get_X_Offs: integer;
 begin
-  Result := Editor.v2d.x_offs;
+  Result := Editor.VirtScreen.x_offs;
 end;
 procedure TfraEditor.Set_X_offs(AValue: integer);
 begin
-  Editor.v2d.x_offs:=AValue;
+  Editor.VirtScreen.x_offs:=AValue;
 end;
 function TfraEditor.Get_Y_Offs: integer;
 begin
-  Result := Editor.v2d.y_offs;
+  Result := Editor.VirtScreen.y_offs;
 end;
 procedure TfraEditor.Set_Y_Offs(AValue: integer);
 begin
-  Editor.v2d.y_offs:=AValue;
+  Editor.VirtScreen.y_offs:=AValue;
 end;
 function TfraEditor.Get_X_Cam: Single;
 begin
-  Result := Editor.v2d.x_cam;
+  Result := Editor.VirtScreen.x_cam;
 end;
 procedure TfraEditor.Set_X_Cam(AValue: Single);
 begin
-  Editor.v2d.x_cam:=AValue;
+  Editor.VirtScreen.x_cam:=AValue;
 end;
 function TfraEditor.Get_Y_Cam: Single;
 begin
-  Result := Editor.v2d.y_cam;
+  Result := Editor.VirtScreen.y_cam;
 end;
 procedure TfraEditor.Set_Y_Cam(AValue: Single);
 begin
-  Editor.v2d.y_cam:=AValue;
+  Editor.VirtScreen.y_cam:=AValue;
 end;
 function TfraEditor.GetZoom: Single;
 begin
-  Result := Editor.v2d.Zoom;
+  Result := Editor.VirtScreen.Zoom;
 end;
 procedure TfraEditor.SetEditorModified;
 {It is executed when the viewer reports changes (dimensioning, positioning, etc)
@@ -172,25 +172,25 @@ begin
 end;
 procedure TfraEditor.SetZoom(AValue: Single);
 begin
-  Editor.v2d.Zoom:=AValue;
+  Editor.VirtScreen.Zoom:=AValue;
 end;
 function TfraEditor.Get_Alfa: Single;
 begin
-  Result := Editor.v2d.Alfa;
+  Result := Editor.VirtScreen.Alfa;
 end;
 procedure TfraEditor.Set_Alfa(AValue: Single);
 begin
-  Editor.v2d.Alfa := AValue;
+  Editor.VirtScreen.Alfa := AValue;
 end;
 function TfraEditor.Get_Fi: Single;
 begin
-  REsult := Editor.v2d.Fi;
+  REsult := Editor.VirtScreen.Fi;
 end;
 procedure TfraEditor.Set_Fi(AValue: Single);
 begin
-  Editor.v2d.Fi := AValue;
+  Editor.VirtScreen.Fi := AValue;
 end;
-{procedure TView3D.KeyDown(Sender: TObject; var Key: Word;
+{procedure TEditor.KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 //Procesa el evento KeyDown()
 //var
@@ -253,9 +253,9 @@ constructor TfraEditor.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   objects:= TEditorObjList.Create(true);  //lista de objects
-  Editor := TView3D.Create(PaintBox1, objects);
-  Editor.v2d.Alfa:=0.7;
-  Editor.v2d.Fi:=0.7;
+  Editor := TEditor.Create(PaintBox1, objects);
+  Editor.VirtScreen.Alfa:=0.7;
+  Editor.VirtScreen.Fi:=0.7;
   Editor.OnModify:=@SetEditorModified;
 end;
 

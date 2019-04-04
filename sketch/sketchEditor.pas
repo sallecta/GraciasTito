@@ -5,7 +5,7 @@ By Tito Hinostroza 01/04/2017
 
 Description
 ============
-Defines the class TView3D that implements a viewer-editor of graphic objects.
+Defines the class TEditor that implements a viewer-editor of graphic objects.
 To work you must associate with a PaintBox control (where the objects will appreciate)
 graphics) and a list of objects of type TEditorObjList, defined in the unit
 ogDefObjGraf.
@@ -15,7 +15,7 @@ to the container of objects but only a referecncia, and that the focus here is o
 of states before of events.
 The idea is that this class provides a higher level layer on the graphic engine
 to show and edit objects with the mouse and by commands.
-In summary, the TView3D class must meet the following requirements:
+In summary, the TEditor class must meet the following requirements:
 
 1. Be associated with a list of objects "TEditorObjList". Does not include the container,
    but it is only a viewer-editor.
@@ -87,8 +87,8 @@ type
   TEvChangeState = procedure(ViewState: TViewState) of object;
   TEvSendMessage = procedure(msg: string) of object;
 
-  { TView3D }
-  TView3D = class
+  { TEditor }
+  TEditor = class
   private
     FState: TViewState;
     procedure GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean=true);
@@ -131,7 +131,7 @@ type
     zvPtr       : Single;   //coordenadas cirtuales del puntero
     objects     : TEditorObjList; //referencia a la lisat de objects
     seleccion   : TEditorObjList;
-    v2d         : TMotGraf;    //salida gráfica
+    VirtScreen         : TVirtScreen;    //graphic output
     incWheel    : Single;      //Incremento de ámgulo con la rueda del mouse
     ShowAxes : boolean;     //Para mostrar los ejec coordenados.
     AxesDistance : integer;     //Longitud de ejes coordenados
@@ -223,17 +223,17 @@ implementation
 uses
   guiFormConfig;
 
-procedure TView3D.SetState(AValue: TViewState);
+procedure TEditor.SetState(AValue: TViewState);
 begin
   if FState=AValue then Exit;
   FState:=AValue;
   if OnChangeState<>nil then OnChangeState(FState);
 end;
-procedure TView3D.v2d_ChangeView;
+procedure TEditor.v2d_ChangeView;
 begin
   if OnChangeView<>nil then OnChangeView;
 end;
-procedure TView3D.PBox_MouseDown(Sender: TObject;
+procedure TEditor.PBox_MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
 begin
     if OnMouseDown<>nil then OnMouseDown(Sender, Button, Shift, Xp, Yp);
@@ -241,12 +241,12 @@ begin
     y_pulso := yp;
     //Prepara inicio de desplazamiento de la pantalla. Se debe hacer porque podría
     //iniciarse el proceso de desplazamiento.
-    x_cam_a := v2d.x_cam;
-    y_cam_a := v2d.y_cam;
+    x_cam_a := VirtScreen.x_cam;
+    y_cam_a := VirtScreen.y_cam;
 
     CallEventState(State, vmeMouseDown, Button, Shift, xp, yp, ''); //Procesa de acuerdo al state
 end;
-procedure TView3D.PBox_MouseUp(Sender: TObject; Button: TMouseButton;
+procedure TEditor.PBox_MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer);
 begin
    //Verifica si la selección es NULA
@@ -256,33 +256,33 @@ begin
      if OnClickDer<> nil then OnClickDer(xp,yp);  //evento
    if OnMouseUp<>nil then OnMouseUp(Sender, Button, Shift, xp, yp);
 end;
-procedure TView3D.PBox_MouseMove(Sender: TObject; Shift: TShiftState;
+procedure TEditor.PBox_MouseMove(Sender: TObject; Shift: TShiftState;
   X,  Y: Integer);
 begin
   zvPtr := 0;   //fijamos el plano de trabajo en z=0
-  v2d.XYvirt(X,Y,zvPtr, xvPtr, yvPtr);  {actualiza puntero virtual.}
+  VirtScreen.XYvirt(X,Y,zvPtr, xvPtr, yvPtr);  {actualiza puntero virtual.}
   if OnMouseMove<>nil then OnMouseMove(Sender, Shift, X, Y);
   if ParaMover = True Then VerificarParaMover(X, Y);
   CallEventState(State, vmeMouseMove, mbExtra1, Shift, x, y, ''); //Procesa de acuerdo al state
 end;
-procedure TView3D.PBox_Paint(Sender: TObject);
+procedure TEditor.PBox_Paint(Sender: TObject);
 var
   o:TGraphicObj;
   x, y, xCuad1, xCuad2, yCuad1, yCuad2: Single;
   nCuad, ix, distCub, paso: Integer;
 begin
-    v2d.Clear;
+    VirtScreen.Clear;
     If State = EP_SELECMULT Then DibujRecSeleccion;
     if ShowGrid then begin
       //Muestra cuadrícula
-      v2d.SetPen(TColor($404040),1);
-      if v2d.Zoom > 7 then begin
+      VirtScreen.SetPen(TColor($404040),1);
+      if VirtScreen.Zoom > 7 then begin
         distCub := 100;  //distancia cubierta (valor virtual)
         paso := 10;      //ancho del paso (valor virtual)
-      end else if v2d.Zoom > 3 then begin
+      end else if VirtScreen.Zoom > 3 then begin
         distCub := 200;  //distancia cubierta (valor virtual)
         paso := 20;      //ancho del paso (valor virtual)
-      end else if v2d.Zoom > 1 then begin
+      end else if VirtScreen.Zoom > 1 then begin
         distCub := 600;  //distancia cubierta (valor virtual)
         paso := 50;      //ancho del paso (valor virtual)
       end else begin
@@ -293,22 +293,22 @@ begin
 
 //      xCuad1 := 0;
 //      xCuad2 := 1000;
-      xCuad1 := int((v2d.x_cam - distCub/2)/paso)*paso;
+      xCuad1 := int((VirtScreen.x_cam - distCub/2)/paso)*paso;
       xCuad2 := xCuad1 + distCub;
 
 //      yCuad1 := 0;
 //      yCuad2 := 1000;
-      yCuad1 := int((v2d.y_cam - distCub/2)/paso)*paso;
+      yCuad1 := int((VirtScreen.y_cam - distCub/2)/paso)*paso;
       yCuad2 := yCuad1 + distCub;
 
       x := xCuad1;
       for ix := 0 to nCuad do begin
-        v2d.Line(x,yCuad1,0, x, yCuad2, 0);
+        VirtScreen.Line(x,yCuad1,0, x, yCuad2, 0);
         x := x + paso;
       end;
       y := yCuad1;
       for ix := 0 to nCuad do begin
-        v2d.Line(xCuad1, y, 0, xCuad2, y, 0);
+        VirtScreen.Line(xCuad1, y, 0, xCuad2, y, 0);
         y := y + paso;
       end;
     end;
@@ -318,59 +318,59 @@ begin
     end;
     //Dibuja eje
     if ShowAxes then begin
-      v2d.SetPen(clRed, 1);
-      v2d.Line(0,0,0,100,0,0);
-      v2d.Line(0,0,0,0,100,0);
-      v2d.Line(0,0,0,0,0,100);
-      v2d.Texto(100,10,0,'x');
-      v2d.Texto(0,100,0,'y');
+      VirtScreen.SetPen(clRed, 1);
+      VirtScreen.Line(0,0,0,100,0,0);
+      VirtScreen.Line(0,0,0,0,100,0);
+      VirtScreen.Line(0,0,0,0,0,100);
+      VirtScreen.Texto(100,10,0,'x');
+      VirtScreen.Texto(0,100,0,'y');
     end;
     if ShowRotPoint then begin
-      x := v2d.x_cam;
-      y := v2d.y_cam;
-      v2d.SetPen(clGreen, 1);
-      v2d.Line(x-30,y,0,  x+30,y,0);
-      v2d.Line(x, y-30,0, x, y+30,0);
+      x := VirtScreen.x_cam;
+      y := VirtScreen.y_cam;
+      VirtScreen.SetPen(clGreen, 1);
+      VirtScreen.Line(x-30,y,0,  x+30,y,0);
+      VirtScreen.Line(x, y-30,0, x, y+30,0);
     end;
     //Dibuja puntero del mouse  (No es apropiado porque necesita refescar siempre.)
-//    v2d.SetPen(clWhite, 1);
-//    v2d.Line(xvPtr-30, yvPtr, zvPtr,
+//    VirtScreen.SetPen(clWhite, 1);
+//    VirtScreen.Line(xvPtr-30, yvPtr, zvPtr,
 //             xvPtr+30, yvPtr, zvPtr);
-//    v2d.Line(xvPtr, yvPtr-30, zvPtr,
+//    VirtScreen.Line(xvPtr, yvPtr-30, zvPtr,
 //             xvPtr, yvPtr+30, zvPtr);
-//    v2d.Line(xvPtr, yvPtr, zvPtr-30,
+//    VirtScreen.Line(xvPtr, yvPtr, zvPtr-30,
 //             xvPtr, yvPtr, zvPtr+30);
 end;
-procedure TView3D.PBox_MouseWheel(Sender: TObject; Shift: TShiftState;
+procedure TEditor.PBox_MouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 var
   d: Single;
 begin
   if Shift = [ssCtrl] then begin
     if WheelDelta>0 then d := incWheel else d := -incWheel;
-    v2d.Alfa := v2d.Alfa + d;
+    VirtScreen.Alfa := VirtScreen.Alfa + d;
   end;
   if Shift = [ssShift] then begin
     if WheelDelta>0 then d := incWheel else d := -incWheel;
-    v2d.Fi := v2d.Fi + d;
+    VirtScreen.Fi := VirtScreen.Fi + d;
   end;
   if Shift = [] then begin
-    if WheelDelta>0 then v2d.Zoom:=v2d.Zoom*1.2
-    else v2d.Zoom:=v2d.Zoom/1.2;
+    if WheelDelta>0 then VirtScreen.Zoom:=VirtScreen.Zoom*1.2
+    else VirtScreen.Zoom:=VirtScreen.Zoom/1.2;
   end;
   Refresh;
 end;
-procedure TView3D.PBox_DblClick(Sender: TObject);
+procedure TEditor.PBox_DblClick(Sender: TObject);
 begin
   if OnDblClick<>nil then OnDblClick(Sender);
 end;
-procedure TView3D.PBox_Resize(Sender: TObject);
+procedure TEditor.PBox_Resize(Sender: TObject);
 {Se aprovecha para fijar el punto de rotación al centro del control.}
 begin
-  v2d.x_offs := PBox.Width div 2;
-  v2d.y_offs := PBox.Height div 2;
+  VirtScreen.x_offs := PBox.Width div 2;
+  VirtScreen.y_offs := PBox.Height div 2;
 end;
-procedure TView3D.ExecuteCommand(command: string);
+procedure TEditor.ExecuteCommand(command: string);
 {Solicita ejecutar, un comando al visor. Esta debe ser el úncio medio, además de los
 eventos del ratón, por el cual se comunica acciones al visor. Visto de este modo,
 ExecuteCommand(), es similar a las rutinas manejadores de eventos: PBOX_???(), con la
@@ -382,11 +382,11 @@ begin
   CallEventState(State, vmeEjecComm, mbExtra1, [], 0, 0, command); //Procesa de acuerdo al state
 end;
 
-procedure TView3D.Refresh();  //   Optional s: TGraphicObj = Nothing
+procedure TEditor.Refresh();  //   Optional s: TGraphicObj = Nothing
 begin
   PBox.Invalidate;
 end;
-function TView3D.SeleccionaAlguno(xp, yp: Integer): TGraphicObj;
+function TEditor.SeleccionaAlguno(xp, yp: Integer): TGraphicObj;
 //Rutina principal para determinar la selección de objects. Si (xp,yp)
 //selecciona a algún objeto, devuelve la referencia, sino devuelve "NIL"
 var
@@ -412,7 +412,7 @@ begin
     End;
   end;
 End;
-procedure TView3D.VerificarParaMover(xp, yp: Integer);
+procedure TEditor.VerificarParaMover(xp, yp: Integer);
 {Si se empieza el movimiento, selecciona primero algun elemento que
 pudiera estar debajo del puntero y actualiza "EstPuntero".
 Solo se debe ejecutar una vez al inicio del movimiento, para ello se
@@ -447,7 +447,7 @@ begin
     CapturoEvento := nil;      //ningún objeto capturo el evento
     ParaMover := False;        //para que ya no se llame otra vez
 End;
-function TView3D.VerificarMovimientoRaton(X, Y: Integer): TGraphicObj;
+function TEditor.VerificarMovimientoRaton(X, Y: Integer): TGraphicObj;
 //Anima la marcación de los objects cuando el ratón pasa encima de ellos
 //Devuelve referencia al objeto por el que pasa el cirsor
 var s: TGraphicObj;
@@ -490,7 +490,7 @@ begin
 
 End;
 //***********Funciones para administrar los elementos visibles y seleccion por teclado**********
-function TView3D.NumeroVisibles: Integer;
+function TEditor.NumeroVisibles: Integer;
 //devuelve el número de objects visibles
 var
   v: TGraphicObj;
@@ -502,7 +502,7 @@ begin
   end;
   Result := tmp;
 end;
-function TView3D.PrimerVisible: TGraphicObj;
+function TEditor.PrimerVisible: TGraphicObj;
  //devuelve el primer objeto visible
 var
   i: integer;
@@ -514,7 +514,7 @@ begin
     end;
   end;
 End;
-function TView3D.UltimoVisible: TGraphicObj;
+function TEditor.UltimoVisible: TGraphicObj;
  //devuelve el último objeto visible
 var
   i: Integer;
@@ -526,7 +526,7 @@ begin
     end;
   end;
 end;
-function TView3D.SiguienteVisible(c: TGraphicObj): TGraphicObj;
+function TEditor.SiguienteVisible(c: TGraphicObj): TGraphicObj;
 //devuelve el siguiente objeto visible en el orden de creación
 var
   i: Integer;
@@ -546,7 +546,7 @@ begin
     //selecciona el siguiente visible
     Result := objects[i];
 end;
-function TView3D.AnteriorVisible(c: TGraphicObj): TGraphicObj;
+function TEditor.AnteriorVisible(c: TGraphicObj): TGraphicObj;
 //devuelve el anterior objeto visible en el orden de creación
 var
   i: Integer;
@@ -566,7 +566,7 @@ begin
     //selecciona el siguiente visible
     Result := objects[i];
 End;
-procedure TView3D.SeleccionarSiguiente;
+procedure TEditor.SeleccionarSiguiente;
 //Selecciona el siguiente elemento visible en el orden de creación.
 //Si no hay ninguno seleccionado, selecciona el primero
 var
@@ -585,7 +585,7 @@ begin
     end;
     Refresh;
 end;
-procedure TView3D.SeleccionarAnterior;
+procedure TEditor.SeleccionarAnterior;
 //Selecciona el anterior elemento visible en el orden de creación.
 //Si no hay ninguno seleccionado, selecciona el ultimo
 var
@@ -605,44 +605,44 @@ begin
     Refresh;
 end;
 //******************* Funciones de visualización **********************
-procedure TView3D.AmpliarClick(factor: real = FACTOR_AMPLIA_ZOOM;
+procedure TEditor.AmpliarClick(factor: real = FACTOR_AMPLIA_ZOOM;
                         xr: integer = 0; yr: integer = 0);
 var anc_p: Real ;  //ancho de pantalla
     alt_p: Real ;  //alto de pantalla
     x_zoom, y_zoom: Single;
 begin
-    If v2d.zoom < ZOOM_MAX_CONSULT Then
-        v2d.zoom := v2d.zoom * factor;
+    If VirtScreen.zoom < ZOOM_MAX_CONSULT Then
+        VirtScreen.zoom := VirtScreen.zoom * factor;
     If (xr <> 0) Or (yr <> 0) Then begin  //se ha especificado una coordenada central
-        anc_p := PBox.width / v2d.zoom;
-        alt_p := PBox.Height / v2d.zoom;
-        v2d.XYvirt(xr, yr, 0, x_zoom, y_zoom);     //convierte
-        v2d.FijarVentana(PBox.Width, PBox.Height,
+        anc_p := PBox.width / VirtScreen.zoom;
+        alt_p := PBox.Height / VirtScreen.zoom;
+        VirtScreen.XYvirt(xr, yr, 0, x_zoom, y_zoom);     //convierte
+        VirtScreen.FijarVentana(PBox.Width, PBox.Height,
                 x_zoom - anc_p / 2, x_zoom + anc_p / 2, y_zoom - alt_p / 2, y_zoom + alt_p / 2);
     End;
     Refresh;
 End;
-procedure TView3D.ReducirClick(factor: Real = FACTOR_AMPLIA_ZOOM;
+procedure TEditor.ReducirClick(factor: Real = FACTOR_AMPLIA_ZOOM;
                         x_zoom: Real = 0; y_zoom: Real = 0);
 begin
-    If v2d.zoom > ZOOM_MIN_CONSULT Then
-        v2d.zoom := v2d.zoom / factor;
+    If VirtScreen.zoom > ZOOM_MIN_CONSULT Then
+        VirtScreen.zoom := VirtScreen.zoom / factor;
     Refresh;
 End;
 /////////////////////////  Funciones de selección /////////////////////////////
-procedure TView3D.SeleccionarTodos;
+procedure TEditor.SeleccionarTodos;
 var s: TGraphicObj;
 begin
     For s In objects do s.Selec; //selecciona todos
 End;
-procedure TView3D.SelectNone();
+procedure TEditor.SelectNone();
 var s: TGraphicObj;
 begin
   For s In objects do //no se explora "seleccion" porque se modifica con "s.Deselect"
     if s.Selected then s.Deselect;
 //  seleccion.Clear; //No se puede limpiar simplemente la lista. Se debe llamar a s.Deselect
 End;
-function  TView3D.Seleccionado: TGraphicObj;
+function  TEditor.Seleccionado: TGraphicObj;
 //Devuelve el objeto seleccionado. Si no hay ninguno seleccionado, devuelve NIL.
 begin
   Result := nil;   //valor por defecto
@@ -650,7 +650,7 @@ begin
   //hay al menos uno
   Result := seleccion[seleccion.Count-1];  //devuelve el único o último
 End;
-function  TView3D.ObjPorNombre(nom: string): TGraphicObj;
+function  TEditor.ObjPorNombre(nom: string): TGraphicObj;
 //Devuelve la referecnia a un objeto, dado el nombre. Si no encuentra, devuelve NIL.
 var s: TGraphicObj;
 begin
@@ -663,54 +663,54 @@ begin
     end;
 End;
 
-procedure TView3D.moverAbajo(desp: Double = DESPLAZ_MENOR) ;  //abajo
+procedure TEditor.moverAbajo(desp: Double = DESPLAZ_MENOR) ;  //abajo
 //Genera un desplazamiento en la pantalla haciendolo independiente del
 //factor de ampliación actual
 var
     z: Single ;  //zoom
 begin
-    z := v2d.zoom;
+    z := VirtScreen.zoom;
     Desplazar(0, round(desp / z));
     Refresh;
 end;
-procedure TView3D.moverArriba(desp: Double = DESPLAZ_MENOR) ;  //arriba
+procedure TEditor.moverArriba(desp: Double = DESPLAZ_MENOR) ;  //arriba
 //Genera un desplazamiento en la pantalla haciendolo independiente del
 //factor de ampliación actual
 var
     z: Single ;  //zoom
 begin
-    z := v2d.zoom;
+    z := VirtScreen.zoom;
     Desplazar(0, round(-desp / z));
     Refresh;
 end;
-procedure TView3D.moverDerecha(desp: Double = DESPLAZ_MENOR) ;  //derecha
+procedure TEditor.moverDerecha(desp: Double = DESPLAZ_MENOR) ;  //derecha
 //Genera un desplazamiento en la pantalla haciendolo independiente del
 //factor de ampliación actual
 var
     z: Single ;  //zoom
 begin
-    z := v2d.zoom;
+    z := VirtScreen.zoom;
     Desplazar(round(desp / z), 0);
     Refresh;
 end;
-procedure TView3D.moverIzquierda(desp: Double = DESPLAZ_MENOR) ;  //izquierda
+procedure TEditor.moverIzquierda(desp: Double = DESPLAZ_MENOR) ;  //izquierda
 //Genera un desplazamiento en la pantalla haciendolo independiente del
 //factor de ampliación actual
 var
     z: Single ;  //zoom
 begin
-    z := v2d.zoom;
+    z := VirtScreen.zoom;
     Desplazar(round(-desp / z), 0);
     Refresh;
 end;
-procedure TView3D.Desplazar(dx, dy: integer);
+procedure TEditor.Desplazar(dx, dy: integer);
 begin
 //Procedimiento "estandar" para hacer un desplazamiento de la pantalla
 //Varía los parámetros de la perspectiva "x_cam" e "y_cam"
-    v2d.Desplazar(dx, dy);
+    VirtScreen.Desplazar(dx, dy);
 end;
 //Modificación de objects
-procedure TView3D.GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean = true);
+procedure TEditor.GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean = true);
 //Agrega un objeto grafico al editor. El objeto gráfico debe haberse creado previamente,
 //y ser de tipo TGraphicObj o un descendiente. "AutoPos", permite posicionar automáticamente
 //al objeto en pantalla, de modo que se evite ponerlo siempre en la misma posición.
@@ -721,8 +721,8 @@ begin
   if OnModify<>nil then OnModify;
   //Posiciona tratando de que siempre aparezca en pantalla
   if AutoPos Then begin  //Se calcula posición
-    x := v2d.Xvirt(100, 100) + 30 * objects.Count Mod 400;
-    y := v2d.Yvirt(100, 100) + 30 * objects.Count Mod 400;
+    x := VirtScreen.Xvirt(100, 100) + 30 * objects.Count Mod 400;
+    y := VirtScreen.Yvirt(100, 100) + 30 * objects.Count Mod 400;
     argGraphicObject.PlaceAt(x,y);
   end;
   //configura eventos para ser controlado por este editor
@@ -732,14 +732,14 @@ begin
 //  Refresh(s)   ;             //Refresca objeto
   objects.Add(argGraphicObject);               //agrega elemento
 end;
-procedure TView3D.GraphicObjectDelete(obj: TGraphicObj);  //elimina un objeto grafico
+procedure TEditor.GraphicObjectDelete(obj: TGraphicObj);  //elimina un objeto grafico
 begin
   obj.Deselect;  //por si acaso
   objects.Remove(obj);
   obj := nil;
   if OnModify<>nil then OnModify;
 End;
-procedure TView3D.DeleteSelected;
+procedure TEditor.DeleteSelected;
 //Elimina la selección.
 var
   v: TGraphicObj;
@@ -751,16 +751,16 @@ begin
 end;
 
 /////////////////////////   Funciones del Rectángulo de Selección /////////////////////////
-procedure TView3D.DibujRecSeleccion();
+procedure TEditor.DibujRecSeleccion();
 //Dibuja por métodos gráficos el rectángulo de selección en pantalla
 begin
-    v2d.SetPen(clGreen, 1, psDot);
-    v2d.rectang0(x1Sel, y1Sel, x2Sel, y2Sel);
+    VirtScreen.SetPen(clGreen, 1, psDot);
+    VirtScreen.rectang0(x1Sel, y1Sel, x2Sel, y2Sel);
 
     x1Sel_a := x1Sel; y1Sel_a := y1Sel;
     x2Sel_a := x2Sel; y2Sel_a := y2Sel;
 End;
-procedure TView3D.InicRecSeleccion(X, Y: Integer);
+procedure TEditor.InicRecSeleccion(X, Y: Integer);
 //Inicia el rectángulo de selección, con las coordenadas
 begin
     x1Sel:= X; y1Sel := Y;
@@ -770,7 +770,7 @@ begin
     x2Sel_a := x2Sel;
     y2Sel_a := y2Sel;
 End;
-function TView3D.RecSeleccionNulo: Boolean;
+function TEditor.RecSeleccionNulo: Boolean;
  //Indica si el rectángulo de selección es de tamaño NULO o despreciable
 begin
     If (x1Sel = x2Sel) And (y1Sel = y2Sel) Then
@@ -778,7 +778,7 @@ begin
     Else
         RecSeleccionNulo := False;
 End;
-function TView3D.enRecSeleccion(X, Y: Single): Boolean;
+function TEditor.enRecSeleccion(X, Y: Single): Boolean;
 //Devuelve verdad si (x,y) esta dentro del rectangulo de seleccion.
 var xMin, xMax: Integer;   //coordenadas mínimas y máximas del recuadro
     yMin, yMax: Integer;
@@ -801,8 +801,8 @@ begin
         yMax := y1Sel;
     End;
 
-    v2d.XYvirt(xMin, yMin, 0, xx1, yy1);
-    v2d.XYvirt(xMax, yMax, 0, xx2, yy2);
+    VirtScreen.XYvirt(xMin, yMin, 0, xx1, yy1);
+    VirtScreen.XYvirt(xMax, yMax, 0, xx2, yy2);
 
     //verifica si está en región
     If (X >= xx1) And (X <= xx2) And (Y >= yy1) And (Y <= yy2) Then
@@ -811,28 +811,28 @@ begin
         enRecSeleccion := False;
 End;
 ////////////////// Eventos para atender requerimientos de objects "TGraphicObj" ///////////////////////
-procedure TView3D.GraphicObject_Select(obj: TGraphicObj);
+procedure TEditor.GraphicObject_Select(obj: TGraphicObj);
 //Agrega un objeto gráfico a la lista "selección". Este método no debe ser llamado directamente.
 //Si se quiere seleccionar un objeto se debe usar la forma objeto.Selec.
 begin
 //    If obj.Seleccionado Then Exit;  //Ya está seleccionado. No debe ser necesario
   seleccion.Add(obj);      { TODO : Verificar si se puede manejar bien el programa sin usar la propiedad "NombreObj"}
 End;
-procedure TView3D.GraphicObject_Unselec(obj: TGraphicObj);
+procedure TEditor.GraphicObject_Unselec(obj: TGraphicObj);
 //Quita un objeto gráfico de la lista "selección". Este método no debe ser llamado directamente.
 //Si se quiere quitar la seleccion a un objeto se debe usar la forma objeto.Deselect.
 begin
 //    If not obj.Seleccionado Then Exit;
   seleccion.Remove(obj);
 End;
-procedure TView3D.GraphicObject_SetPointer(Punt: integer);
+procedure TEditor.GraphicObject_SetPointer(Punt: integer);
 //Procedimiento que cambia el puntero del mouse. Es usado para proporcionar la los objects "TGraphicObj"
 //la posibilidad de cambiar el puntero.
 begin
   PBox.Cursor := Punt;        //define cursor
 end;
 //Rutinas de procesamiento de estados
-function TView3D.StateAsStr: string;
+function TEditor.StateAsStr: string;
 {Debe el esatdo como una cadena descriptiva. Es necesario actualizar la desciprción
 para cada state nuevoq ue se vaya agregando.}
 begin
@@ -850,13 +850,13 @@ begin
     Result := '<< Desconocido >>';
   end;
 end;
-procedure TView3D.RegisterState(State0: TViewState;
+procedure TEditor.RegisterState(State0: TViewState;
   EventHandler: TVisEventHandler);
 {Registra un nuevo state del Ratón}
 begin
   EventOfState[State0] := EventHandler;
 end;
-procedure TView3D.ClearEventState;
+procedure TEditor.ClearEventState;
 var
   sta: TViewState;
 begin
@@ -864,12 +864,12 @@ begin
     EventOfState[sta] := nil;
   end;
 end;
-procedure TView3D.SendData(Data: string);
+procedure TEditor.SendData(Data: string);
 {Solicita enviar datos al comadno actual (que debe ser el state actual).}
 begin
   CallEventState(State, vmeEjecComm, mbExtra1, [], 0, 0, Data);  //para Initiate
 end;
-procedure TView3D.CallEventState(State0: TViewState;
+procedure TEditor.CallEventState(State0: TViewState;
   EventTyp: TVisEventTyp; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; txt: string);
 {Llama al evento apropiado para el state indicado}
@@ -937,7 +937,7 @@ begin
   if y=MaxInt then exit(false);
   exit(true);
 end;
-procedure TView3D.proc_NORMAL(EventTyp: TVisEventTyp; Button: TMouseButton;
+procedure TEditor.proc_NORMAL(EventTyp: TVisEventTyp; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; txt: string);
 {Procesa eventos, en el esatdo NORMAL. Este es el state estable o Proj defecto.
 Desde aquí se pasan a todos los demás estados.}
@@ -1052,7 +1052,7 @@ begin
       end;
   end;
 end;
-procedure TView3D.proc_SELECMULT(EventTyp: TVisEventTyp;
+procedure TEditor.proc_SELECMULT(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   o: TGraphicObj;
@@ -1083,7 +1083,7 @@ begin
     State := EP_NORMAL;
   end;
 end;
-procedure TView3D.proc_MOV_OBJS(EventTyp: TVisEventTyp;
+procedure TEditor.proc_MOV_OBJS(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   s: TGraphicObj;
@@ -1105,16 +1105,16 @@ begin
     if OnObjectsMoved<>nil then OnObjectsMoved;
   end;
 end;
-procedure TView3D.proc_DESP_PANT(EventTyp: TVisEventTyp;
+procedure TEditor.proc_DESP_PANT(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   dx, dy: Single;
 begin
   if EventTyp = vmeMouseDown then begin
   end else if EventTyp = vmeMouseMove then begin
-    v2d.ObtenerDesplazXY( xp, yp, x_pulso, y_pulso, dx, dy);
-    v2d.x_cam -= dx;
-    v2d.y_cam -= dy;
+    VirtScreen.ObtenerDesplazXY( xp, yp, x_pulso, y_pulso, dx, dy);
+    VirtScreen.x_cam -= dx;
+    VirtScreen.y_cam -= dy;
     x_pulso := xp; y_pulso := yp;  {Tal vez deba usar otras variables aparte de x_pulso, e
                                   y_pulso,  para no interferir}
     Refresh;
@@ -1123,16 +1123,16 @@ begin
     State := EP_NORMAL;
   end;
 end;
-procedure TView3D.proc_DESP_ANG(EventTyp: TVisEventTyp;
+procedure TEditor.proc_DESP_ANG(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   dx, dy: Single;
 begin
   if EventTyp = vmeMouseDown then begin
   end else if EventTyp = vmeMouseMove then begin
-    v2d.ObtenerDesplazXY( xp, yp, x_pulso, y_pulso, dx, dy);
-    v2d.Alfa := v2d.Alfa + dx/100;
-    v2d.Fi   := v2d.Fi + dy/100;
+    VirtScreen.ObtenerDesplazXY( xp, yp, x_pulso, y_pulso, dx, dy);
+    VirtScreen.Alfa := VirtScreen.Alfa + dx/100;
+    VirtScreen.Fi   := VirtScreen.Fi + dy/100;
     x_pulso := xp; y_pulso := yp;  {Tal vez deba usar otras variables aparte de x_pulso, e
                                    y_pulso,  para no interferir}
     Refresh;
@@ -1140,7 +1140,7 @@ begin
     State := EP_NORMAL;
   end;
 end;
-procedure TView3D.proc_DIMEN_OBJ(EventTyp: TVisEventTyp;
+procedure TEditor.proc_DIMEN_OBJ(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 begin
   if EventTyp = vmeMouseDown then begin
@@ -1157,7 +1157,7 @@ begin
     ParaMover := False;        //por si aca
   end;
 end;
-procedure TView3D.proc_RAT_ZOOM(EventTyp: TVisEventTyp;
+procedure TEditor.proc_RAT_ZOOM(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 begin
   if EventTyp = vmeMouseDown then begin
@@ -1168,7 +1168,7 @@ begin
     State := EP_NORMAL;
   end;
 end;
-procedure TView3D.proc_COMM_LINE(EventTyp: TVisEventTyp;
+procedure TEditor.proc_COMM_LINE(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 const
   {Usamos constante con tipo porque no hay STATIC en FreePascal, y como este
@@ -1198,14 +1198,14 @@ begin
         exit;
       end;
       //Agregar recta, con las coord. dadas
-      lin := TObjGrafDXF.Create(v2d);
+      lin := TObjGrafDXF.Create(VirtScreen);
       lin.SetP0(xLin, yLin, 0); //Especifica el primer punto
       lin.SetP1(xvPtr, yvPtr, 0); //Especifica siguiente punto por defecto
       x0 := xLin; y0 := yLin;  //guarda primer punto
     end;
     vmeMouseDown: begin
       //Agregar recta, con las coord. dadas
-      lin := TObjGrafDXF.Create(v2d);
+      lin := TObjGrafDXF.Create(VirtScreen);
       lin.SetP0(xvPtr, yvPtr, 0); //Esperamos coordenadas
       lin.SetP1(xvPtr, yvPtr, 0);
       x0 := xvPtr; y0 := yvPtr;  //guarda primer punto
@@ -1243,7 +1243,7 @@ begin
       Refresh;
 
       //Inicia otra recta, sin salir del state
-      lin := TObjGrafDXF.Create(v2d);
+      lin := TObjGrafDXF.Create(VirtScreen);
       lin.SetP0(xLin, yLin, 0); //Esperamos coordenadas
       lin.SetP1(xvPtr, yvPtr, 0);
       GraphicObjectAdd(lin);
@@ -1266,7 +1266,7 @@ begin
       Refresh;
 
       //Inicia otra recta, sin salir del state
-      lin := TObjGrafDXF.Create(v2d);
+      lin := TObjGrafDXF.Create(VirtScreen);
       lin.SetP0(xvPtr, yvPtr, 0); //Esperamos coordenadas
       lin.SetP1(xvPtr, yvPtr, 0);
       GraphicObjectAdd(lin);
@@ -1281,7 +1281,7 @@ begin
     end;
   end;
 end;
-procedure TView3D.proc_COMM_RECTAN(EventTyp: TVisEventTyp;
+procedure TEditor.proc_COMM_RECTAN(EventTyp: TVisEventTyp;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 const
   {Usamos constante con tipo porque no hay STATIC en FreePascal, y como este
@@ -1309,7 +1309,7 @@ begin
           exit;
         end;
         //Agregar recta, con las coord. dadas
-        lin := TObjGrafDXF.Create(v2d);
+        lin := TObjGrafDXF.Create(VirtScreen);
         lin.SetP0(xLin, yLin, 0); //Especifica el primer punto
         lin.SetP1(xvPtr, yvPtr, 0); //Especifica el primer punto
         GraphicObjectAdd(lin);
@@ -1350,7 +1350,7 @@ begin
   vmeMouseDown: begin
       if paso = 1 then begin
         //Agregar recta, con las coord. dadas
-        lin := TObjGrafDXF.Create(v2d);
+        lin := TObjGrafDXF.Create(VirtScreen);
         lin.SetP0(xvPtr, yvPtr, 0); //Esperamos coordenadas
         lin.SetP1(xvPtr, yvPtr, 0);
         GraphicObjectAdd(lin);
@@ -1363,7 +1363,7 @@ begin
         Refresh;
 
         //Inicia otra recta, sin salir del state
-        lin := TObjGrafDXF.Create(v2d);
+        lin := TObjGrafDXF.Create(VirtScreen);
         lin.SetP0(xvPtr, yvPtr, 0); //Esperamos coordenadas
         lin.SetP1(xvPtr, yvPtr, 0);
         GraphicObjectAdd(lin);
@@ -1379,7 +1379,7 @@ begin
   end;
 end;
 //Inicialización
-procedure TView3D.RestoreState(msg: string='');
+procedure TEditor.RestoreState(msg: string='');
 {Resatura el state del Visor, poniéndolo en state EP_NORMAL.
 Si se indica "msg", se genera el evento OnSendMessage().}
 begin
@@ -1390,7 +1390,7 @@ begin
   PBox.Cursor := CUR_DEFEC;        //define cursor
   if msg<>'' then OnSendMessage(msg);
 end;
-constructor TView3D.Create(PB0: TPaintBox; objectList: TEditorObjList);
+constructor TEditor.Create(PB0: TPaintBox; objectList: TEditorObjList);
 {Metodo de inicialización de la clase Visor. Debe indicarse el PaintBox de
 salida donde se controlarán los objects gráficos.
 y también debe recibir la lista de objects a administrar.}
@@ -1408,9 +1408,9 @@ begin
   PBox.OnPaint     := @PBox_Paint;
   PBox.OnResize    := @PBox_Resize;
   //Inicia motor
-  v2d := TMotGraf.Create(PBox);    //Inicia motor gráfico
-  v2d.SetFont('MS Sans Serif');  //define tipo de letra
-  v2d.OnChangeView:=@v2d_ChangeView;
+  VirtScreen := TVirtScreen.Create(PBox);    //Inicia motor gráfico
+  VirtScreen.SetFont('MS Sans Serif');  //define tipo de letra
+  VirtScreen.OnChangeView:=@v2d_ChangeView;
   seleccion := TEditorObjList.Create(FALSE);  {crea lista sin posesión", porque la
                                              administración la hará "objects".}
   RestoreState;
@@ -1428,13 +1428,13 @@ begin
   RegisterState(EP_COMM_LINE, @proc_COMM_LINE);
   RegisterState(EP_COMM_RECTAN, @proc_COMM_RECTAN);
   ///////////!!!!!!!!!!!!!!!!!!!!!!
-argGraphicObject := TMyObject.Create(v2d);
+argGraphicObject := TMyObject.Create(VirtScreen);
 GraphicObjectAdd(argGraphicObject);
 end;
-destructor TView3D.Destroy;
+destructor TEditor.Destroy;
 begin
   seleccion.Free;
-  v2d.Free;      //Libera
+  VirtScreen.Free;      //Libera
   //resatura eventos
   PBox.OnMouseUp:=nil;
   PBox.OnMouseDown:=nil;

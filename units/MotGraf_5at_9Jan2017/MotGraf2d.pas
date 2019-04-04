@@ -16,8 +16,8 @@ interface
 uses
   Classes, SysUtils, Graphics, ExtCtrls, Controls;
 type
-  { TMotGraf }
-  TMotGraf = class
+  { TVirtScreen }
+  TVirtScreen = class
     //Parámetros de la cámara (perspectiva)
     x_cam   : Single;  //coordenadas de la camara
     y_cam   : Single;
@@ -52,51 +52,51 @@ type
 
 implementation
 
-{ TMotGraf }
-procedure TMotGraf.Clear;
+{ TVirtScreen }
+procedure TVirtScreen.Clear;
 begin
   gControl.Canvas.Brush.Color := clBlack;
   gControl.Canvas.FillRect(0,0,gControl.Width,gControl.Height);
 end;
-function TMotGraf.XPant(x:Single): Integer; inline;   //INLINE Para acelerar las llamadas
+function TVirtScreen.XPant(x:Single): Integer; inline;   //INLINE Para acelerar las llamadas
 //Función de la geometría del motor. Da la transformación lineal de la coordenada x.
 begin
 //   XPant := Round((x - x_cam) * Zoom + x_offs);
   Result := Round(x+x_offs);
 end;
-function TMotGraf.YPant(y:Single): Integer; inline;  //INLINE Para acelerar las llamadas
+function TVirtScreen.YPant(y:Single): Integer; inline;  //INLINE Para acelerar las llamadas
 //Función de la geometría del motor. Da la transformación lineal de la coordenada y.
 begin
 //   YPant := Round((y - y_cam) * Zoom + y_offs);
   Result := Round(gControl.Height-(y+y_offs));
 end;
-procedure TMotGraf.XYpant(xv, yv: Single; var xp, yp: Integer);
+procedure TVirtScreen.XYpant(xv, yv: Single; var xp, yp: Integer);
 //Devuelve las coordenadas de pantalla para un punto virtual (x,y,z).
 begin
     xp := Xpant(xv);
     yp := Ypant(yv);
 end;
 
-procedure TMotGraf.SetPenColor(AValue: TColor);
+procedure TVirtScreen.SetPenColor(AValue: TColor);
 begin
   cv.Pen.Color:=AValue;
 end;
-function TMotGraf.GetPenColor: TColor;
+function TVirtScreen.GetPenColor: TColor;
 begin
   Result := cv.Pen.Color;
 end;
-procedure TMotGraf.Line(const x1, y1, x2, y2: Double);
+procedure TVirtScreen.Line(const x1, y1, x2, y2: Double);
 begin
   cv.Line(XPant(x1), YPant(y1), XPant(x2), YPant(y2));
 end;
-constructor TMotGraf.Create(gContrl0: TGraphicControl);
+constructor TVirtScreen.Create(gContrl0: TGraphicControl);
 begin
   gControl := gContrl0;
   cv := gControl.Canvas;
   x_offs := 10;
   y_offs := 10;
 end;
-destructor TMotGraf.Destroy;
+destructor TVirtScreen.Destroy;
 begin
   inherited Destroy;
 end;

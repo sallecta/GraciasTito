@@ -22,9 +22,9 @@ type
     procedure btnAcceptClick(Sender: TObject);
     procedure btnApplyClick(Sender: TObject);
   private
-    View: TfraPaintBox;
+    View: TFrPaintBox;
   public
-    procedure Exec(argView: TfraPaintBox);
+    procedure Exec(argView: TFrPaintBox);
   end;
 
 var
@@ -42,20 +42,20 @@ end;
 
 procedure TFormPropView.btnApplyClick(Sender: TObject);
 begin
-  View.viewEdi.ShowAxes  := chbShowAxes.Checked;
-  View.viewEdi.AxesDistance  := spnAxeDist.Value;
-  View.viewEdi.ShowRotPoint := chbShowRotPoint.Checked;
-  View.viewEdi.ShowGrid   := chbShowGrid.Checked;
-  View.viewEdi.Refresh;
+  View.Editor.ShowAxes  := chbShowAxes.Checked;
+  View.Editor.AxesDistance  := spnAxeDist.Value;
+  View.Editor.ShowRotPoint := chbShowRotPoint.Checked;
+  View.Editor.ShowGrid   := chbShowGrid.Checked;
+  View.Editor.Refresh;
 end;
 
-procedure TFormPropView.Exec(argView: TfraPaintBox);
+procedure TFormPropView.Exec(argView: TFrPaintBox);
 begin
   View := argView;
-  chbShowAxes.Checked    := View.viewEdi.ShowAxes;
-  spnAxeDist.Value      := View.viewEdi.AxesDistance;
-  chbShowRotPoint.Checked := View.viewEdi.ShowRotPoint;
-  chbShowGrid.Checked := View.viewEdi.ShowGrid;
+  chbShowAxes.Checked    := View.Editor.ShowAxes;
+  spnAxeDist.Value      := View.Editor.AxesDistance;
+  chbShowRotPoint.Checked := View.Editor.ShowRotPoint;
+  chbShowGrid.Checked := View.Editor.ShowGrid;
   Showmodal;
 end;
 
