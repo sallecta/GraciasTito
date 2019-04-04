@@ -41,13 +41,13 @@ object frmProject: TfrmProject
       Caption = 'General'
       ClientHeight = 258
       ClientWidth = 422
-      object txtNombre: TEdit
+      object TeditName: TEdit
         Left = 24
         Height = 23
         Top = 40
         Width = 232
         TabOrder = 0
-        Text = 'txtNombre'
+        Text = 'TeditName'
       end
       object Label1: TLabel
         Left = 24
@@ -62,7 +62,7 @@ object frmProject: TfrmProject
       Caption = 'Notas'
       ClientHeight = 258
       ClientWidth = 422
-      object txtNotas: TMemo
+      object TMemoNotes: TMemo
         Left = 8
         Height = 165
         Top = 75
@@ -90,14 +90,14 @@ object frmProject: TfrmProject
         Caption = 'Creado por:'
         ParentColor = False
       end
-      object txtCreadoPor: TEdit
+      object TeditCreatedBy: TEdit
         Left = 96
         Height = 23
         Top = 24
         Width = 96
         Enabled = False
         TabOrder = 1
-        Text = 'txtCreadoPor'
+        Text = 'TeditCreatedBy'
       end
     end
   end

@@ -1,21 +1,24 @@
 unit guiFormProject;
+
 {$mode objfpc}{$H+}
 interface
+
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   EditBtn, StdCtrls, ButtonPanel, Buttons, ComCtrls, Spin, Menus, MisUtils,
   BasicGrilla, sketchDocument, glob;
+
 type
   { TfrmProject }
   TfrmProject = class(TForm)
     ButtonPanel1: TButtonPanel;
     Label1: TLabel;
     MainMenu1: TMainMenu;
-    txtNombre: TEdit;
+    TeditName: TEdit;
     Label5: TLabel;
-    txtCreadoPor: TEdit;
+    TeditCreatedBy: TEdit;
     Label8: TLabel;
-    txtNotas: TMemo;
+    TMemoNotes: TMemo;
     PageControl1: TPageControl;
     TabSheet1: TTabSheet;
     TabSheet3: TTabSheet;
@@ -24,81 +27,81 @@ type
     procedure FormCreate(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
   private
-    Aceptado  : boolean;   //Indica que se ha pulsado el botón ACEPTAR
-    ErrorDatos: boolean;   //Indica que hubo error de datos al Aceptar
-    presup    : TProject; //Referencia al presupuesto
-    procRefresc: TEvRefrescar;
+    Accepted: boolean;
+    ErrorData: boolean;
+    aProject: TProject;
+    procRefresh: TEvRefresh;
   public
-    function Exec(presup0: TProject; procRefrescar: TEvRefrescar;
-      soloLect: boolean=false): boolean;
-    function ExecNew(presup0: TProject): boolean;
+    function Exec(argProj: TProject; argProcRefresh: TEvRefresh;
+      soloRead: boolean = False): boolean;
+    function ExecNew(argProj: TProject): boolean;
   end;
 
 var
   frmProject: TfrmProject;
 
 implementation
+
 {$R *.lfm}
 { TfrmProject }
 procedure TfrmProject.FormCreate(Sender: TObject);
 begin
-  Aceptado := false;
+  Accepted := False;
 end;
+
 procedure TfrmProject.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-  VerifSalir(Aceptado, ErrorDatos, CanClose);
+  VerifyClose(Accepted, ErrorData, CanClose);
 end;
+
 procedure TfrmProject.OKButtonClick(Sender: TObject);
 begin
-  //Validaciones
-  if trim(txtNombre.Text) = '' then begin
-    MsgExc('Error en Cliente: ' + txtNombre.Text);
-    txtNombre.Visible:=true;
-    PageControl1.ActivePage := TTabSheet(txtNombre.Parent);  //activa página
-    txtNombre.SetFocus;
-    ErrorDatos := true;
-    Aceptado  := true;
+  //Validate
+  if trim(TeditName.Text) = '' then
+  begin
+    MsgExc('Error en Cliente: ' + TeditName.Text);
+    TeditName.Visible := True;
+    PageControl1.ActivePage := TTabSheet(TeditName.Parent);
+    TeditName.SetFocus;
+    ErrorData := True;
+    Accepted := True;
     exit;
   end;
-  //Asignación
-  presup.name   := txtNombre.Text;
-  presup.notas    := txtNotas.Text;
-  presup.creadoPor:= txtCreadoPor.TextHint;
-  Aceptado := true;
-  //self.Hide;
+  aProject.Name := TeditName.Text;
+  aProject.notes := TMemoNotes.Text;
+  aProject.createdBy := TeditCreatedBy.TextHint;
+  Accepted := True;
 end;
+
 procedure TfrmProject.CancelButtonClick(Sender: TObject);
 begin
-  Aceptado := false;
+  Accepted := False;
 end;
 
-function TfrmProject.Exec(presup0: TProject; procRefrescar: TEvRefrescar;
-  soloLect: boolean): boolean;
+function TfrmProject.Exec(argProj: TProject; argProcRefresh: TEvRefresh;
+  soloRead: boolean): boolean;
 begin
-  presup := presup0;
-  procRefresc := procRefrescar;
+  aProject := argProj;
+  procRefresh := argProcRefresh;
 
-  txtNombre.Text   := presup.name;
-  txtCreadoPor.Text:= presup.creadoPor;
-  txtNotas.Text    := presup.notas;
+  TeditName.Text := aProject.Name;
+  TeditCreatedBy.Text := aProject.createdBy;
+  TMemoNotes.Text := aProject.notes;
 
-  ButtonPanel1.OKButton.Enabled := not soloLect;
+  ButtonPanel1.OKButton.Enabled := not soloRead;
 
-  Self.ShowModal;  //se muestra modal
-  Result := Aceptado;
+  Self.ShowModal;
+  Result := Accepted;
 end;
-function TfrmProject.ExecNew(presup0: TProject): boolean;
-{Abre la ventana y la configura de modo apropiado, de modo que la ventana permita configurar
-las propiedades iniciales de un nuevo presupuesto.}
+
+function TfrmProject.ExecNew(argProj: TProject): boolean;
+
 var
-  maxord: String;
+  projNameIndex: string;
 begin
-  maxord := '1'; //frmAbrirPresup.LeerMaxOrdinalPresup;
-  //configura valores iniciales
-  presup0.name := 'Proyecto' + maxord;
-  //Abre ventana de propiedades
-  Result := Exec(presup0, nil);
+  projNameIndex := '1';
+  argProj.Name := 'Proyecto' + projNameIndex;
+  Result := Exec(argProj, nil);
 end;
 
 end.
-

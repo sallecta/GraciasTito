@@ -63,8 +63,8 @@ type
     procedure SetModific(AValue: boolean);
   public
     name : string;
-    creadoPor: string;
-    notas    : string;
+    createdBy: string;
+    notes    : string;
     unidades : Tunidades;
     OnModify : procedure of object; //Proyecto modificado
     OnChangePersp: TEveCambiaPerspec;  //Cambia x_des, y_des, x_cam, alfa, ...

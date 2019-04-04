@@ -10,7 +10,7 @@ type
   { TFormPropView }
 
   TFormPropView = class(TForm)
-    btnAplicar: TBitBtn;
+    btnApply: TBitBtn;
     btnCancelar: TBitBtn;
     btnAceptar: TBitBtn;
     chkVerEjes: TCheckBox;
