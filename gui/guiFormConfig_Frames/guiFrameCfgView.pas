@@ -13,11 +13,11 @@ type
   { TfraCfgView }
 
   TfraCfgView = class(TFrame)
-    chkVerEjes: TCheckBox;
+    chbShowAxes: TCheckBox;
     chkVerCoorPunt: TCheckBox;
     spnIncrWheel: TFloatSpinEdit;
     Label2: TLabel;
-    spnLongEje: TFloatSpinEdit;
+    spnAxeDist: TFloatSpinEdit;
     Label1: TLabel;
     procedure chkVerEjesChange(Sender: TObject);
   public
@@ -34,14 +34,14 @@ implementation
 
 procedure TfraCfgView.chkVerEjesChange(Sender: TObject);
 begin
-  spnLongEje.Enabled := chkVerEjes.Checked;
-  label1.Enabled:= chkVerEjes.Checked;
+  spnAxeDist.Enabled := chbShowAxes.Checked;
+  label1.Enabled:= chbShowAxes.Checked;
 end;
 
 procedure TfraCfgView.Initiate(cfgFile: TMiConfigBasic);
 begin
-  cfgFile.Asoc_Bol(self.Name + '/VerEjesCoor', @VerEjesCoor , chkVerEjes, true);
-  cfgFile.Asoc_Dbl(self.Name + '/LongEjeCoor', @LongEjeCoor , spnLongEje, 100);
+  cfgFile.Asoc_Bol(self.Name + '/VerEjesCoor', @VerEjesCoor , chbShowAxes, true);
+  cfgFile.Asoc_Dbl(self.Name + '/LongEjeCoor', @LongEjeCoor , spnAxeDist, 100);
   cfgFile.Asoc_Bol(self.Name + '/VerCoorPunt', @VerCoorPunt,  chkVerCoorPunt, true);
   cfgFile.Asoc_Dbl(self.Name + '/incrWheel',   @incrWheel  , spnIncrWheel, 100);
   chkVerEjesChange(self);

@@ -133,10 +133,10 @@ type
     seleccion   : TlistObjGraf;
     v2d         : TMotGraf;    //salida gráfica
     incWheel    : Single;      //Incremento de ámgulo con la rueda del mouse
-    VerEjesCoor : boolean;     //Para mostrar los ejec coordenados.
-    LonEjesCoor : integer;     //Longitud de ejes coordenados
-    VerPuntoGiro: boolean;     //Para mostrar el punto de giro.
-    VerCuadric  : boolean;     //Para mostrar la cuadrícula.
+    ShowAxes : boolean;     //Para mostrar los ejec coordenados.
+    AxesDistance : integer;     //Longitud de ejes coordenados
+    ShowRotPoint: boolean;     //Para mostrar el punto de giro.
+    ShowGrid  : boolean;     //Para mostrar la cuadrícula.
     function Seleccionado: TObjGraf;
     function ObjPorNombre(nom: string): TObjGraf;
     procedure Refresh;
@@ -273,7 +273,7 @@ var
 begin
     v2d.Clear;
     If State = EP_SELECMULT Then DibujRecSeleccion;
-    if VerCuadric then begin
+    if ShowGrid then begin
       //Muestra cuadrícula
       v2d.SetPen(TColor($404040),1);
       if v2d.Zoom > 7 then begin
@@ -317,7 +317,7 @@ begin
       o.Dibujar;
     end;
     //Dibuja eje
-    if VerEjesCoor then begin
+    if ShowAxes then begin
       v2d.SetPen(clRed, 1);
       v2d.Line(0,0,0,100,0,0);
       v2d.Line(0,0,0,0,100,0);
@@ -325,7 +325,7 @@ begin
       v2d.Texto(100,10,0,'x');
       v2d.Texto(0,100,0,'y');
     end;
-    if VerPuntoGiro then begin
+    if ShowRotPoint then begin
       x := v2d.x_cam;
       y := v2d.y_cam;
       v2d.SetPen(clGreen, 1);

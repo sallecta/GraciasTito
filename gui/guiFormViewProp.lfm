@@ -16,7 +16,7 @@ object FormPropView: TFormPropView
     ClientHeight = 50
     ClientWidth = 320
     TabOrder = 0
-    object btnAceptar: TBitBtn
+    object btnAccept: TBitBtn
       Left = 16
       Height = 30
       Top = 8
@@ -25,10 +25,10 @@ object FormPropView: TFormPropView
       DefaultCaption = True
       Kind = bkOK
       ModalResult = 1
-      OnClick = btnAceptarClick
+      OnClick = btnAcceptClick
       TabOrder = 0
     end
-    object btnCancelar: TBitBtn
+    object btnCancel: TBitBtn
       Left = 224
       Height = 30
       Top = 8
@@ -45,15 +45,15 @@ object FormPropView: TFormPropView
       Top = 8
       Width = 75
       Caption = 'A&plicar'
-      OnClick = btnAplicarClick
+      OnClick = btnApplyClick
       TabOrder = 2
     end
   end
-  object chkVerEjes: TCheckBox
+  object chbShowAxes: TCheckBox
     Left = 32
     Height = 23
     Top = 24
-    Width = 152
+    Width = 163
     Caption = 'Show &Ejes Coordenados.'
     TabOrder = 1
   end
@@ -65,15 +65,15 @@ object FormPropView: TFormPropView
     Caption = 'Longitud de ejes:'
     ParentColor = False
   end
-  object chkVerPtoGiro: TCheckBox
+  object chbShowRotPoint: TCheckBox
     Left = 32
     Height = 23
     Top = 96
-    Width = 124
+    Width = 135
     Caption = 'Show Punto de &Giro'
     TabOrder = 2
   end
-  object spnLongEje: TSpinEdit
+  object spnAxeDist: TSpinEdit
     Left = 128
     Height = 29
     Top = 60
@@ -81,11 +81,11 @@ object FormPropView: TFormPropView
     Alignment = taRightJustify
     TabOrder = 3
   end
-  object chkVerCuadric: TCheckBox
+  object chbShowGrid: TCheckBox
     Left = 32
     Height = 23
     Top = 136
-    Width = 108
+    Width = 119
     Caption = 'Show &Cuadrícula'
     TabOrder = 4
   end

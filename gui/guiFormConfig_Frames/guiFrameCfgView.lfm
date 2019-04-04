@@ -8,7 +8,7 @@ object fraCfgVista: TfraCfgView
   TabOrder = 0
   DesignLeft = 318
   DesignTop = 327
-  object chkVerEjes: TCheckBox
+  object chbShowAxes: TCheckBox
     Left = 32
     Height = 19
     Top = 24
@@ -17,7 +17,7 @@ object fraCfgVista: TfraCfgView
     OnChange = chkVerEjesChange
     TabOrder = 0
   end
-  object spnLongEje: TFloatSpinEdit
+  object spnAxeDist: TFloatSpinEdit
     Left = 168
     Height = 23
     Top = 56

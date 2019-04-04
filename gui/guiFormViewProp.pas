@@ -1,4 +1,4 @@
-{Formulario para configurar ub objeto View }
+
 unit guiFormViewProp;
 {$mode objfpc}{$H+}
 interface
@@ -11,20 +11,20 @@ type
 
   TFormPropView = class(TForm)
     btnApply: TBitBtn;
-    btnCancelar: TBitBtn;
-    btnAceptar: TBitBtn;
-    chkVerEjes: TCheckBox;
-    chkVerPtoGiro: TCheckBox;
-    chkVerCuadric: TCheckBox;
+    btnCancel: TBitBtn;
+    btnAccept: TBitBtn;
+    chbShowAxes: TCheckBox;
+    chbShowRotPoint: TCheckBox;
+    chbShowGrid: TCheckBox;
     Label1: TLabel;
     Panel1: TPanel;
-    spnLongEje: TSpinEdit;
-    procedure btnAceptarClick(Sender: TObject);
-    procedure btnAplicarClick(Sender: TObject);
+    spnAxeDist: TSpinEdit;
+    procedure btnAcceptClick(Sender: TObject);
+    procedure btnApplyClick(Sender: TObject);
   private
     View: TfraPaintBox;
   public
-    procedure Exec(vista0: TfraPaintBox);
+    procedure Exec(argView: TfraPaintBox);
   end;
 
 var
@@ -35,27 +35,27 @@ implementation
 
 { TFormPropView }
 
-procedure TFormPropView.btnAceptarClick(Sender: TObject);
+procedure TFormPropView.btnAcceptClick(Sender: TObject);
 begin
-  btnAplicarClick(self);
+  btnApplyClick(self);
 end;
 
-procedure TFormPropView.btnAplicarClick(Sender: TObject);
+procedure TFormPropView.btnApplyClick(Sender: TObject);
 begin
-  View.viewEdi.VerEjesCoor  := chkVerEjes.Checked;
-  View.viewEdi.LonEjesCoor  := spnLongEje.Value;
-  View.viewEdi.VerPuntoGiro := chkVerPtoGiro.Checked;
-  View.viewEdi.VerCuadric   := chkVerCuadric.Checked;
+  View.viewEdi.ShowAxes  := chbShowAxes.Checked;
+  View.viewEdi.AxesDistance  := spnAxeDist.Value;
+  View.viewEdi.ShowRotPoint := chbShowRotPoint.Checked;
+  View.viewEdi.ShowGrid   := chbShowGrid.Checked;
   View.viewEdi.Refresh;
 end;
 
-procedure TFormPropView.Exec(vista0: TfraPaintBox);
+procedure TFormPropView.Exec(argView: TfraPaintBox);
 begin
-  View := vista0;
-  chkVerEjes.Checked    := View.viewEdi.VerEjesCoor;
-  spnLongEje.Value      := View.viewEdi.LonEjesCoor;
-  chkVerPtoGiro.Checked := View.viewEdi.VerPuntoGiro;
-  chkVerCuadric.Checked := View.viewEdi.VerCuadric;
+  View := argView;
+  chbShowAxes.Checked    := View.viewEdi.ShowAxes;
+  spnAxeDist.Value      := View.viewEdi.AxesDistance;
+  chbShowRotPoint.Checked := View.viewEdi.ShowRotPoint;
+  chbShowGrid.Checked := View.viewEdi.ShowGrid;
   Showmodal;
 end;
 

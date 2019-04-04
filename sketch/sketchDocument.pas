@@ -117,9 +117,9 @@ begin
 //  View.Visible:=true;
 //  View.Align:=alClient;
   View.viewEdi.v2d.backColor:=clBlack;
-  View.viewEdi.VerEjesCoor:=true;
-  View.viewEdi.VerPuntoGiro:=true;
-  View.viewEdi.VerCuadric:=true;
+  View.viewEdi.ShowAxes:=true;
+  View.viewEdi.ShowRotPoint:=true;
+  View.viewEdi.ShowGrid:=true;
 //  View.VisEdiGraf.OnChangeView:=@fraMotEdicionmotEdiChangeView;
   View.OnChangePersp:=@vistaCambiaPerspec;
   View.OnMouseMoveVirt:=@vistaMouseMoveVirt;
