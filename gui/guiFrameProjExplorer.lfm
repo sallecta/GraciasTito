@@ -1,4 +1,4 @@
-object fraExploreProj: TfraExploreProject
+object FrProjectExplorer: TFrProjectExplorer
   Left = 0
   Height = 480
   Top = 0
@@ -8,7 +8,7 @@ object fraExploreProj: TfraExploreProject
   TabOrder = 0
   DesignLeft = 319
   DesignTop = 226
-  object arbNaveg: TTreeView
+  object treeNav: TTreeView
     Left = 0
     Height = 464
     Top = 16
@@ -17,7 +17,7 @@ object fraExploreProj: TfraExploreProject
     Images = ImgActions16
     ReadOnly = True
     TabOrder = 0
-    OnKeyDown = arbNavegKeyDown
+    OnKeyDown = treeNavKeyDown
     Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
   end
   object Label2: TLabel

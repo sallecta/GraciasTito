@@ -148,7 +148,7 @@ type
     procedure Refresh;
     procedure RefreshPanelView;
   public
-    fraExploreProj: TfraExploreProject;  //Project Explorer
+    frExploreProj: TFrProjectExplorer;  //Project Explorer
   end;
 
 var
@@ -180,20 +180,20 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   //Configure Project Explorer
-  fraExploreProj := TfraExploreProject.Create(self);
-  fraExploreProj.Parent := self;
-  fraExploreProj.Name := 'fraExpProy';
-  fraExploreProj.Caption := 'Explorador de Proyectos1';
-  fraExploreProj.OnClickRightProject := @fraExploreProj_ClickRightProj;
-  fraExploreProj.OnClickRightPage := @fraExploreProj_ClickRightPage;
-  fraExploreProj.OnClickRightView := @fraExploreProj_ClickRightView;
-  fraExploreProj.OnDeletePage := @acPageRemoveExecute;
-  fraExploreProj.Initiate(@curProject);
+  frExploreProj := TFrProjectExplorer.Create(self);
+  frExploreProj.Parent := self;
+  frExploreProj.Name := 'fraExpProy';
+  frExploreProj.Caption := 'Explorador de Proyectos1';
+  frExploreProj.OnClickRightProject := @fraExploreProj_ClickRightProj;
+  frExploreProj.OnClickRightPage := @fraExploreProj_ClickRightPage;
+  frExploreProj.OnClickRightView := @fraExploreProj_ClickRightView;
+  frExploreProj.OnDeletePage := @acPageRemoveExecute;
+  frExploreProj.Initiate(@curProject);
 
   //Set the alignment
-  fraExploreProj.Align := alLeft;
+  frExploreProj.Align := alLeft;
   Splitter2.Align := alLeft;
-  fraExploreProj.Visible := True;
+  frExploreProj.Visible := True;
   panCommand.Align := alBottom;
   PageControl1.Align := alClient;
 end;
@@ -388,7 +388,7 @@ procedure TForm1.Refresh;
 {Rerfresca the entire interface}
 begin
   RefreshEnvironment;
-  fraExploreProj.Refresh;   //Refresh project explorer
+  frExploreProj.Refresh;   //Refresh project explorer
   RefreshPanelView;
 end;
 
@@ -591,7 +591,7 @@ begin
   if frmProject.Exec(curProject, @RefreshPanelView) then
   begin
     curProject.Modified := True;
-    fraExploreProj.Refresh;
+    frExploreProj.Refresh;
     RefreshPanelView;
   end;
 end;

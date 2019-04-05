@@ -106,7 +106,7 @@
       <Unit12>
         <Filename Value="gui/guiFrameProjExplorer.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="fraExplorProyectos"/>
+        <ComponentName Value="FrProjectExplorer"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit12>

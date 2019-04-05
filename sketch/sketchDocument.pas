@@ -22,7 +22,7 @@ type
     nombre: string;
     tipTab: TCadTipObjGraf;
   end;
-  TCadObjetos_list = specialize TFPGObjectList<TCadObjGraf>;
+  TCadObjetcs_list = specialize TFPGObjectList<TCadObjGraf>;
 
   TEveCambiaPerspec = procedure(View: TFrPaintBox) of object;
   TProject = class;
@@ -37,7 +37,7 @@ type
   public
     name     : string;
     parent      : TProject;      //Referencia al objeto padre.
-    objetosGraf: TCadObjetos_list;  //Lista de elementos gráficos
+    GraphicObj: TCadObjetcs_list;  //Lista de elementos gráficos
     objects : TEditorObjList; //Lista de objects
   public  //Manejo de las vistas
     View: TFrPaintBox;   //una sola View por el momento
@@ -73,7 +73,7 @@ type
     property Modified: boolean read fModific write SetModific;
     procedure SaveFile;
   public  //Campos de página
-    paginas: TCadPagina_list; {Lista de páginas. Debe contener al menos una.}
+    pages: TCadPagina_list; {Lista de páginas. Debe contener al menos una.}
     OnChangeActivePage: procedure of object;
     Property ActivePage: TDocPage read FActivePage write SetActivePage;
     function IndexOfPage(Page: TDocPage): integer;
@@ -90,7 +90,7 @@ type
     destructor Destroy; override;
   end;
 
-  TCadProyectoPtr = ^TProject;
+  TPtrProject = ^TProject;
 
 implementation
 
@@ -109,7 +109,7 @@ begin
 end;
 constructor TDocPage.Create;
 begin
-  objetosGraf := TCadObjetos_list.Create(true);
+  GraphicObj := TCadObjetcs_list.Create(true);
   objects := TEditorObjList.Create(true);   //contenedor
   View:= TFrPaintBox.Create(nil, objects);  //crea una View
 
@@ -131,7 +131,7 @@ destructor TDocPage.Destroy;
 begin
   View.Destroy;
   objects.Destroy;
-  objetosGraf.Destroy;
+  GraphicObj.Destroy;
   inherited Destroy;
 end;
 { TProject }
@@ -168,7 +168,7 @@ var
 begin
   if FActivePage=AValue then Exit;
   //Verifica si la página solicitada, existe
-  for Page in paginas do begin
+  for Page in pages do begin
     if Page = AValue then begin
       //Existe
       FActivePage:=AValue;
@@ -185,8 +185,8 @@ function TProject.IndexOfPage(Page: TDocPage): integer;
 var
   i: integer;
 begin
-  for i:=0 to paginas.Count-1 do begin
-    if paginas[i] = Page then exit(i);
+  for i:=0 to pages.Count-1 do begin
+    if pages[i] = Page then exit(i);
   end;
   //No encontró
   exit(-1);
@@ -202,7 +202,7 @@ begin
   if i=0 then begin  //no hay anterior, devuelve la misma
     exit(Page);
   end else begin
-    exit(paginas[i-1]); //devuelve anterior
+    exit(pages[i-1]); //devuelve anterior
   end;
 end;
 function TProject.NextPage(Page: TDocPage): TDocPage;
@@ -213,10 +213,10 @@ var
 begin
   i := IndexOfPage(Page);
   if i=-1 then exit(niL);
-  if i=paginas.Count-1 then begin  //no hay siguiente, devuelve la misma
+  if i=pages.Count-1 then begin  //no hay siguiente, devuelve la misma
     exit(Page);
   end else begin
-    exit(paginas[i+1]); //devuelve siguiente
+    exit(pages[i+1]); //devuelve siguiente
   end;
 end;
 function TProject.PageByName(pagName: string): TDocPage;
@@ -225,7 +225,7 @@ devuelve NIL.}
 var
   Page: TDocPage;
 begin
-  for Page in paginas do begin
+  for Page in pages do begin
     if Page.name = pagName then exit(Page);
   end;
   exit(nil);
@@ -234,7 +234,7 @@ procedure TProject.SetActivePageByName(pagName: string);
 var
   Page: TDocPage;
 begin
-  for Page in paginas do begin
+  for Page in pages do begin
     if Page.name = pagName then begin
       ActivePage := Page;
       exit;
@@ -248,37 +248,37 @@ var
   Page: TDocPage;
 begin
   Page := TDocPage.Create;
-  Page.name:='Página'+IntToStr(paginas.Count+1);
+  Page.name:='Página'+IntToStr(pages.Count+1);
   Page.parent := self;
   Page.OnChangePersp:=@pag_CambiaPerspec;
   Page.OnMouseMoveVirt:=@pag_MouseMoveVirt;
   Page.OnChangeState:=@pag_ChangeState;
-  paginas.Add(Page);
+  pages.Add(Page);
   Modified:=true;   //es un cambio
   Result := Page;
 end;
 procedure TProject.RemovePage(pagName: TDocPage);
 {Elimina la página indicada.}
 begin
-  if paginas.Count=1 then begin
+  if pages.Count=1 then begin
     MsgExc('No se pueden eliminar todas las páginas.');
     exit;
   end;
   if ActivePage = pagName then begin
     //Se está borrando la página activa, hay que moverla
-    if pagName = paginas.First then   //es la primera
+    if pagName = pages.First then   //es la primera
       ActivePage := NextPage(pagName)  //pasa a la siguiente
     else
       ActivePage := PrevPage(pagName);  //pasa a la anetrior
   end;
-  paginas.Remove(pagName);
+  pages.Remove(pagName);
   Modified:=true;   //es un cambio
 end;
 procedure TProject.RemovePage(argName: string);
 var
   Page: TDocPage;
 begin
-  for Page in paginas do begin
+  for Page in pages do begin
     if Page.name = argName then begin
       RemovePage(Page);
       exit;
@@ -293,7 +293,7 @@ en el control asignado.}
 var
   Page: TDocPage;
 begin
-  for Page in paginas do begin
+  for Page in pages do begin
     Page.View.Visible:=false;
   end;
 end;
@@ -303,14 +303,14 @@ constructor TProject.Create;
 var
   Page: TDocPage;
 begin
-  paginas:= TCadPagina_list.Create(true);
+  pages:= TCadPagina_list.Create(true);
   //Crea una página
   Page := AddPage;
   ActivePage := Page;   //la pone como activa por defecto
 end;
 destructor TProject.Destroy;
 begin
-  paginas.Destroy;
+  pages.Destroy;
   inherited Destroy;
 end;
 
