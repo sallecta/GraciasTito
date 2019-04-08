@@ -6,7 +6,7 @@ object fraFiltCampo: TfraFiltCampo
   ClientHeight = 109
   ClientWidth = 356
   Color = clWindow
-  Constraints.MinHeight = 24
+  Constraints.MINWIDTH = 24
   ParentColor = False
   TabOrder = 0
   DesignLeft = 399

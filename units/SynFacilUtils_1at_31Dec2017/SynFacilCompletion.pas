@@ -123,8 +123,8 @@ type
   //Elemento del patrón
   TFaPatternElement = record
     patKind: TFaTPatternElementKind;
-    str    : string;   //valor, cuando es del tipo pak_String
-    toktyp : integer;  //valor cuando es de tipo pak_TokTyp o pak_NoTokTyp
+    str    : string;   //value, cuando es del tipo pak_String
+    toktyp : integer;  //value cuando es de tipo pak_TokTyp o pak_NoTokTyp
   end;
   TFaPatternElementPtr = ^TFaPatternElement;
 
@@ -367,7 +367,7 @@ begin
     for i:= 0 to doc.DocumentElement.Attributes.Length-1 do begin
       atri := doc.DocumentElement.Attributes.Item[i];
       if UpCase(atri.NodeName) = 'EXT' then begin
-        Result := trim(AnsiString(atri.NodeValue));  //valor sin espacios
+        Result := trim(AnsiString(atri.NodeValue));  //value sin espacios
       end;
     end;
     doc.Free;  //libera
@@ -439,7 +439,7 @@ begin
   end;
 end;
 procedure TFaCompletItem.SetCaption(AValue: string);
-{Asigna el valor a Caption, separando los campos si es que vinieran codificados}
+{Asigna el value a Caption, separando los campos si es que vinieran codificados}
 {Recibe una cadena que representa a un ítem y de el extrae los campos, si es que vinieran
 codificados. El formato de la codificiacón es:
  <texto a mostrar> | <texto a reemplazar> | <descripción>
@@ -594,7 +594,7 @@ procedure TFaCursorEnviron.UpdateStartIdentif;
 var
   i: Integer;
 begin
-  StartIdentif := -1;   //valor por defecto
+  StartIdentif := -1;   //value por defecto
   if CurX<=1 then exit;  //está al inicio
   i:= CurX-1;  //caracter anterior al cursor
   {Se asume que el cursor, está después de un identificador y retrocede por los
@@ -655,7 +655,7 @@ function TFaCursorEnviron.ExtractStaticText(var ReplaceSeq: string;
     limit: Integer;
     lin: string;
   begin
-    Result := 0;   //valor inicial
+    Result := 0;   //value inicial
     found := '';
     limit := length(str);
     for i:=0 to high(substrs) do begin

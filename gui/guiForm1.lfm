@@ -249,7 +249,7 @@ object Form1: TForm1
     end
     object acToolbarDesp: TAction
       Category = 'TollBox'
-      Caption = '&Desplazar'
+      Caption = '&Displace'
       ImageIndex = 13
       OnExecute = acToolbarDespExecute
     end
@@ -344,7 +344,7 @@ object Form1: TForm1
     end
     object acPageCamNom: TAction
       Category = 'Page'
-      Caption = 'Cambiar &Nombre'
+      Caption = 'Cambiar &Name'
       ImageIndex = 34
     end
     object acPageProp: TAction

@@ -4,47 +4,46 @@ All of them must descend from TGraphicObj, so that they can be treated
 by the "ogMotEdicion" engine}
 
 unit sketchDxf;
+
 {$mode objfpc}{$H+}
 interface
+
 uses
   Classes, Graphics, LCLProc, fgl,
   MotGraf3d, sketchCore;
 
 type
-//Tipo de entidad gráfica
-TDXFentType = (
-   etyLine      //línea
-  ,etyCircle    //círculo
-  ,etyPolyline  //polilínea
-  ,etyInsert    //bloque
-);
+  //ObjType of graphic entity
+  TDxfPrimitive = (
+    dxfLine, dxfCircle, dxfPolyline, dxfBlock
+    );
 
-TObjGrafDXF = class;
-TObjGrafDXF_list = specialize TFPGObjectList<TObjGrafDXF>;
-{ TMyObject }
-TMyObject = class(TGraphicObj)  //graphic object that we will draw
-  procedure Dibujar; override;  //Draw the graphic object
-  constructor Create(mGraf: TVirtScreen); override;
-private
-  procedure RelocateElements; override;
-end;
+  TDxf = class;
+  TDxf_list = specialize TFPGObjectList<TDxf>;
+  { TMyObject }
+  TMyObject = class(TGraphicObj)  //graphic object that we will draw
+    procedure Draw; override;  //Draw the graphic object
+    constructor Create(argVirtScreen: TVirtScreen); override;
+  private
+    procedure RelocateElements; override;
+  end;
 
-{ TObjGrafDXF }
-{Se define al objeto para que sea compatible con archivos DXF.}
-TObjGrafDXF = class(TGraphicObj)  //objeto gráfico DXF
-private
-  pc0, pc1, pcM: TPtoCtrl;
-  procedure PtoCtrl0_Move(xvTar, yvTar, dx, dy: Single);
-  procedure PtoCtrl1_Move(xvTar, yvTar, dx, dy: Single);
-  procedure PtoCtrlM_Move(xvTar, yvTar, dxv, dyv: Single);
-public  //Campos equivalentes a los de una entidad DXF
-  etype: TDXFentType;   //tipo de entidad
-  idDxf: string;        //identificador de la entidad
-  layer: string;
-  color: string;
-  style: string;
-  isComplex: boolean;
-  polyFlag: integer; {Bandera para polilíneas. Mapa de bits, cero por defecto:
+  { TDxf }
+  {The object is defined to be compatible with DXF files.}
+  TDxf = class(TGraphicObj)
+  private
+    pc0, pc1, pcM: TControlPoint;
+    procedure ControlPoint_0_Move(x_vPoint, y_vPoint, dx, dy: single);
+    procedure ControlPoint_1_Move(x_vPoint, y_vPoint, dx, dy: single);
+    procedure ControlPoint_M_Move(x_vPoint, y_vPoint, x_dv, y_dv: single);
+  public
+    DxfPrimitive: TDxfPrimitive;
+    dxfId: string;        //identifier of the primitive
+    layer: string;
+    color: string;
+    style: string;
+    isComplex: boolean;
+    polyFlag: integer; {Flag for polylines. Bitmap, zero by default:
     1 = This is a closed polyline (or a polygon mesh closed in the M direction).
     2 = Curve-fit vertices have been added.
     4 = Spline-fit vertices have been added.
@@ -53,198 +52,218 @@ public  //Campos equivalentes a los de una entidad DXF
     32 = The polygon mesh is closed in the N direction.
     64 = The polyline is a polyface mesh.
     128 = The linetype pattern is generated continuously around the vertices of this polyline.}
-    //propiedades gráficas
-  P0: TMotPoint;
-  P1: TMotPoint;
-  radius: double;
-  vertexs: TObjGrafDXF_list;   {Lista de Vertex. Solo se instancia para objects
-                               complejos. OJO!!! Es muy pesado guardar una lista de
-                               TObjGrafDXF. Debería optimizarse}
-  blkName: string;    //usado cuando es de tipo etyInsert.
-public
-  procedure SetP0(const xv,yv,zv: Single);
-  procedure SetP1(const xv,yv,zv: Single);
-  procedure RelocateElements; override;
-public
-  procedure Dibujar; override;  //Dibuja el objeto gráfico
-  function LoSelecciona(xp, yp:integer): Boolean; override;
-  constructor Create(mGraf: TVirtScreen); override;
-//  destructor Destroy; override;
-end;
+    P0: TPoint3D;
+    P1: TPoint3D;
+    radius: double;
+    vertexs: TDxf_list;   {Vertex list. Only instance for objects
+                                complex. EYE!!! It is very heavy to keep a list of
+                                TDxf. It should be optimized}
+    blkName: string;    //used when it is from btnType dxfBlock.
+  public
+    procedure SetP0(const xv, yv, zv: single);
+    procedure SetP1(const xv, yv, zv: single);
+    procedure RelocateElements; override;
+  public
+    procedure Draw; override;  //Draw the graphic object
+    function isSelected(xp, yp: integer): boolean; override;
+    constructor Create(argVirtScreen: TVirtScreen); override;
+    //  destructor Destroy; override;
+  end;
 
 implementation
 
 { TMyObject }
-constructor TMyObject.Create(mGraf: TVirtScreen);
+constructor TMyObject.Create(argVirtScreen: TVirtScreen);
 begin
   inherited;
-  ReConstGeom;     //It must be called after creating the control points to be able to locate them
-  nombre := 'miObjeto';
+  ReconstructGeom;
+  //It must be called after creating the control points to be able to locate them
+  Name := 'miObjeto';
 end;
+
 procedure TMyObject.RelocateElements;
 {Relocate elements, from the object. It is called when the position of the object is changed, with
 or without change of dimensions. }
 var
-  x2: Single;
+  x2: single;
 begin
   inherited;
-  x2 := x + width;
+  x2 := x + Width;
 end;
-procedure TMyObject.Dibujar();
+
+procedure TMyObject.Draw();
 begin
-  //Dibuja etiqueta
-//  VirtScreen.SetPen(clGray, 1);
-  VirtScreen.SetText(clWhite, 11,'', false);
-  VirtScreen.Texto(x + 2, Y + Height + 20, 0, nombre);
-  //muestra un rectángulo
+  //Draw label
+  //  VirtScreen.SetPen(clGray, 1);
+  VirtScreen.SetText(clWhite, 11, '', False);
+  VirtScreen.Texto(x + 2, Y + Height + 20, 0, Name);
+  //shows a rectangle
   VirtScreen.SetPen(clWhite, 1, psSolid);
-  VirtScreen.FijaRelleno(clBlack);
-  VirtScreen.rectangXYr(x, y+10, x+width, y+height,0);
+  VirtScreen.FillFixed(clBlack);
+  VirtScreen.rectangXYr(x, y + 10, x + Width, y + Height, 0);
   inherited;
 end;
 
-{ TObjGrafDXF }
-procedure TObjGrafDXF.PtoCtrl0_Move(xvTar, yvTar, dx, dy: Single);
+{ TDxf }
+procedure TDxf.ControlPoint_0_Move(x_vPoint, y_vPoint, dx, dy: single);
 begin
-  P0.x:=xvTar;
-  P0.y:=yvTar;
-  ReConstGeom;
+  P0.x := x_vPoint;
+  P0.y := y_vPoint;
+  ReconstructGeom;
 end;
-procedure TObjGrafDXF.PtoCtrl1_Move(xvTar, yvTar, dx, dy: Single);
+
+procedure TDxf.ControlPoint_1_Move(x_vPoint, y_vPoint, dx, dy: single);
 begin
-  P1.x:=xvTar;
-  P1.y:=yvTar;
-  ReConstGeom;
+  P1.x := x_vPoint;
+  P1.y := y_vPoint;
+  ReconstructGeom;
 end;
-procedure TObjGrafDXF.PtoCtrlM_Move(xvTar, yvTar, dxv, dyv: Single);
+
+procedure TDxf.ControlPoint_M_Move(x_vPoint, y_vPoint, x_dv, y_dv: single);
 begin
-  ReConstGeom;
+  ReconstructGeom;
 end;
-procedure TObjGrafDXF.SetP0(const xv, yv, zv: Single);
+
+procedure TDxf.SetP0(const xv, yv, zv: single);
 begin
-  P0.x:=xv;
-  P0.y:=yv;
-  P0.z:=zv;
+  P0.x := xv;
+  P0.y := yv;
+  P0.z := zv;
   RelocateElements;
 end;
-procedure TObjGrafDXF.SetP1(const xv, yv, zv: Single);
+
+procedure TDxf.SetP1(const xv, yv, zv: single);
 begin
-  P1.x:=xv;
-  P1.y:=yv;
-  P1.z:=zv;
+  P1.x := xv;
+  P1.y := yv;
+  P1.z := zv;
   RelocateElements;
 end;
-constructor TObjGrafDXF.Create(mGraf: TVirtScreen);
+
+constructor TDxf.Create(argVirtScreen: TVirtScreen);
 begin
-  inherited Create(mGraf);
-  //Notar que los puntos de control son estáticos, aunque tal vez sea mejor, crearlos
-  //solo cuando el objeto está seleccionado.
-  pc0:=AddPtoControl(TD_SUP_IZQ,@PtoCtrl0_Move);
-  pc1:=AddPtoControl(TD_SUP_IZQ,@PtoCtrl1_Move);
-  pcM:=AddPtoControl(TD_SUP_IZQ,@PtoCtrlM_Move);
-  ReConstGeom;     //Se debe llamar después de crear los puntos de control para poder ubicarlos
-  nombre := 'Objeto';
+  inherited Create(argVirtScreen);
+  {Note that the control points are static, although it may be better to create them
+   only when the object is selected.  }
+  pc0 := AddControlPoint(CPO_TOP_LEFT, @ControlPoint_0_Move);
+  pc1 := AddControlPoint(CPO_TOP_LEFT, @ControlPoint_1_Move);
+  pcM := AddControlPoint(CPO_TOP_LEFT, @ControlPoint_M_Move);
+  ReconstructGeom;//Control points must be called after CreateIt to be able to locate them
+  Name := 'Objeto';
 end;
-procedure TObjGrafDXF.RelocateElements;
+
+procedure TDxf.RelocateElements;
 begin
-  //Ubica puntos de control
+  //Locate control points
   pc0.PlaceAt(P0);
   pc1.PlaceAt(P1);
-  pcM.PlaceAt((P0.x + P1.x)/2, (P0.y + P1.y)/2, (P0.z + P1.z)/2 );
+  pcM.PlaceAt((P0.x + P1.x) / 2, (P0.y + P1.y) / 2, (P0.z + P1.z) / 2);
 end;
-procedure TObjGrafDXF.Dibujar;
+
+procedure TDxf.Draw;
 var
-  pdc  : TPtoCtrl;
-  Ptos : Array of TPoint;
-  i: Integer;
+  ctrlPoint: TControlPoint;
+  Points: array of TPoint;
+  i: integer;
 begin
-  If Marcado and Highlight Then begin
-    VirtScreen.SetPen(TColor($FF8000), 2, psSolid);
-  end else begin
+  if Marked and canHighlight then
+    VirtScreen.SetPen(TColor($FF8000), 2, psSolid)
+  else
     VirtScreen.SetPen(clWhite, 1);
-  end;
-  case etype of
-  etyLine: begin
-      VirtScreen.Line(P0, P1);
-    end;
-//  etyCircle: begin
-//      VirtScreen.Circulo(xv + ent.x0, y + ent.y0,
-//                  ent.radius);
-//    end;
-{  etyPolyline: begin
+  case DxfPrimitive of
+    dxfLine: VirtScreen.Line(P0, P1);
+    //  dxfCircle: begin
+    //      VirtScreen.Circulo(xv + ent.x0, y + ent.y0,
+    //                  ent.radius);
+    //    end;
+{  dxfPolyline: begin
       //Por eficiencia, se dibuja la polilínea directamente del canvas
-      SetLength(Ptos, vertexs.Count);   //dimensiona
+      SetLength(Points, vertexs.Count);   //dimensiona
       //transforma puntos
       for i:= 0 to vertexs.Count-1 do begin
-        Ptos[i].x := VirtScreen.XPant(vertexs[i].x0);
-        Ptos[i].y := VirtScreen.YPant(vertexs[i].y0);
+        Points[i].x := VirtScreen.XPant(vertexs[i].x0);
+        Points[i].y := VirtScreen.YPant(vertexs[i].y0);
       end;
-      //VirtScreen.Canvas.Polygon(Ptos);   //dibuja
-      VirtScreen.cv.Polyline(Ptos);
+      //VirtScreen.Canvas.Polygon(Points);   //dibuja
+      VirtScreen.cv.Polyline(Points);
     end;}
   end;
-  //---------------dibuja marca de seleccion--------------
-  if Selected Then begin
-    for pdc in PtosControl do pdc.Dibujar;   //Dibuja puntos de control
-  end;
+  //---------------draw selection mark--------------
+  if Selected then
+    for ctrlPoint in ControlPoints do
+      ctrlPoint.Draw//Draw control points
+  ;
 end;
-function TObjGrafDXF.LoSelecciona(xp, yp: integer): Boolean;
-{Versión personalizada}
+
+function TDxf.isSelected(xp, yp: integer): boolean;
+  {Custom version}
 const
   DSEL = 5;
 var
-  a, b: Single;
+  a, b: single;
   dx, dy: Int16;
-   //tolerancia en pixeles
+  //tolerance in pixels
 begin
-  {No debería ser necesario actualizar las coordenadas de pantalla de P0 y P1, ya que
-  si esta recta se mostró en pantalla, es porque se actualizaron sus coordenadas de
-  pantalla:
-  VirtScreen.XYpant(P0);
-  VirtScreen.XYpant(P1);
+  {It should not be necessary to update the screen coordinates of P0 and P1, since
+   if this line was shown on the screen, it is because its coordinates were updated
+   screen:
+   VirtScreen.XYpant (P0);
+   VirtScreen.XYpant (P1);
   }
-  if P0.xp = P1.xp then begin  //Caso recta vertical
-     if abs(P0.xp - xp)>DSEL then exit(false);  //excede distancia horizontal
-     if P0.yp = P1.yp then begin  //Caso de un punto
-       Result := (abs(P0.yp - yp) < DSEL);
-     end else begin //Caso de recta vertical común
-       if P0.yp > P1.yp then begin  //P0 arriba
-          Result := (yp<P0.yp+DSEL) and (yp>P1.yp-DSEL);
-       end else begin               //P1 arriba
-          Result := (yp<P1.yp+DSEL) and (yp>P0.yp-DSEL);
-       end;
-     end;
-  end else if P0.xp < P1.xp then begin  //P0 a la izquierda
-     if xp<P0.xp-DSEL then exit(false);  //escapa de límite
-     if xp>P1.xp+DSEL then exit(false);  //escapa de límite
-     //Simplifica la comparación, viendo solo una distancia vertical
-//     a := (P1.yp - P0.yp)/(P1.xp - P0.xp);  //pendiente
-//     b := P0.yp - a*P0.xp;  //Define ecuación de la recta y=ax+b
-//     Result := abs(a*xp + b - yp) < DSEL;
-     //Forma alternativa, sin divisiones
-     dx := P1.xp - P0.xp;   //siempre positivo
-     dy := P1.yp - P0.yp;   //positivo o negativo
-     if abs(dy)<dx then begin
-       Result := abs( (xp - P0.xp)*dy - (yp-P0.yp)*dx ) < DSEL * dx;
-     end else begin //abs(dy), es mayor a dx
-       Result := abs( (xp - P0.xp)*dy - (yp-P0.yp)*dx ) < DSEL * abs(dy);
-     end;
-  end else begin                        //P1 a la izquierda
-     if xp<P1.xp-DSEL then exit(false);  //escapa de límite
-     if xp>P0.xp+DSEL then exit(false);  //escapa de límite
-     //Define ecuación de la recta y=ax+b
-//     a := (P0.yp - P1.yp)/(P0.xp - P1.xp);  //pendiente
-//     b := P1.yp - a*P1.xp;
-//     Result := abs(a*xp + b - yp) < DSEL;
-      dx := P0.xp - P1.xp;   //siempre positivo
-      dy := P0.yp - P1.yp;   //positivo o negativo
-      if abs(dy)<dx then begin
-        Result := abs( (xp - P1.xp)*dy - (yp-P1.yp)*dx ) < DSEL * dx;
-      end else begin //abs(dy), es mayor a dx
-        Result := abs( (xp - P1.xp)*dy - (yp-P1.yp)*dx ) < DSEL * abs(dy);
-      end;
+  if P0.xp = P1.xp then
+  begin  //Vertical straight case
+    if abs(P0.xp - xp) > DSEL then
+      exit(False);  //exceeds horizontal distance
+    if P0.yp = P1.yp then
+      Result := (abs(P0.yp - yp) < DSEL)//Case of a point
+    else
+    begin //Common vertical line case
+      if P0.yp > P1.yp then
+        Result := (yp < P0.yp + DSEL) and (yp > P1.yp - DSEL)//above P0
+      else
+        Result := (yp < P1.yp + DSEL) and (yp > P0.yp - DSEL)//above P1
+      ;
+    end;
+  end
+  else if P0.xp < P1.xp then
+  begin  //P0 on the left
+    if xp < P0.xp - DSEL then
+      exit(False);  //escapes from limit
+    if xp > P1.xp + DSEL then
+      exit(False);  //escapes from limit
+    //Simplify the comparison, seeing only a vertical distance
+    //     a := (P1.yp - P0.yp)/(P1.xp - P0.xp);  //pendiente
+    //     b := P0.yp - a*P0.xp;  //Define ecuación de la recta y=ax+b
+    //     Result := abs(a*xp + b - yp) < DSEL;
+    //Alternative form, without divisions
+    dx := P1.xp - P0.xp;   //Always positive
+    dy := P1.yp - P0.yp;   //positive or negative
+    if abs(dy) < dx then
+      Result := abs((xp - P0.xp) * dy - (yp - P0.yp) * dx) < DSEL * dx
+    else
+    begin //abs (dy), is greater than dx
+      Result := abs((xp - P0.xp) * dy - (yp - P0.yp) * dx) < DSEL * abs(dy);
+    end;
+  end
+  else
+  begin                        //P1 on the left
+    if xp < P1.xp - DSEL then
+      exit(False);  //escapes from limit
+    if xp > P0.xp + DSEL then
+      exit(False);  //escapes from limit
+    //Define equation of the line y = ax + b
+    //     a := (P0.yp - P1.yp)/(P0.xp - P1.xp);  //pendiente
+    //     b := P1.yp - a*P1.xp;
+    //     Result := abs(a*xp + b - yp) < DSEL;
+    dx := P0.xp - P1.xp;   //Always positive
+    dy := P0.yp - P1.yp;   //positive or negative
+    if abs(dy) < dx then
+      Result := abs((xp - P1.xp) * dy - (yp - P1.yp) * dx) < DSEL * dx
+    else
+      Result := abs((xp - P1.xp) * dy - (yp - P1.yp) * dx) < DSEL *
+        abs(dy)//abs (dy), is greater than dx
+    ;
   end;
 end;
 
 end.
-

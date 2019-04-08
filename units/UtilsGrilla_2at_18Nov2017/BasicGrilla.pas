@@ -8,7 +8,7 @@ uses
 type
 { TListaCompletado }
 {Representa a una lista con opciones de autocompletado. Usada para llenar a un campo
-de tipo TEdit, con ayuda contextual}
+de btnType TEdit, con ayuda contextual}
 TListaCompletado = class
   procedure EditCtrl_DblClick(Sender: TObject);
   procedure EditCtrl_Change(Sender: TObject);
@@ -395,7 +395,7 @@ begin
 end;
 function AnalizarCeldas(grilla0: TStringGrid): string;
 {Analiza las celdas seleccionadas y devuelve una cadena con información sobre estas celdas.}
-  function EsFormatoMoneda(cad: string; var valor: double): boolean;
+  function EsFormatoMoneda(cad: string; var value: double): boolean;
   {Indica si el texto está en el formato de  moneda. De ser así, lo ocnvierte a número}
   var
     l: Integer;
@@ -406,12 +406,12 @@ function AnalizarCeldas(grilla0: TStringGrid): string;
     //Puede ser
     cad := copy(cad, l+1, length(cad));
     cad := StringReplace(cad, DefaultFormatSettings.ThousandSeparator, '', [rfReplaceAll]);
-    Result := TryStrToFloat(cad, valor);
+    Result := TryStrToFloat(cad, value);
   end;
-  function EsNumero(cad: string; var valor: double): boolean;
+  function EsNumero(cad: string; var value: double): boolean;
   {Indica si el texto está en el formato de  moneda. De ser así, lo ocnvierte a número}
   begin
-    Result := TryStrToFloat(cad, valor);
+    Result := TryStrToFloat(cad, value);
   end;
 
 var
@@ -419,31 +419,31 @@ var
   col1: integer;
   fil1, fil2: integer;
   f: integer;
-  valor: double;
+  value: double;
   cel1: String;
 begin
   if grilla0.Selection.Top = grilla0.Selection.Bottom then
      exit('');  //solo hay una fila seleccionada
-  //Trata de identificar el tipo de contenido de la selección
+  //Trata de identificar el btnType de contenido de la selección
   col1 := grilla0.Selection.Left;
   fil1 := grilla0.Selection.Top;
   fil2 := grilla0.Selection.Bottom;
   if fil1 = -1 then exit('');
   cel1 := grilla0.Cells[col1,fil1];
   //Intenta hacer una suma de las celdas
-  if EsFormatoMoneda(cel1, valor{%H-}) then begin
+  if EsFormatoMoneda(cel1, value{%H-}) then begin
     sum := 0;
     for f:=fil1 to fil2 do begin
-      if EsFormatoMoneda(grilla0.Cells[col1, f],valor) then begin
-        sum := sum + valor;
+      if EsFormatoMoneda(grilla0.Cells[col1, f],value) then begin
+        sum := sum + value;
       end;
     end;
     Result := 'Sum=' + FloatToStrF(sum, ffCurrency, 6, 2);
-  end else if EsNumero(cel1, valor) then begin
+  end else if EsNumero(cel1, value) then begin
     sum := 0;
     for f:=fil1 to fil2 do begin
-      if EsNumero(grilla0.Cells[col1, f],valor) then begin
-        sum := sum + valor;
+      if EsNumero(grilla0.Cells[col1, f],value) then begin
+        sum := sum + value;
       end;
     end;
     Result := 'Sum=' + FloatToStr(sum);
@@ -502,14 +502,14 @@ var
   f: Integer;
   a: TStringDynArray;
   c: Integer;
-  lin: String;
+  line: String;
   ncol: Integer;
 begin
   grilla.BeginUpdate;
   grilla.RowCount:=grilla.FixedRows+list.Count;
   f := grilla.FixedRows;  //fila inicial
-  for lin in list do begin
-    a:=Explode(sep, lin);
+  for line in list do begin
+    a:=Explode(sep, line);
     for c:=grilla.FixedCols to grilla.ColCount-1 do begin
       ncol := c-grilla.FixedCols;
       if ncol<=high(a) then
@@ -525,18 +525,18 @@ que no son fijas. La lista se dimensionará de acuerdo a la cantidad de datos de
 var
   f: Integer;
   c: Integer;
-  lin: string;
+  line: string;
 begin
   list.Clear;
   for f:=grilla.FixedRows to grilla.RowCount-1 do begin
     //fusiona los campos en una sola cadena
-    lin := '';
+    line := '';
     for c:=grilla.FixedCols to grilla.ColCount-1 do begin
-      lin := lin + grilla.Cells[c,f] + sep;
+      line := line + grilla.Cells[c,f] + sep;
     end;
-    delete(lin, length(lin), 1);
+    delete(line, length(line), 1);
     //Agrega cadena con separadores
-    list.Add(lin);
+    list.Add(line);
   end;
 end;
 //Funciones para listas
@@ -553,16 +553,16 @@ procedure FiltrarEnListBox(gr: TStringGrid;
   end;
 var
   f: Integer;
-  nombre: String;
+  Name: String;
 begin
   //debugln('Filtrando: ' + valFiltro1);
   lista.Items.BeginUpdate;
   lista.Clear;
   if gr = nil then exit;
   for f:=1 to gr.RowCount-1 do begin
-    nombre := gr.Cells[colFiltro1, f];
-    if CumpleFiltro(nombre , valFiltro1) and CumpleFiltro2(f) then
-      lista.AddItem(nombre, nil);
+    Name := gr.Cells[colFiltro1, f];
+    if CumpleFiltro(Name , valFiltro1) and CumpleFiltro2(f) then
+      lista.AddItem(Name, nil);
   end;
   if lista.Count>0 then
     lista.ItemIndex:=0;  //selecciona el primer elemento
@@ -572,11 +572,11 @@ end;
 procedure TListaCompletado.ElegirDeLista;
 {Elige el elemento seleccioando de la lista}
 var
-  nomb: String;
+  number: String;
 begin
   if ListBox.ItemIndex<>-1 then begin
-    nomb := ListBox.Items[ListBox.ItemIndex];
-    EditCtrl.Text := nomb;
+    number := ListBox.Items[ListBox.ItemIndex];
+    EditCtrl.Text := number;
     listBox.Visible:=false;
     if OnSelect<>nil then OnSelect;
   end;
@@ -635,11 +635,11 @@ begin
 end;
 procedure TListaCompletado.listBox_DblClick(Sender: TObject);
 var
-  nomb: String;
+  number: String;
 begin
   if ListBox.ItemIndex<>-1 then begin
-    nomb := ListBox.Items[ListBox.ItemIndex];
-    EditCtrl.Text := nomb;
+    number := ListBox.Items[ListBox.ItemIndex];
+    EditCtrl.Text := number;
     listBox.Visible:=false;
     if OnSelect<>nil then OnSelect;
   end;

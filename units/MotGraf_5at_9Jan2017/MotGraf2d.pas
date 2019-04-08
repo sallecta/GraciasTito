@@ -1,5 +1,5 @@
-{Define un objeto "Motor gráfico", que permite dibujar en un lienzo virtual,
-de coordenadas de tipo Single, que luego se transformarán a coordenadas de la
+{Define un objeto "Motor gráfico", que permite Draw en un lienzo virtual,
+de coordenadas de btnType Single, que luego se transformarán a coordenadas de la
 pantalla (en pixeles).
 El sistema de coordenadas, sigue la dirección usual en geometría:
 
@@ -33,7 +33,7 @@ type
     x_offs      : integer;
     y_offs      : Integer;
   private
-    gControl: TGraphicControl;   //Control gráfico, en donde se va a dibujar
+    gControl: TGraphicControl;   //Control gráfico, en donde se va a Draw
     cv      : Tcanvas;           //referencia al lienzo
     function GetPenColor: TColor;
     procedure SetPenColor(AValue: TColor);

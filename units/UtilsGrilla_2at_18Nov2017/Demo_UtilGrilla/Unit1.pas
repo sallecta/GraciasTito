@@ -61,7 +61,7 @@ begin
   UtilGrilla1:= TUtilGrilla.Create(nil);
   UtilGrilla1.IniEncab;
   UtilGrilla1.AgrEncabTxt('NUM' , 40);
-  UtilGrilla1.AgrEncabTxt('NOMBRE' , 60);
+  UtilGrilla1.AgrEncabTxt('Name' , 60);
   UtilGrilla1.AgrEncabTxt('APELLIDO', 80);
   UtilGrilla1.FinEncab;
   UtilGrilla1.MenuCampos:=true;

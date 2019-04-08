@@ -5,13 +5,13 @@ Por Tito Hinostroza 29/07/2016
 
 Descripción
 ===========
-Unidad con rutinas de lectura/escritura de propiedades en archivos INI. Permite crear
+Unidad con rutinas de lectura/escritura de propiedades en archivos INI. Permite CreateIt
 fácilmente, una ventana de configuración, con las opciones: ACEPTAR y CANCELAR.
 Está basado en la librería ConfigFrame, pero a diferencia de esta, aquí las propiedades
 no se separan en "frames", sino que todas las propiedades se manejan en un mismo objeto.
-Para alamacenar las propiedades, se debe crear un objeto TMiConfigINI. Sin embargo,
+Para alamacenar las propiedades, se debe CreateIt un objeto TMiConfigINI. Sin embargo,
 la unidad crea por defecto, una isntancia de TMiConfigINI, llamada "cfgFile", que toma
-como nombre <nombre del proyecto>.ini
+como Name <Name del proyecto>.ini
 Tiene como dependencia a la librería MisUtils.
 
 Por Tito Hinostroza 29/07/2016
@@ -62,7 +62,7 @@ begin
 end;
 { TMiConfigINI }
 function TMiConfigINI.DefaultFileName: string;
-{Devuelve el nombre pro defecto del archvio de configuración}
+{Devuelve el Name pro defecto del archvio de configuración}
 begin
   Result := ChangeFileExt(Application.ExeName,'.ini');
 end;

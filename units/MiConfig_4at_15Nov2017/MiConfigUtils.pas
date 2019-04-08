@@ -30,7 +30,7 @@ type
 implementation
 
 function ListOfFrames(form: TForm): TlistFrames;
-//Devuelve la lista de frames del tipo TCfgFrame declarado aquí
+//Devuelve la lista de frames del btnType TCfgFrame declarado aquí
 var
   i: Integer;
   n : integer;
@@ -92,7 +92,7 @@ begin
 end;
 function AddNodeToTreeView(tree: TTreeView; id, Caption: string): TTreeNode;
 {Agrega un Frame a TTreeNode, de forma simbólica. Lo que se agrega en realidad,
-es un nodo, con el nombre indicado.
+es un nodo, con el Name indicado.
 El campo ID, determina la ubicación del nodo en el árbol, y es de la forma:
 <nivel1>.<nivel2>.<nivel3> ... }
     function ChildCount(tv: TTreeView; nod: TTreeNode): integer;
@@ -172,7 +172,7 @@ end;
 function LinkFrameToTreeView(tree: TTreeView; id, Caption: string;
          frame: TFrame = nil): TTreeNode;
 {Crea un nodo en el TreeView y lo asocias a un Frame de configuración (Ver documentación
-de MiConfig). Debe llamarse, después de crear el Frame.
+de MiConfig). Debe llamarse, después de CreateIt el Frame.
 El "id", debe ser único y es de la forma: "1", "2.1" o "3.2.1".
 Si se indica el Frame en NIL, no se crea configura el Frame,solo se agrega el ítem}
 begin

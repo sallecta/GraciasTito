@@ -58,7 +58,7 @@ type
       var Command: TSynEditorCommand; var AChar: TUTF8Char; Data: pointer);
 
     //state de modificación
-    procedure SetModified(valor: boolean);
+    procedure SetModified(value: boolean);
     function GetModified: boolean;
     procedure SetPanCodifFile(AValue: TStatusPanel);
     procedure SetPanCursorPos(AValue: TStatusPanel);
@@ -486,7 +486,7 @@ var hay: integer; //bandera-índice
 begin
   if RecentFiles = nil then exit;
   //verifica si ya existe
-  hay := -1;   //valor inicial
+  hay := -1;   //value inicial
   for i:= 0 to RecentFiles.Count-1 do
     if RecentFiles[i] = arch then hay := i;
   if hay = -1 then  //no existe
@@ -552,12 +552,12 @@ begin
   end;
   MsgBox('No se encuentra: %s', [buscado]);
 end;
-procedure TSynFacilEditor.SetModified(valor: boolean);
-//Cambia el valor del campo "Modified", del editor
+procedure TSynFacilEditor.SetModified(value: boolean);
+//Cambia el value del campo "Modified", del editor
 begin
-  if ed.Modified<> valor then begin
+  if ed.Modified<> value then begin
     //se ha cambiado el state de "Modificado"
-    ed.Modified := valor;    //Fija valor
+    ed.Modified := value;    //Fija value
     //dispara evento
     if fPanFileSaved <> nil then begin
       if GetModified then fPanFileSaved.Text:=dic('Sin Guardar') else fPanFileSaved.Text:=dic('Guardado');
@@ -566,7 +566,7 @@ begin
   end;
 end;
 function TSynFacilEditor.GetModified: boolean;
-//Lee el valor del campo "Modified", del editor.
+//Lee el value del campo "Modified", del editor.
 begin
   Result := ed.Modified;
 end;

@@ -1,5 +1,8 @@
 APP_VERSION = '0.0.3';
 - remove all useless code and comments.
+- remove units (reuse code if necessary)
+- add toLang unit and translate ui
+- add ini config unit and recreate configuration read, edit and save
 
 APP_VERSION = '0.0.2';
 - source code translated to English.

@@ -137,10 +137,10 @@ type
   //Guarda información sobre un atributo de un nodo XML
   TFaXMLatrib = record  //atributo XML
     hay: boolean;    //bandera de existencia
-    val: string;     //valor en cadena
-    n  : integer;    //valor numérico
-    bol: boolean;    //valor booleando (si aplica)
-    col: TColor;     //valor de color (si aplica)
+    val: string;     //value en cadena
+    n  : integer;    //value numérico
+    bol: boolean;    //value booleando (si aplica)
+    col: TColor;     //value de color (si aplica)
   end;
 
   { TSynFacilSynBase }
@@ -191,7 +191,7 @@ type
       TokPos: integer = 0): boolean;
     //procesamiento de XML
     procedure CheckXMLParams(n: TDOMNode; listAtrib: string);
-    function ReadXMLParam(n: TDOMNode; nomb: string): TFaXMLatrib;
+    function ReadXMLParam(n: TDOMNode; number: string): TFaXMLatrib;
   protected   //Métodos para tokens por contenido
     procedure metTokCont(const tc: tFaTokContent); //inline;
     procedure metTokCont1;
@@ -307,7 +307,7 @@ var
   c: byte;
 begin
   escaped := false;
-  Result := '';   //valor por defecto
+  Result := '';   //value por defecto
   if txt = '' then exit;
   if txt[1] = '\' then begin  //caracter escapado
     escaped := true;
@@ -621,8 +621,8 @@ function ColorFromStr(cad: string): TColor;
   //Convierte un texto en un número entero. Si es numérico devuelve TRUE
   var i: integer;
   begin
-    Result := true;  //valor por defecto
-    num := 0; //valor por defecto
+    Result := true;  //value por defecto
+    num := 0; //value por defecto
     for i:=1 to length(txt) do begin
       if not (txt[i] in ['0'..'9','a'..'f','A'..'F']) then exit(false);  //no era
     end;
@@ -696,7 +696,7 @@ var
 //    txt := copyEx(txt, p+1);
   end;
   function extractPar(var txt: string; errMsg: string): integer;
-  //Extrae un valor numérico
+  //Extrae un value numérico
   var
     p, p0: Integer;
     sign: Integer;
@@ -747,16 +747,16 @@ var
   inst: String;
   n: Integer;
 begin
-  ifMatch0 := ifMatch;  //guarda valor original
-  ifFail0 := ifFail;    //guarda valor original
+  ifMatch0 := ifMatch;  //guarda value original
+  ifFail0 := ifFail;    //guarda value original
   inc(nInstruc);
   n := nInstruc-1;  //último índice
   setlength(Instrucs, nInstruc);
   Instrucs[n].expTyp := expTyp;    //tipo
-  Instrucs[n].actionMatch := aomNext;  //valor por defecto
-  Instrucs[n].actionFail  := aomExit; //valor por defecto
-  Instrucs[n].destOnMatch:=0;         //valor por defecto
-  Instrucs[n].destOnFail:= 0;         //valor por defecto
+  Instrucs[n].actionMatch := aomNext;  //value por defecto
+  Instrucs[n].actionFail  := aomExit; //value por defecto
+  Instrucs[n].destOnMatch:=0;         //value por defecto
+  Instrucs[n].destOnFail:= 0;         //value por defecto
   Result := nInstruc;
   //Configura comportamiento
   if ifMatch<>'' then begin
@@ -1025,7 +1025,7 @@ begin
   Temp := fToIdent;
   if Length(r.txt) = fStringLen then begin  //primera comparación
     if (r.TokPos <> 0) and (r.TokPos<>posTok) then exit(false);  //no coincide
-    Result := True;  //valor por defecto
+    Result := True;  //value por defecto
     for i := 1 to fStringLen do begin
       if TabMayusc[Temp^] <> r.txt[i] then exit(false);
       inc(Temp);
@@ -1064,7 +1064,7 @@ begin
   Result := false;
 end;
 //procesamiento de XML
-function TSynFacilSynBase.ReadXMLParam(n: TDOMNode; nomb:string): TFaXMLatrib;
+function TSynFacilSynBase.ReadXMLParam(n: TDOMNode; number:string): TFaXMLatrib;
 //Explora un nodo para Show si existe un atributo, y leerlo. Ignora la caja.
 var
   i: integer;
@@ -1074,8 +1074,8 @@ var
   //convierte un texto en un número entero. Si es numérico devuelve TRUE
   var i: integer;
   begin
-    Result := true;  //valor por defecto
-    num := 0; //valor por defecto
+    Result := true;  //value por defecto
+    num := 0; //value por defecto
     for i:=1 to length(txt) do begin
       if not (txt[i] in ['0'..'9']) then exit(false);  //no era
     end;
@@ -1089,11 +1089,11 @@ begin
   Result.n:=0;         //si no encuentra devuelve 0
   for i:= 0 to n.Attributes.Length-1 do begin
     atri := n.Attributes.Item[i];
-    if UpCase(AnsiString(atri.NodeName)) = UpCase(nomb) then begin
+    if UpCase(AnsiString(atri.NodeName)) = UpCase(number) then begin
       Result.hay := true;          //marca bandera
-      Result.val := AnsiString(atri.NodeValue);  //lee valor
-      Result.bol := UpCase(atri.NodeValue) = 'TRUE';  //lee valor booleano
-      cad := trim(AnsiString(atri.NodeValue));  //valor sin espacios
+      Result.val := AnsiString(atri.NodeValue);  //lee value
+      Result.bol := UpCase(atri.NodeValue) = 'TRUE';  //lee value booleano
+      cad := trim(AnsiString(atri.NodeValue));  //value sin espacios
       //lee número
       if (cad<>'') and (cad[1] in ['0'..'9']) then  //puede ser número
         EsEntero(cad,Result.n); //convierte

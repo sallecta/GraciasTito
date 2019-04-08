@@ -311,7 +311,7 @@ var
   met: TFaProcMetTable;
   c: Char;
 begin
-  Result := false;  //valor por defecto
+  Result := false;  //value por defecto
   TableIdent(cad, mat, met);  //busca tabla y método (Puede generar excepción)
   //Verifica si existe
   if CreaBuscTokEspec(mat^, copy(cad,2,length(cad)), i, TokPos) then begin
@@ -334,7 +334,7 @@ function TSynFacilSyn.CreaBuscSymEspec(out mat: TPtrATokEspec; cad: string;
  en "i". En "mat" devuelve la referencia a la tabla que corresponda al símbolo (por ahora
  siempre será mSymb0).}
 begin
-  Result := false;  //valor por defecto
+  Result := false;  //value por defecto
   mat := @mSym0;  //no hace falta buscarlo
   //Verifica si existe
   if CreaBuscTokEspec(mSym0, cad, i, TokPos) then
@@ -1397,7 +1397,7 @@ function TSynFacilSyn.SearchBlock(blk: string; out Success: boolean): TFaSynBloc
  Si la búsqueda tuvo éxito, pone la bandera "Success" en TRUE}
 var i: integer;
 begin
-  Result := nil;  //valor por defecto. Es un valor "válido".
+  Result := nil;  //value por defecto. Es un value "válido".
   Success := false;
   if UpCase(blk) = 'NONE' then begin
     Success := true;
@@ -1893,7 +1893,7 @@ function TSynFacilSyn.CreateBlock(blkName: string; showFold: boolean = true;
 //Crea un bloque en el resaltador y devuelve una referencia al bloque creado.
 var blk : TFaSynBlock;
 begin
-  Result := nil;    //valor por defecto
+  Result := nil;    //value por defecto
   //if blkName = '' //No se verifica el nombre del bloque
   //Crea bloque
   blk:= TFaSynBlock.Create;
@@ -1915,7 +1915,7 @@ function TSynFacilSyn.AddBlock(dStart, dEnd: string; showFold: boolean = true;
 excepción}
 var blk : TFaSynBlock;
 begin
-  Result := nil;    //valor por defecto
+  Result := nil;    //value por defecto
   //Crea bloque
   blk:= CreateBlock('',showFold,parentBlk);
   Result := blk;           //devuelve referencia
@@ -1930,7 +1930,7 @@ function TSynFacilSyn.AddSection(dStart: string; showFold: boolean = true;
 genera una excepción}
 var blk : TFaSynBlock;
 begin
-  Result := nil;    //valor por defecto
+  Result := nil;    //value por defecto
   //verificaciones
   if parentBlk = nil then begin
     parentBlk := MainBlk;  //NIL significa que es válido en el bloque principal
@@ -1949,7 +1949,7 @@ Si encuentra error, genera una excepción}
 var
   blk : TFaSynBlock;
 begin
-  Result := nil;    //valor por defecto
+  Result := nil;    //value por defecto
   //Una sección es también un bloque. Crea bloque
   blk:= CreateBlock('',showFold,parentBlk);
   blk.IsSection:=true;
@@ -1960,7 +1960,7 @@ end;
 //funciones para obtener información de bloques
 function TSynFacilSyn.NestedBlocks: Integer;
 //Devuelve la cantidad de bloques anidados en la posición actual. No existe un contador
-//en el resaltador para este valor (solo para bloques con marca de pleagdo visible).
+//en el resaltador para este value (solo para bloques con marca de pleagdo visible).
 var
   Fold: TSynCustomCodeFoldBlock;
 begin
@@ -2000,7 +2000,7 @@ var
 //  Line: string;
   Start: Integer;
 begin
-  Result := false;  //valor por defecto
+  Result := false;  //value por defecto
   //validaciónes
   PosY := XY.Y -1;
   if (PosY < 0) or (PosY >= CurrentLines.Count) then exit;
@@ -2044,8 +2044,8 @@ var
   PosX, PosY: integer;
   idx: Integer;
 begin
-  Result := false;  //valor por defecto
-  CurTok :=-1;       //valor por defecto
+  Result := false;  //value por defecto
+  CurTok :=-1;       //value por defecto
   idx := 0;
   setlength(toks,12);  //tamaño inicial
   //validaciónes
@@ -2097,7 +2097,7 @@ var
   niv1, niv2: Integer;   //niveles anterior y posterior
   ultApert : integer;    //posición de última apertura
 begin
-  ultApert := -1; //valor por defecto
+  ultApert := -1; //value por defecto
   niv1 := NestedBlocksBegin(PosY); //Verifica el nivel al inicio de la línea
   //explora línea
   StartAtLineIndex(PosY);   //posiciona y hace el primer Next()
@@ -2118,7 +2118,7 @@ function TSynFacilSyn.SearchEndBlock(level: integer; PosY: integer): integer;
 var
   niv1, niv2: Integer;   //niveles anterior y posterior
 begin
-  Result := MAXINT; //valor por defecto
+  Result := MAXINT; //value por defecto
   niv1 := NestedBlocksBegin(PosY); //Verifica el nivel al inicio de la línea
   //explora línea
   StartAtLineIndex(PosY);   //posiciona y hace el primer Next()
@@ -2149,8 +2149,8 @@ var
   niv1, niv2: Integer;   //niveles anterior y posterior
   Despues: boolean;      //bandera para indicar si se alcanzó al token
 begin
-  pIniBlock := -1; //valor por defecto
-  pEndBlock := MAXINT;  //valor por defecto
+  pIniBlock := -1; //value por defecto
+  pEndBlock := MAXINT;  //value por defecto
   Despues := false;
   niv1 := NestedBlocksBegin(PosY); //Verifica el nivel al inicio de la línea
   //explora línea

@@ -48,42 +48,41 @@ uses
   Classes, Controls, ExtCtrls, Graphics, LCLProc, LCLType, fgl,
   MotGraf3d, sketchCore, sketchDxf;
 const
-  CUR_DEFEC = crDefault;          //cursor por defecto
+  CUR_DEFAULT = crDefault; //default cursor
 
-  ZOOM_MAX_CONSULT = 5  ;  //Define el zoom máximo que se permite en un diagrama
-  ZOOM_MIN_CONSULT = 0.1;  //Define el zoom mínimo que se permite en un diagrama
+  ZOOM_MAX_EDITOR = 5  ;//Defines the maximal zoom allowed in a diagram
+  ZOOM_MIN_EDITOR = 0.1;//Defines the minimal zoom allowed in a diagram
 
-  FACTOR_AMPLIA_ZOOM = 1.15;  //Factor de ampliación del zoom
-  DESPLAZ_MENOR = 10;
+  ZOOM_STEP_EDITOR = 1.15;
+  OFFSET_EDITOR = 10;
 type
-  //Tipo de evento producido en la View
-  TVisEventTyp = (
-    vmeMouseDown,   //Botón del mouse pulsado
-    vmeMouseMove,   //Botón desplazado
-    vmeMouseUp,     //Botón del mouse soltado
-    vmeEjecComm    //Inicio de comando
+  //ObjType of event produced in the View
+  TViewEvent = (
+    vmeMouseDown,
+    vmeMouseMove,
+    vmeMouseUp,
+    vmeCmdStart    //Start of command
   );
-  //Tipo del manejador de eventos de la View. Se espera solo eventos del mouse o de
-  //comandos.
-  TVisEventHandler = procedure(EventTyp: TVisEventTyp; Button: TMouseButton;
+  {ObjType of the event handler of the View. Only mouse or event events are expected.}
+  TViewEventHandler = procedure(EventType: TViewEvent; Button: TMouseButton;
                             Shift: TShiftState; xp, yp: Integer; txt: string) of object;
 
-  //Estados del puntero
+  //Point States
   TViewState = (
-      //Estados del editor visual
-       EP_NORMAL      //No se está realizando ninguna operación
-      ,EP_SELECMULT   //Esta en modo de selección múltiple
-      ,EP_MOV_OBJS    //Indica que se esta moviendo una o mas objects
-      ,EP_DESP_PANT   //desplazamiento de pantalla
-      ,EP_DESP_ANG    //Indica desplazamiento de ángulos de View
-      ,EP_DIMEN_OBJ   //Indica que se está dimensionando un objeto
-      ,EP_RAT_ZOOM    //Indica que se está en un proceso de Zoom
-      //Estados adciionales para los comandos
-      ,EP_COMM_LINE
-      ,EP_COMM_RECTAN
+      //Visual editor states
+       VS_NORMAL,      //No operation is being performed
+      VS_SELECTINGMULT,   //You are in multiple selection mode
+      VS_OBJS_MOVING,    //Indicates that one or more objects are moving
+      VS_SCREEN_SCROLLING,
+      VS_SCREEN_ANG,   //Indicates offset of View angles
+      VS_DIMEN_OBJ,   // Indicates that an object is being dimensioned
+      VS_ZOOMING,    //Indicates that you are in a Zoom Processing
+      //Additional states for commands
+      VS_CMD_ADDING_LINE,
+      VS_CMD_ADDING_RECTAN
       );
 
-  TOnClickDer = procedure(x,y:integer) of object;
+  TOnClickRight = procedure(x,y:integer) of object;
   TEvChangeState = procedure(ViewState: TViewState) of object;
   TEvSendMessage = procedure(msg: string) of object;
 
@@ -92,17 +91,17 @@ type
   private
     FState: TViewState;
     procedure GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean=true);
-    procedure GraphicObjectDelete(obj: TGraphicObj);  //elimina un objeto grafico
+    procedure GraphicObjectDelete(obj: TGraphicObj);
     procedure DeleteSelected;
-    procedure proc_COMM_RECTAN(EventTyp: TVisEventTyp; Button: TMouseButton;
+    procedure proc_COMM_RECTAN(EventType: TViewEvent; Button: TMouseButton;
       Shift: TShiftState; xp, yp: Integer; txt: string);
     procedure SetState(AValue: TViewState);
-    procedure v2d_ChangeView;
+    procedure VirtualScreen_ChangeView;
   protected
-    PBox         : TPaintBox;   //Control de Salida
-    CapturoEvento: TGraphicObj;    //referencia a objeto que capturo el movimiento
-    ultMarcado   : TGraphicObj;    //nombre del objeto marcado
-    ParaMover    : Boolean;     //bandera de control para el inicio del movimiento
+    PBox         : TPaintBox;   //Output Control
+    MovingObject: TGraphicObj;    //reference to object that captured movement
+    MarkedObject   : TGraphicObj;
+    Moving : Boolean;     //Control flag for the start of the movement
     procedure PBox_MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
                         xp, yp: Integer); virtual;
     procedure PBox_MouseUp(Sender: TObject; Button: TMouseButton;Shift: TShiftState; xp, yp: Integer);
@@ -112,106 +111,106 @@ type
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure PBox_DblClick(Sender: TObject);
     procedure PBox_Resize(Sender: TObject);
-  public  //Esta ruitna pertenece al grupo de eventos PBox_???, pero debe ser pública.
+  public
     procedure ExecuteCommand(command: string);
-  public  //Manejo de eventos
-    OnClickDer  : TOnClickDer;
-    OnMouseUp   : TMouseEvent;          //cuando se suelta el botón
+  public
+    OnClickRight  : TOnClickRight;
+    OnMouseUp   : TMouseEvent;
     OnMouseDown : TMouseEvent;
     OnMouseMove : TMouseMoveEvent;
     OnDblClick  : TNotifyEvent;
     OnObjectsMoved: procedure of object;
     OnChangeView: procedure of object;
-    OnModify     : procedure of object;  //Este visor indica los cambios con este evento
-    OnChangeState: TEvChangeState;      //Cambia el state del Visor
-    OnSendMessage: TEvSendMessage;      //Envía un mensaje. Usado para respuesta a comandos
+    OnModify     : procedure of object;
+    OnChangeState: TEvChangeState;
+    OnSendMessage: TEvSendMessage;
   public
-    xvPtr       : Single;   //coordenadas cirtuales del puntero
-    yvPtr       : Single;   //coordenadas cirtuales del puntero
-    zvPtr       : Single;   //coordenadas cirtuales del puntero
-    objects     : TEditorObjList; //referencia a la lisat de objects
-    seleccion   : TEditorObjList;
+    xvPt       : Single;
+    yvPt       : Single;
+    zvPt       : Single;
+    objects     : TEditorObjList;
+    selection   : TEditorObjList;
     VirtScreen         : TVirtScreen;    //graphic output
-    incWheel    : Single;      //Incremento de ámgulo con la rueda del mouse
-    ShowAxes : boolean;     //Para mostrar los ejec coordenados.
-    AxesDistance : integer;     //Longitud de ejes coordenados
-    ShowRotPoint: boolean;     //Para mostrar el punto de giro.
-    ShowGrid  : boolean;     //Para mostrar la cuadrícula.
-    function Seleccionado: TGraphicObj;
-    function ObjPorNombre(nom: string): TGraphicObj;
+    Wheel_step    : Single;
+    ShowAxes : boolean;
+    AxesDistance : integer;
+    ShowRotPoint: boolean;
+    ShowGrid  : boolean;
+    function ObjSelected: TGraphicObj;
+    function ObjByName(argName: string): TGraphicObj;
     procedure Refresh;
-    procedure SeleccionarTodos;
+    procedure SelectAll;
     procedure SelectNone();
   protected
     x1Sel    : integer;
     y1Sel    : integer;
     x2Sel    : integer;
     y2Sel    : integer;
-    x1Sel_a  : integer;
-    y1Sel_a  : integer;
-    x2Sel_a  : integer;
-    y2Sel_a  : integer;
-    //coordenadas del raton
-    x_pulso: integer;
-    y_pulso: integer;
-    x_cam_a: Single;  //coordenadas anteriores de x_cam
-    y_cam_a: Single;
-    procedure AmpliarClick(factor: real=FACTOR_AMPLIA_ZOOM; xr: integer=0;
+    x1Sel_prev  : integer;
+    y1Sel_prev  : integer;
+    x2Sel_prev  : integer;
+    y2Sel_prev  : integer;
+    //mouse coordinates
+    x_mouse: integer;
+    y_mouse: integer;
+    x_cam_prev: Single;  //previous coordinates of x_cam
+    y_cam_prev: Single;
+    procedure ZoomToClick(factor: real=ZOOM_STEP_EDITOR; xr: integer=0;
       yr: integer=0);
-    function AnteriorVisible(c: TGraphicObj): TGraphicObj;
-    procedure DibujRecSeleccion;
+    function PreviousVisible(c: TGraphicObj): TGraphicObj;
+    procedure DrawRectangleSeleccion;
 
-    function enRecSeleccion(X, Y: Single): Boolean;
-    procedure InicRecSeleccion(X, Y: Integer);
-    procedure moverAbajo(desp: Double=DESPLAZ_MENOR);
-    procedure moverArriba(desp: Double=DESPLAZ_MENOR);
-    procedure moverDerecha(desp: Double=DESPLAZ_MENOR);
-    procedure moverIzquierda(desp: Double=DESPLAZ_MENOR);
-    procedure Desplazar(dx, dy: integer);
-    function NumeroVisibles: Integer;
-    function PrimerVisible: TGraphicObj;
-    function RecSeleccionNulo: Boolean;
-    procedure ReducirClick(factor: Real=FACTOR_AMPLIA_ZOOM; x_zoom: Real=0;
+    function inRectangleSeleccion(X, Y: Single): Boolean;
+    procedure startRectangleSeleccion(X, Y: Integer);
+    procedure moveDown(offs: Double=OFFSET_EDITOR);
+    procedure moveUp(offs: Double=OFFSET_EDITOR);
+    procedure moveRight(offs: Double=OFFSET_EDITOR);
+    procedure moveLeft(offs: Double=OFFSET_EDITOR);
+    procedure Displace(dx, dy: integer);
+    function VisibleObjectsCount: Integer;
+    function FirstVisible: TGraphicObj;
+    function RectangleSelectionIsNil: Boolean;
+    procedure ZoomReduceClick(factor: Real=ZOOM_STEP_EDITOR; x_zoom: Real=0;
       y_zoom: Real=0);
-    function SeleccionaAlguno(xp, yp: Integer): TGraphicObj;
-    procedure SeleccionarAnterior;
-    procedure SeleccionarSiguiente;
-    function SiguienteVisible(c: TGraphicObj): TGraphicObj;
-    function UltimoVisible: TGraphicObj;
-    function VerificarMovimientoRaton(X, Y: Integer): TGraphicObj;
-    procedure VerificarParaMover(xp, yp: Integer);
-  public  //Se hace público porque se necesita acceder desde fuera
-    procedure GraphicObject_Select(obj: TGraphicObj);     //Respuesta a Evento
-    procedure GraphicObject_Unselec(obj: TGraphicObj);    //Respuesta a Evento
-    procedure GraphicObject_SetPointer(Punt: integer);  //Respuesta a Evento
-  private  //Rutinas de procesamiento de estados
-    {Contenedor que asocia el state a su procedimiento manejador. Se usar para acceder
-     rápidamente a la rutina manejadora, ya que algunos eventos (como PBox_MouseMove), se
-     generan de forma repetida.}
-    EventOfState: array[low(TViewState) .. high(TViewState)] of TVisEventHandler;
-    property State: TViewState read FState write SetState;  //state del puntero
-    public function StateAsStr: string; private  //Cadena de descripción de state
-    procedure RegisterState(State0: TViewState; EventHandler: TVisEventHandler);
+    function SelectObjectAt(xp, yp: Integer): TGraphicObj;
+    procedure SelectPrevious;
+    procedure SelectNext;
+    function NextVisible(c: TGraphicObj): TGraphicObj;
+    function LastVisible: TGraphicObj;
+    function VerifyMouseMovement(X, Y: Integer): TGraphicObj;
+    procedure VerifyToMove(xp, yp: Integer);
+  public
+    procedure GraphicObject_Select(obj: TGraphicObj);     //Response to Event
+    procedure GraphicObject_Unselec(obj: TGraphicObj);    //Response to Event
+    procedure GraphicObject_SetPointer(argPoint: integer);  //Response to Event
+  private
+    {Container that associates the state with its handling procedure. Use to access
+      quickly to the management routine, since some events (like PBox_MouseMove),
+      generate repeatedly.}
+    EventOfState: array[low(TViewState) .. high(TViewState)] of TViewEventHandler;
+    property State: TViewState read FState write SetState;
+    public function StateAsStr: string; private
+    procedure RegisterState(argState: TViewState; EventHandler: TViewEventHandler);
     procedure ClearEventState;
     procedure SendData(Data: string);
-    procedure CallEventState(State0: TViewState; EventTyp: TVisEventTyp;
+    procedure CallEventState(argState: TViewState; EventType: TViewEvent;
       Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
-  private  //Manejadores de eventos de state
-    procedure proc_COMM_LINE(EventTyp: TVisEventTyp; Button: TMouseButton;
+  private
+    procedure proc_CMD_ADDING_LINE(EventType: TViewEvent; Button: TMouseButton;
                             Shift: TShiftState; xp, yp: Integer; txt: string);
-    procedure proc_NORMAL(EventTyp: TVisEventTyp; Button: TMouseButton;
+    procedure proc_NORMAL(EventType: TViewEvent; Button: TMouseButton;
                             Shift: TShiftState; xp, yp: Integer; txt: string);
-    procedure proc_SELECMULT(EventTyp: TVisEventTyp; Button: TMouseButton;
+    procedure proc_SELECTINGMULT(EventType: TViewEvent; Button: TMouseButton;
                             Shift: TShiftState; xp, yp: Integer; txt: string);
-    procedure proc_MOV_OBJS(EventTyp: TVisEventTyp; Button: TMouseButton;
+    procedure proc_OBJS_MOVING(EventType: TViewEvent; Button: TMouseButton;
                             Shift: TShiftState; xp, yp: Integer; txt: string);
-    procedure proc_DESP_PANT(EventTyp: TVisEventTyp; Button: TMouseButton;
+    procedure proc_SCREEN_SCROLLING(EventType: TViewEvent; Button: TMouseButton;
                             Shift: TShiftState; xp, yp: Integer; txt: string);
-    procedure proc_DESP_ANG(EventTyp: TVisEventTyp; Button: TMouseButton;
+    procedure proc_SCREEN_ANG(EventType: TViewEvent; Button: TMouseButton;
                             Shift: TShiftState; xp, yp: Integer; txt: string);
-    procedure proc_DIMEN_OBJ(EventTyp: TVisEventTyp; Button: TMouseButton;
+    procedure proc_DIMEN_OBJ(EventType: TViewEvent; Button: TMouseButton;
                             Shift: TShiftState; xp, yp: Integer; txt: string);
-    procedure proc_RAT_ZOOM(EventTyp: TVisEventTyp; Button: TMouseButton;
+    procedure proc_ZOOMING(EventType: TViewEvent; Button: TMouseButton;
                             Shift: TShiftState; xp, yp: Integer; txt: string);
   public //Inicialización
     procedure RestoreState(msg: string='');
@@ -229,7 +228,7 @@ begin
   FState:=AValue;
   if OnChangeState<>nil then OnChangeState(FState);
 end;
-procedure TEditor.v2d_ChangeView;
+procedure TEditor.VirtualScreen_ChangeView;
 begin
   if OnChangeView<>nil then OnChangeView;
 end;
@@ -237,86 +236,86 @@ procedure TEditor.PBox_MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
 begin
     if OnMouseDown<>nil then OnMouseDown(Sender, Button, Shift, Xp, Yp);
-    x_pulso := xp;
-    y_pulso := yp;
-    //Prepara inicio de desplazamiento de la pantalla. Se debe hacer porque podría
-    //iniciarse el proceso de desplazamiento.
-    x_cam_a := VirtScreen.x_cam;
-    y_cam_a := VirtScreen.y_cam;
+    x_mouse := xp;
+    y_mouse := yp;
+    //Prepares start of scrolling the screen. It must be done because it could
+     // start the Processing of displacement.
+    x_cam_prev := VirtScreen.x_cam;
+    y_cam_prev := VirtScreen.y_cam;
 
-    CallEventState(State, vmeMouseDown, Button, Shift, xp, yp, ''); //Procesa de acuerdo al state
+    CallEventState(State, vmeMouseDown, Button, Shift, xp, yp, ''); //Process according to state
 end;
 procedure TEditor.PBox_MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer);
 begin
-   //Verifica si la selección es NULA
-   If (State = EP_SELECMULT) And RecSeleccionNulo Then State := EP_NORMAL;
-   CallEventState(State, vmeMouseUp, Button, Shift, xp, yp, ''); //Procesa de acuerdo al state
+   //Check if the selection is NULL
+   If (State = VS_SELECTINGMULT) And RectangleSelectionIsNil Then State := VS_NORMAL;
+   CallEventState(State, vmeMouseUp, Button, Shift, xp, yp, '');
    if Button = mbRight then
-     if OnClickDer<> nil then OnClickDer(xp,yp);  //evento
+     if OnClickRight<> nil then OnClickRight(xp,yp);
    if OnMouseUp<>nil then OnMouseUp(Sender, Button, Shift, xp, yp);
 end;
 procedure TEditor.PBox_MouseMove(Sender: TObject; Shift: TShiftState;
   X,  Y: Integer);
 begin
-  zvPtr := 0;   //fijamos el plano de trabajo en z=0
-  VirtScreen.XYvirt(X,Y,zvPtr, xvPtr, yvPtr);  {actualiza puntero virtual.}
+  zvPt := 0;   //we set the work plane at z = 0
+  VirtScreen.XYvirt(X,Y,zvPt, xvPt, yvPt);
   if OnMouseMove<>nil then OnMouseMove(Sender, Shift, X, Y);
-  if ParaMover = True Then VerificarParaMover(X, Y);
-  CallEventState(State, vmeMouseMove, mbExtra1, Shift, x, y, ''); //Procesa de acuerdo al state
+  if Moving = True Then VerifyToMove(X, Y);
+  CallEventState(State, vmeMouseMove, mbExtra1, Shift, x, y, ''); //Process according to state
 end;
 procedure TEditor.PBox_Paint(Sender: TObject);
 var
   o:TGraphicObj;
-  x, y, xCuad1, xCuad2, yCuad1, yCuad2: Single;
-  nCuad, ix, distCub, paso: Integer;
+  x, y, xGrid1, xGrid2, yGrid1, yGrid2: Single;
+  nGrid, ix, distCovered, step: Integer;
 begin
     VirtScreen.Clear;
-    If State = EP_SELECMULT Then DibujRecSeleccion;
+    If State = VS_SELECTINGMULT Then DrawRectangleSeleccion;
     if ShowGrid then begin
-      //Muestra cuadrícula
+      //Shows grid
       VirtScreen.SetPen(TColor($404040),1);
       if VirtScreen.Zoom > 7 then begin
-        distCub := 100;  //distancia cubierta (valor virtual)
-        paso := 10;      //ancho del paso (valor virtual)
+        distCovered := 100;  //covered distance (virtual value)
+        step := 10;      //step width (virtual value)
       end else if VirtScreen.Zoom > 3 then begin
-        distCub := 200;  //distancia cubierta (valor virtual)
-        paso := 20;      //ancho del paso (valor virtual)
+        distCovered := 200;
+        step := 20;
       end else if VirtScreen.Zoom > 1 then begin
-        distCub := 600;  //distancia cubierta (valor virtual)
-        paso := 50;      //ancho del paso (valor virtual)
+        distCovered := 600;
+        step := 50;
       end else begin
-        distCub := 1200;  //distancia cubierta (valor virtual)
-        paso := 100;      //ancho del paso (valor virtual)
+        distCovered := 1200;
+        step := 100;
       end;
-      nCuad := distCub div paso;
+      nGrid := distCovered div step;
 
-//      xCuad1 := 0;
-//      xCuad2 := 1000;
-      xCuad1 := int((VirtScreen.x_cam - distCub/2)/paso)*paso;
-      xCuad2 := xCuad1 + distCub;
+//      xGrid1 := 0;
+//      xGrid2 := 1000;
+      xGrid1 := int((VirtScreen.x_cam - distCovered/2)/step)*step;
+      xGrid2 := xGrid1 + distCovered;
 
-//      yCuad1 := 0;
-//      yCuad2 := 1000;
-      yCuad1 := int((VirtScreen.y_cam - distCub/2)/paso)*paso;
-      yCuad2 := yCuad1 + distCub;
+//      yGrid1 := 0;
+//      yGrid2 := 1000;
+      yGrid1 := int((VirtScreen.y_cam - distCovered/2)/step)*step;
+      yGrid2 := yGrid1 + distCovered;
 
-      x := xCuad1;
-      for ix := 0 to nCuad do begin
-        VirtScreen.Line(x,yCuad1,0, x, yCuad2, 0);
-        x := x + paso;
+      x := xGrid1;
+      for ix := 0 to nGrid do begin
+        VirtScreen.Line(x,yGrid1,0, x, yGrid2, 0);
+        x := x + step;
       end;
-      y := yCuad1;
-      for ix := 0 to nCuad do begin
-        VirtScreen.Line(xCuad1, y, 0, xCuad2, y, 0);
-        y := y + paso;
+      y := yGrid1;
+      for ix := 0 to nGrid do begin
+        VirtScreen.Line(xGrid1, y, 0, xGrid2, y, 0);
+        y := y + step;
       end;
     end;
-    //Dibuja objects
+    //Draw objects
     for o In objects do begin
-      o.Dibujar;
+      o.Draw;
     end;
-    //Dibuja eje
+    //Draw axis
     if ShowAxes then begin
       VirtScreen.SetPen(clRed, 1);
       VirtScreen.Line(0,0,0,100,0,0);
@@ -334,12 +333,12 @@ begin
     end;
     //Dibuja puntero del mouse  (No es apropiado porque necesita refescar siempre.)
 //    VirtScreen.SetPen(clWhite, 1);
-//    VirtScreen.Line(xvPtr-30, yvPtr, zvPtr,
-//             xvPtr+30, yvPtr, zvPtr);
-//    VirtScreen.Line(xvPtr, yvPtr-30, zvPtr,
-//             xvPtr, yvPtr+30, zvPtr);
-//    VirtScreen.Line(xvPtr, yvPtr, zvPtr-30,
-//             xvPtr, yvPtr, zvPtr+30);
+//    VirtScreen.Line(xvPt-30, yvPt, zvPt,
+//             xvPt+30, yvPt, zvPt);
+//    VirtScreen.Line(xvPt, yvPt-30, zvPt,
+//             xvPt, yvPt+30, zvPt);
+//    VirtScreen.Line(xvPt, yvPt, zvPt-30,
+//             xvPt, yvPt, zvPt+30);
 end;
 procedure TEditor.PBox_MouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
@@ -347,11 +346,11 @@ var
   d: Single;
 begin
   if Shift = [ssCtrl] then begin
-    if WheelDelta>0 then d := incWheel else d := -incWheel;
+    if WheelDelta>0 then d := Wheel_step else d := -Wheel_step;
     VirtScreen.Alfa := VirtScreen.Alfa + d;
   end;
   if Shift = [ssShift] then begin
-    if WheelDelta>0 then d := incWheel else d := -incWheel;
+    if WheelDelta>0 then d := Wheel_step else d := -Wheel_step;
     VirtScreen.Fi := VirtScreen.Fi + d;
   end;
   if Shift = [] then begin
@@ -365,133 +364,124 @@ begin
   if OnDblClick<>nil then OnDblClick(Sender);
 end;
 procedure TEditor.PBox_Resize(Sender: TObject);
-{Se aprovecha para fijar el punto de rotación al centro del control.}
+{It is used to set the rotation point to the center of the control.}
 begin
   VirtScreen.x_offs := PBox.Width div 2;
   VirtScreen.y_offs := PBox.Height div 2;
 end;
 procedure TEditor.ExecuteCommand(command: string);
-{Solicita ejecutar, un comando al visor. Esta debe ser el úncio medio, además de los
-eventos del ratón, por el cual se comunica acciones al visor. Visto de este modo,
-ExecuteCommand(), es similar a las rutinas manejadores de eventos: PBOX_???(), con la
-excepción de que no se ejecuta, como respuesta a un evento del mouse, sino que debe ser
-llamado externamente. }
+{Request to execute, a command to the viewer. This must be the only means, in addition to the
+mouse events, by which actions are communicated to the viewer. Seen in this way,
+ExecuteCommand (), is similar to the event handler routines: PBOX _ ??? (), with the
+exception that it is not executed, in response to a mouse event, but must be
+externally called }
 begin
-  //Pasa el evento de comando, a la rutina correspondiente al state actual.
-  //El único state que debería tratar este comando, sería el state NORMAL.
-  CallEventState(State, vmeEjecComm, mbExtra1, [], 0, 0, command); //Procesa de acuerdo al state
+  {Pass the command event, to the routine corresponding to the current state.
+   The only state that this command should treat, would be the NORMAL state. }
+  CallEventState(State, vmeCmdStart, mbExtra1, [], 0, 0, command); //Process according to state
 end;
 
 procedure TEditor.Refresh();  //   Optional s: TGraphicObj = Nothing
 begin
   PBox.Invalidate;
 end;
-function TEditor.SeleccionaAlguno(xp, yp: Integer): TGraphicObj;
-//Rutina principal para determinar la selección de objects. Si (xp,yp)
-//selecciona a algún objeto, devuelve la referencia, sino devuelve "NIL"
+function TEditor.SelectObjectAt(xp, yp: Integer): TGraphicObj;
 var
   i: Integer;
   s: TGraphicObj;
 begin
-  //Verifica primero entre los que están seleccionados
-  Result := NIL; //valor por defecto
-  //Explora objects priorizando los que están encima
-  For i := seleccion.Count-1 downTo 0 do begin
-    s := seleccion[i];
-    If not s.SelLocked and s.LoSelecciona(xp, yp) Then begin
+  Result := NIL;
+  For i := selection.Count-1 downTo 0 do begin
+    s := selection[i];
+    If not s.SelLocked and s.isSelected(xp, yp) Then begin
         Result:= s;
         Exit;
     End;
   end;
-  //Explora objects priorizando los que están encima
   For i := objects.Count-1 downTo 0 do begin
     s := objects[i];
-    If not s.SelLocked and s.LoSelecciona(xp, yp) Then begin
+    If not s.SelLocked and s.isSelected(xp, yp) Then begin
         Result := s;
         Exit;
     End;
   end;
 End;
-procedure TEditor.VerificarParaMover(xp, yp: Integer);
-{Si se empieza el movimiento, selecciona primero algun elemento que
-pudiera estar debajo del puntero y actualiza "EstPuntero".
-Solo se debe ejecutar una vez al inicio del movimiento, para ello se
-usa la bandera ParaMover, que debe ponerse a FALSE aquí.}
+procedure TEditor.VerifyToMove(xp, yp: Integer);
+{If the movement starts, first select an element that
+could be below the pointer and update "EstPuntero".
+It should only be executed once at the beginning of the movement, for this purpose
+use the Moving flag, which should be set to FALSE here.}
 var s: TGraphicObj;
 begin
-    for s In seleccion  do begin  //da prioridad a los elementos seleccionados
+    for s In selection  do begin
       if s.PosLocked then continue;
-      s.StartMove(xp, yp);      //llama al evento inic_mover para cada objeto
-      if s.Proceso Then begin  //este objeto proceso el evento
-          CapturoEvento := s;
-          if s.Resizing then State := EP_DIMEN_OBJ else State := EP_NORMAL;
-          ParaMover := False;    //para que ya no se llame otra vez
+      s.StartMove(xp, yp);
+      if s.Processing Then begin
+          MovingObject := s;
+          if s.Resizing then State := VS_DIMEN_OBJ else State := VS_NORMAL;
+          Moving := False;
           Exit;
       end;
     end;
     for s In objects do begin
       if s.PosLocked then continue;
-      s.StartMove(xp, yp);    //llama al evento inic_mover para cada objeto
-      if s.Proceso Then begin   //este objeto proceso el evento
-          CapturoEvento := s;
-          if s.Resizing then State := EP_DIMEN_OBJ else State := EP_NORMAL;
-          State := EP_NORMAL;
-          ParaMover := False;   //para que ya no se llame otra vez
+      s.StartMove(xp, yp);
+      if s.Processing Then begin
+          MovingObject := s;
+          if s.Resizing then State := VS_DIMEN_OBJ else State := VS_NORMAL;
+          State := VS_NORMAL;
+          Moving := False;
           exit;
       end;
     end;
-    //Ningún objeto ha capturado, el evento, asumimos que se debe realizar
-    //el desplazamiento simple de los objects seleccionados
-//Debug.Print "   VerifParaMover: EP_MOV_OBJS"
-    State := EP_MOV_OBJS;
-    CapturoEvento := nil;      //ningún objeto capturo el evento
-    ParaMover := False;        //para que ya no se llame otra vez
+{No object has captured, the event, we assume that the
+Simple scrolling of selected objects Debug.Print "VerifParaMover: VS_OBJS_MOVING" }
+    State := VS_OBJS_MOVING;
+    MovingObject := nil;
+    Moving := False;
 End;
-function TEditor.VerificarMovimientoRaton(X, Y: Integer): TGraphicObj;
-//Anima la marcación de los objects cuando el ratón pasa encima de ellos
-//Devuelve referencia al objeto por el que pasa el cirsor
+function TEditor.VerifyMouseMovement(X, Y: Integer): TGraphicObj;
+{It animates the marking of the objects when the mouse passes over them
+Returns reference to the object through which the cirsor passes    }
 var s: TGraphicObj;
 begin
 
-    s := SeleccionaAlguno(X, Y);    //verifica si selecciona a un objeto
-    Result := s;  //devuelve referencia
+    s := SelectObjectAt(X, Y);
+    Result := s;
 //    If Not s = NIL Then
-//        If s.Id = ID_CONECTOR Then  ;  //Or s.Seleccionado
+//        If s.Id = ID_CONECTOR Then  ;  //Or s.ObjSelected
 //            Set s = Nothing  ;  //no válido para conectores
 //        End If
 //    End If
     //Se refresca la pantalla optimizando
-    If s = NIL Then begin  //No hay ninguno por marcar
-      If ultMarcado <> NIL Then begin
-            //Si ya había uno marcado, se actualiza el dibujo y la bandera
-            ultMarcado.Marcado := False;  //se desmarca
-            ultMarcado := NIL;
+    If s = NIL Then begin
+      If MarkedObject <> NIL Then begin
+            MarkedObject.Marked := False;
+            MarkedObject := NIL;
             Refresh;
         End;
-      PBox.Cursor := CUR_DEFEC;   //restaura cursor
+      PBox.Cursor := CUR_DEFAULT;
     end
-    Else begin   //Hay uno por marcar
-      If ultMarcado = NIL Then begin
-         //No había ninguno marcado
-         ultMarcado := s;      //guarda
-         s.Marcado := True;    //lo marca
-         Refresh;            //y se dibuja
-      end Else begin  //ya había uno marcado
-           If ultMarcado = s Then  //es el mismo
-               //no se hace nada
-           Else begin    //había otro marcado
-               ultMarcado.Marcado := False;  //se desmarca
-               ultMarcado := s ;   //actualiza
-               s.Marcado := True;
-               Refresh;          //y se dibuja
+    Else begin
+      If MarkedObject = NIL Then begin
+         MarkedObject := s;
+         s.Marked := True;
+         Refresh;
+      end Else begin
+           If MarkedObject = s Then
+           Else begin
+               MarkedObject.Marked := False;
+               MarkedObject := s ;
+               s.Marked := True;
+               Refresh;
            End;
         End;
     End;
 
 End;
-//***********Funciones para administrar los elementos visibles y seleccion por teclado**********
-function TEditor.NumeroVisibles: Integer;
-//devuelve el número de objects visibles
+//***********Functions to manage the visible elements and selection by keyboard**********
+function TEditor.VisibleObjectsCount: Integer;
+//returns the number of visible objects
 var
   v: TGraphicObj;
   tmp: Integer;
@@ -502,8 +492,7 @@ begin
   end;
   Result := tmp;
 end;
-function TEditor.PrimerVisible: TGraphicObj;
- //devuelve el primer objeto visible
+function TEditor.FirstVisible: TGraphicObj;
 var
   i: integer;
 begin
@@ -514,8 +503,7 @@ begin
     end;
   end;
 End;
-function TEditor.UltimoVisible: TGraphicObj;
- //devuelve el último objeto visible
+function TEditor.LastVisible: TGraphicObj;
 var
   i: Integer;
 begin
@@ -526,266 +514,262 @@ begin
     end;
   end;
 end;
-function TEditor.SiguienteVisible(c: TGraphicObj): TGraphicObj;
-//devuelve el siguiente objeto visible en el orden de creación
+function TEditor.NextVisible(c: TGraphicObj): TGraphicObj;
 var
   i: Integer;
 begin
-    //busca su orden dentro de los objects
     For i := 0 To objects.Count-1 do begin
       if objects[i] = c Then break;
     end;
-    //calcula el siguiente elemento
     repeat
       Inc(i);
-      If i >= objects.Count Then begin  //se ha llegado al final del conjunto
-        Result := PrimerVisible;
+      If i >= objects.Count Then begin
+        Result := FirstVisible;
         Exit;
       end;
     until objects[i].visible;
-    //selecciona el siguiente visible
     Result := objects[i];
 end;
-function TEditor.AnteriorVisible(c: TGraphicObj): TGraphicObj;
-//devuelve el anterior objeto visible en el orden de creación
+function TEditor.PreviousVisible(c: TGraphicObj): TGraphicObj;
 var
   i: Integer;
 begin
-    //busca su orden dentro de los objects
     For i := 0 To objects.Count-1 do begin
       If objects[i] = c Then break;
     end;
-    //calcula el elemento anterior
     repeat
       Dec(i);
-      If i < 0 Then begin  //se ha llegado al inicio
-        Result := UltimoVisible;
+      If i < 0 Then begin
+        Result := LastVisible;
         Exit;
       End;
     until objects[i].visible;
-    //selecciona el siguiente visible
     Result := objects[i];
 End;
-procedure TEditor.SeleccionarSiguiente;
-//Selecciona el siguiente elemento visible en el orden de creación.
-//Si no hay ninguno seleccionado, selecciona el primero
+procedure TEditor.SelectNext;
 var
   s: TGraphicObj;
 begin
-    if NumeroVisibles() = 0 Then exit;
-    if seleccion.Count = 1 Then begin  //hay uno seleccionado
-        s := seleccion[0];   //toma el seleccionado
-        s := SiguienteVisible(s);
+    if VisibleObjectsCount() = 0 Then exit;
+    if selection.Count = 1 Then begin
+        s := selection[0];
+        s := NextVisible(s);
         SelectNone;
-        s.Selec;
-    end else begin     //hay cero o más de uno seleccionado
-        s := PrimerVisible;  //selecciona el primero
+        s.Select;
+    end else begin
+        s := FirstVisible;
         SelectNone;
-        s.Selec;
+        s.Select;
     end;
     Refresh;
 end;
-procedure TEditor.SeleccionarAnterior;
-//Selecciona el anterior elemento visible en el orden de creación.
-//Si no hay ninguno seleccionado, selecciona el ultimo
+procedure TEditor.SelectPrevious;
 var
   s: TGraphicObj;
 begin
-    if NumeroVisibles() = 0 Then exit;
-    if seleccion.Count = 1 then begin     //hay uno seleccionado
-        s := seleccion[0];    //toma el seleccionado
-        s := AnteriorVisible(s);
+    if VisibleObjectsCount() = 0 Then exit;
+    if selection.Count = 1 then begin
+        s := selection[0];
+        s := PreviousVisible(s);
         SelectNone;
-        s.Selec;
-    end else begin               //hay cero o más de uno seleccionado
-        s := UltimoVisible;   //selecciona el ultimo
+        s.Select;
+    end else begin
+        s := LastVisible;
         SelectNone;
-        s.Selec;
+        s.Select;
     end;
     Refresh;
 end;
-//******************* Funciones de visualización **********************
-procedure TEditor.AmpliarClick(factor: real = FACTOR_AMPLIA_ZOOM;
+//******************* Display functions **********************
+procedure TEditor.ZoomToClick(factor: real = ZOOM_STEP_EDITOR;
                         xr: integer = 0; yr: integer = 0);
-var anc_p: Real ;  //ancho de pantalla
-    alt_p: Real ;  //alto de pantalla
+var screen_width: Real ;
+    screen_height: Real ;
     x_zoom, y_zoom: Single;
 begin
-    If VirtScreen.zoom < ZOOM_MAX_CONSULT Then
+    If VirtScreen.zoom < ZOOM_MAX_EDITOR Then
         VirtScreen.zoom := VirtScreen.zoom * factor;
-    If (xr <> 0) Or (yr <> 0) Then begin  //se ha especificado una coordenada central
-        anc_p := PBox.width / VirtScreen.zoom;
-        alt_p := PBox.Height / VirtScreen.zoom;
-        VirtScreen.XYvirt(xr, yr, 0, x_zoom, y_zoom);     //convierte
-        VirtScreen.FijarVentana(PBox.Width, PBox.Height,
-                x_zoom - anc_p / 2, x_zoom + anc_p / 2, y_zoom - alt_p / 2, y_zoom + alt_p / 2);
+    If (xr <> 0) Or (yr <> 0) Then begin  //a central coordinate has been specified
+        screen_width := PBox.width / VirtScreen.zoom;
+        screen_height := PBox.Height / VirtScreen.zoom;
+        VirtScreen.XYvirt(xr, yr, 0, x_zoom, y_zoom);     //convert
+        VirtScreen.SetWindow(PBox.Width, PBox.Height,
+                x_zoom - screen_width / 2, x_zoom + screen_width / 2, y_zoom - screen_height / 2, y_zoom + screen_height / 2);
     End;
     Refresh;
 End;
-procedure TEditor.ReducirClick(factor: Real = FACTOR_AMPLIA_ZOOM;
+procedure TEditor.ZoomReduceClick(factor: Real = ZOOM_STEP_EDITOR;
                         x_zoom: Real = 0; y_zoom: Real = 0);
 begin
-    If VirtScreen.zoom > ZOOM_MIN_CONSULT Then
+    If VirtScreen.zoom > ZOOM_MIN_EDITOR Then
         VirtScreen.zoom := VirtScreen.zoom / factor;
     Refresh;
 End;
-/////////////////////////  Funciones de selección /////////////////////////////
-procedure TEditor.SeleccionarTodos;
-var s: TGraphicObj;
+///////////////////////// Selection functions/////////////////////////////
+procedure TEditor.SelectAll;
+var obj: TGraphicObj;
 begin
-    For s In objects do s.Selec; //selecciona todos
+    For obj In objects do obj.Select;
 End;
 procedure TEditor.SelectNone();
 var s: TGraphicObj;
 begin
-  For s In objects do //no se explora "seleccion" porque se modifica con "s.Deselect"
+  For s In objects do //"selection" is not scanned because it is modified with "s.Deselect"
     if s.Selected then s.Deselect;
-//  seleccion.Clear; //No se puede limpiar simplemente la lista. Se debe llamar a s.Deselect
+//  selection.Clear; //No se puede limpiar simplemente la lista. Se debe llamar a s.Deselect
 End;
-function  TEditor.Seleccionado: TGraphicObj;
-//Devuelve el objeto seleccionado. Si no hay ninguno seleccionado, devuelve NIL.
+function  TEditor.ObjSelected: TGraphicObj;
+//Returns the ObjSelected object. If there is no ObjSelected, it returns NIL.
 begin
-  Result := nil;   //valor por defecto
-  if seleccion.Count = 0 then exit;  //no hay
-  //hay al menos uno
-  Result := seleccion[seleccion.Count-1];  //devuelve el único o último
+  Result := nil;
+  if selection.Count = 0 then exit;
+  //there is at least one
+  Result := selection[selection.Count-1];  //returns the only or last
 End;
-function  TEditor.ObjPorNombre(nom: string): TGraphicObj;
-//Devuelve la referecnia a un objeto, dado el nombre. Si no encuentra, devuelve NIL.
+function  TEditor.ObjByName(argName: string): TGraphicObj;
 var s: TGraphicObj;
 begin
-  Result := nil;   //valor por defecto
-  if nom = '' then exit;
+  Result := nil;
+  if argName = '' then exit;
   For s In objects do
-    if s.nombre = nom then begin
+    if s.Name = argName then begin
        Result := s;
        break;
     end;
 End;
 
-procedure TEditor.moverAbajo(desp: Double = DESPLAZ_MENOR) ;  //abajo
-//Genera un desplazamiento en la pantalla haciendolo independiente del
-//factor de ampliación actual
+procedure TEditor.moveDown(offs: Double = OFFSET_EDITOR) ;
+{It generates a displacement on the screen making it independent of the
+current expansion factor}
 var
     z: Single ;  //zoom
 begin
     z := VirtScreen.zoom;
-    Desplazar(0, round(desp / z));
+    Displace(0, round(offs / z));
     Refresh;
 end;
-procedure TEditor.moverArriba(desp: Double = DESPLAZ_MENOR) ;  //arriba
-//Genera un desplazamiento en la pantalla haciendolo independiente del
-//factor de ampliación actual
+procedure TEditor.moveUp(offs: Double = OFFSET_EDITOR) ;
+{
+ It generates a displacement on the screen making it independent of the
+  current expansion factor
+}
 var
     z: Single ;  //zoom
 begin
     z := VirtScreen.zoom;
-    Desplazar(0, round(-desp / z));
+    Displace(0, round(-offs / z));
     Refresh;
 end;
-procedure TEditor.moverDerecha(desp: Double = DESPLAZ_MENOR) ;  //derecha
-//Genera un desplazamiento en la pantalla haciendolo independiente del
-//factor de ampliación actual
+procedure TEditor.moveRight(offs: Double = OFFSET_EDITOR) ;
+{
+It generates a displacement on the screen making it independent of the
+current expansion factor
+}
 var
     z: Single ;  //zoom
 begin
     z := VirtScreen.zoom;
-    Desplazar(round(desp / z), 0);
+    Displace(round(offs / z), 0);
     Refresh;
 end;
-procedure TEditor.moverIzquierda(desp: Double = DESPLAZ_MENOR) ;  //izquierda
-//Genera un desplazamiento en la pantalla haciendolo independiente del
-//factor de ampliación actual
+procedure TEditor.moveLeft(offs: Double = OFFSET_EDITOR) ;
+{
+It generates a displacement on the screen making it independent of the
+  current expansion factor
+}
 var
     z: Single ;  //zoom
 begin
     z := VirtScreen.zoom;
-    Desplazar(round(-desp / z), 0);
+    Displace(round(-offs / z), 0);
     Refresh;
 end;
-procedure TEditor.Desplazar(dx, dy: integer);
+procedure TEditor.Displace(dx, dy: integer);
 begin
-//Procedimiento "estandar" para hacer un desplazamiento de la pantalla
-//Varía los parámetros de la perspectiva "x_cam" e "y_cam"
-    VirtScreen.Desplazar(dx, dy);
+{
+"Standard" procedure to scroll the screen
+  Varies the parameters of the perspective "x_cam" and "y_cam"
+}
+    VirtScreen.Displace(dx, dy);
 end;
-//Modificación de objects
+//Modification of objects
 procedure TEditor.GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean = true);
-//Agrega un objeto grafico al editor. El objeto gráfico debe haberse creado previamente,
-//y ser de tipo TGraphicObj o un descendiente. "AutoPos", permite posicionar automáticamente
-//al objeto en pantalla, de modo que se evite ponerlo siempre en la misma posición.
+{
+Add a graphic object to the editor. The graphic object must have been created previously,
+  and be of Type TGraphicObj or a descendant. "AutoPos", allows automatic positioning
+  to the object on the screen, so that you avoid putting it always in the same position.
+}
 var
   x: single;
   y: single;
 begin
   if OnModify<>nil then OnModify;
-  //Posiciona tratando de que siempre aparezca en pantalla
-  if AutoPos Then begin  //Se calcula posición
+  //Position trying to always appear on the screen
+  if AutoPos Then begin  //Position is calculated
     x := VirtScreen.Xvirt(100, 100) + 30 * objects.Count Mod 400;
     y := VirtScreen.Yvirt(100, 100) + 30 * objects.Count Mod 400;
     argGraphicObject.PlaceAt(x,y);
   end;
-  //configura eventos para ser controlado por este editor
-  argGraphicObject.OnSelect   := @GraphicObject_Select;     //referencia a procedimiento de selección
-  argGraphicObject.OnDeselect := @GraphicObject_Unselec;    //referencia a procedimiento de "de-selección"
-  argGraphicObject.OnCamPoint := @GraphicObject_SetPointer; //procedimiento para cambiar el puntero
+  //configure events to be controlled by this editor
+  argGraphicObject.OnSelect   := @GraphicObject_Select;
+  argGraphicObject.OnDeselect := @GraphicObject_Unselec;
+  argGraphicObject.OnCamPoint := @GraphicObject_SetPointer;
 //  Refresh(s)   ;             //Refresca objeto
-  objects.Add(argGraphicObject);               //agrega elemento
+  objects.Add(argGraphicObject);
 end;
-procedure TEditor.GraphicObjectDelete(obj: TGraphicObj);  //elimina un objeto grafico
+procedure TEditor.GraphicObjectDelete(obj: TGraphicObj);
 begin
-  obj.Deselect;  //por si acaso
+  obj.Deselect;
   objects.Remove(obj);
   obj := nil;
   if OnModify<>nil then OnModify;
 End;
 procedure TEditor.DeleteSelected;
-//Elimina la selección.
 var
   v: TGraphicObj;
 begin
-  For v In seleccion  do  //explora todos
+  For v In selection  do  //explore all
     GraphicObjectDelete(v);
   if OnModify<>nil then OnModify;
   Refresh;
 end;
 
-/////////////////////////   Funciones del Rectángulo de Selección /////////////////////////
-procedure TEditor.DibujRecSeleccion();
-//Dibuja por métodos gráficos el rectángulo de selección en pantalla
+/////////////////////////  Selection Rectangle Functions/////////////////////////
+procedure TEditor.DrawRectangleSeleccion();
+//Draw the selection rectangle on the screen
 begin
     VirtScreen.SetPen(clGreen, 1, psDot);
     VirtScreen.rectang0(x1Sel, y1Sel, x2Sel, y2Sel);
 
-    x1Sel_a := x1Sel; y1Sel_a := y1Sel;
-    x2Sel_a := x2Sel; y2Sel_a := y2Sel;
+    x1Sel_prev := x1Sel; y1Sel_prev := y1Sel;
+    x2Sel_prev := x2Sel; y2Sel_prev := y2Sel;
 End;
-procedure TEditor.InicRecSeleccion(X, Y: Integer);
-//Inicia el rectángulo de selección, con las coordenadas
+procedure TEditor.startRectangleSeleccion(X, Y: Integer);
+//Start the selection rectangle, with the coordinates
 begin
     x1Sel:= X; y1Sel := Y;
     x2Sel := X; y2Sel := Y;
-    x1Sel_a := x1Sel;
-    y1Sel_a := y1Sel;
-    x2Sel_a := x2Sel;
-    y2Sel_a := y2Sel;
+    x1Sel_prev := x1Sel;
+    y1Sel_prev := y1Sel;
+    x2Sel_prev := x2Sel;
+    y2Sel_prev := y2Sel;
 End;
-function TEditor.RecSeleccionNulo: Boolean;
- //Indica si el rectángulo de selección es de tamaño NULO o despreciable
+function TEditor.RectangleSelectionIsNil: Boolean;
+ //Indicates whether the selection rectangle is NULL or negligible size
 begin
     If (x1Sel = x2Sel) And (y1Sel = y2Sel) Then
-        RecSeleccionNulo := True
+        RectangleSelectionIsNil := True
     Else
-        RecSeleccionNulo := False;
+        RectangleSelectionIsNil := False;
 End;
-function TEditor.enRecSeleccion(X, Y: Single): Boolean;
-//Devuelve verdad si (x,y) esta dentro del rectangulo de seleccion.
-var xMin, xMax: Integer;   //coordenadas mínimas y máximas del recuadro
+function TEditor.inRectangleSeleccion(X, Y: Single): Boolean;
+//Returns true if (x, y) is inside the selection rectangle.
+var xMin, xMax: Integer;
     yMin, yMax: Integer;
     xx1, yy1: Single;
     xx2, yy2: Single;
 begin
-    //guarda coordenadas mínimas y máximas
+    //get minimum and maximum coordinates
     If x1Sel < x2Sel Then begin
         xMin := x1Sel;
         xMax := x2Sel;
@@ -804,109 +788,114 @@ begin
     VirtScreen.XYvirt(xMin, yMin, 0, xx1, yy1);
     VirtScreen.XYvirt(xMax, yMax, 0, xx2, yy2);
 
-    //verifica si está en región
+    //check if you are in region
     If (X >= xx1) And (X <= xx2) And (Y >= yy1) And (Y <= yy2) Then
-        enRecSeleccion := True
+        inRectangleSeleccion := True
     Else
-        enRecSeleccion := False;
+        inRectangleSeleccion := False;
 End;
-////////////////// Eventos para atender requerimientos de objects "TGraphicObj" ///////////////////////
+//////////////////  "TGraphicObj" Events  ///////////////////////
 procedure TEditor.GraphicObject_Select(obj: TGraphicObj);
-//Agrega un objeto gráfico a la lista "selección". Este método no debe ser llamado directamente.
-//Si se quiere seleccionar un objeto se debe usar la forma objeto.Selec.
+{
+Add a graphic object to the "selection" list. This method should not be called directly.
+  If you want to select an object you must use the object.Select form.
+}
 begin
-//    If obj.Seleccionado Then Exit;  //Ya está seleccionado. No debe ser necesario
-  seleccion.Add(obj);      { TODO : Verificar si se puede manejar bien el programa sin usar la propiedad "NombreObj"}
+  selection.Add(obj);
 End;
 procedure TEditor.GraphicObject_Unselec(obj: TGraphicObj);
-//Quita un objeto gráfico de la lista "selección". Este método no debe ser llamado directamente.
-//Si se quiere quitar la seleccion a un objeto se debe usar la forma objeto.Deselect.
+{
+Remove a graphic object from the "selection" list. This method should not be called directly.
+  If you want to remove the selection from an object, you must use the object.Select form.
+}
 begin
-//    If not obj.Seleccionado Then Exit;
-  seleccion.Remove(obj);
+//    If not obj.ObjSelected Then Exit;
+  selection.Remove(obj);
 End;
-procedure TEditor.GraphicObject_SetPointer(Punt: integer);
-//Procedimiento que cambia el puntero del mouse. Es usado para proporcionar la los objects "TGraphicObj"
-//la posibilidad de cambiar el puntero.
+procedure TEditor.GraphicObject_SetPointer(argPoint: integer);
+{
+Procedure that changes the mouse pointer. It is used to provide the "TGraphicObj" objects
+  the possibility of changing the pointer.
+}
 begin
-  PBox.Cursor := Punt;        //define cursor
+  PBox.Cursor := argPoint;        //define cursor
 end;
 //Rutinas de procesamiento de estados
 function TEditor.StateAsStr: string;
-{Debe el esatdo como una cadena descriptiva. Es necesario actualizar la desciprción
-para cada state nuevoq ue se vaya agregando.}
+{It must state as a descriptive string. It is necessary to update the desciprción
+for each new state that is being added.}
 begin
   case State of
-  EP_NORMAL      : Result := 'Normal';
-  EP_SELECMULT   : Result := 'Selecc. Múltiple';
-  EP_MOV_OBJS    : Result := 'Moviendo objects';
-  EP_DESP_PANT   : Result := 'Desplaz. Pantalla';
-  EP_DESP_ANG    : Result := 'Rotando Pantalla';
-  EP_DIMEN_OBJ   : Result := 'Dimension.objects';
-  EP_RAT_ZOOM    : Result := 'Zoom con ratón';
-  EP_COMM_LINE   : Result := 'Modo línea';
-  EP_COMM_RECTAN : Result := 'Modo Rectángulo';
+  VS_NORMAL      : Result := 'Normal';
+  VS_SELECTINGMULT   : Result := 'Selecc. Múltiple';
+  VS_OBJS_MOVING    : Result := 'Moviendo objects';
+  VS_SCREEN_SCROLLING   : Result := 'Desplaz. Pantalla';
+  VS_SCREEN_ANG    : Result := 'Rotando Pantalla';
+  VS_DIMEN_OBJ   : Result := 'Dimension.objects';
+  VS_ZOOMING    : Result := 'Zoom con ratón';
+  VS_CMD_ADDING_LINE   : Result := 'Modo línea';
+  VS_CMD_ADDING_RECTAN : Result := 'Modo Rectángulo';
   else
     Result := '<< Desconocido >>';
   end;
 end;
-procedure TEditor.RegisterState(State0: TViewState;
-  EventHandler: TVisEventHandler);
-{Registra un nuevo state del Ratón}
+procedure TEditor.RegisterState(argState: TViewState;
+  EventHandler: TViewEventHandler);
+{Register a new mouse state}
 begin
-  EventOfState[State0] := EventHandler;
+  EventOfState[argState] := EventHandler;
 end;
 procedure TEditor.ClearEventState;
 var
-  sta: TViewState;
+  st: TViewState;
 begin
-  for sta := low(TViewState) to high(TViewState) do begin
-    EventOfState[sta] := nil;
+  for st := low(TViewState) to high(TViewState) do begin
+    EventOfState[st] := nil;
   end;
 end;
 procedure TEditor.SendData(Data: string);
-{Solicita enviar datos al comadno actual (que debe ser el state actual).}
+{Request to send data to the current command (which should be the current state).}
 begin
-  CallEventState(State, vmeEjecComm, mbExtra1, [], 0, 0, Data);  //para Initiate
+  CallEventState(State, vmeCmdStart, mbExtra1, [], 0, 0, Data);
 end;
-procedure TEditor.CallEventState(State0: TViewState;
-  EventTyp: TVisEventTyp; Button: TMouseButton;
+procedure TEditor.CallEventState(argState: TViewState;
+  EventType: TViewEvent; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; txt: string);
-{Llama al evento apropiado para el state indicado}
+{Call the appropriate event for the indicated state}
 var
-  eveHandler: TVisEventHandler;
+  eveHandler: TViewEventHandler;
 begin
-  eveHandler := EventOfState[State0];
-  if eveHandler=nil then exit;  //protección
-  eveHandler(EventTyp, Button, Shift, xp, yp, txt);
+  eveHandler := EventOfState[argState];
+  if eveHandler=nil then exit;
+  eveHandler(EventType, Button, Shift, xp, yp, txt);
 end;
-//Manejadores de eventos de state
+// State event handlers
 function GetNumber(var txt: string): Single;
-{Extrae un número de una cadena de texto. Si hay error, devuelev "MaxInt"}
+{Extracts a number from a text string. If there is an error, devuelev "MaxInt"}
 var
-  decimalMark: Boolean;
+  isDecimal: Boolean;
   i: Integer;
   numTxt: String;
 begin
   if txt = '' then exit(MaxInt);
   if not (txt[1] in ['0'..'9']) then exit(MaxInt);
   i := 2;
-  decimalMark := false;
+  isDecimal := false;
   while (i<=length(txt)) and (txt[i] in ['0'..'9','.']) do begin
     if txt[i]='.' then begin
-      if decimalMark then break;  //ya hay un punto decimal
-      decimalMark := true;        //indica que encontró el punto decimal
+      if isDecimal then break;
+      isDecimal := true;
     end;
     Inc(i)
   end;
-  //Terminó de explorar la cadena
+  //Finished exploring the chain
   numTxt := copy(txt, 1, i-1);
-  Result := StrToDouble(numTxt);   //no debería fallar si se ha extraído bien el número
+  Result := StrToDouble(numTxt);//should not fail if the number has been correctly extracted
   delete(txt, 1, i-1);
 end;
 function GetSeparator(var txt: string): boolean;
-{Extrae un separador (espacio o coma) de una cadena de texto, ignorando los espacios
-múltiples. Si no encuentra un  separador, devuelve FALSE}
+{Extract a separator (space or comma) from a text string, ignoring the spaces
+multiple If you can not find a separator, return FALSE}
 var
   i: Integer;
   HaveSeparator: Boolean;
@@ -937,469 +926,424 @@ begin
   if y=MaxInt then exit(false);
   exit(true);
 end;
-procedure TEditor.proc_NORMAL(EventTyp: TVisEventTyp; Button: TMouseButton;
+procedure TEditor.proc_NORMAL(EventType: TViewEvent; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; txt: string);
-{Procesa eventos, en el esatdo NORMAL. Este es el state estable o Proj defecto.
-Desde aquí se pasan a todos los demás estados.}
+{Process events, in the NORMAL state. This is the stable state or Proj defect.
+From here they are passed to all other states.}
 var
   o: TGraphicObj;
   s: TGraphicObj;
-  ogs: TGraphicObj;  //objeto seleccionado
+  o_sel: TGraphicObj;  //ObjSelected
 begin
-  if EventTyp = vmeMouseDown then begin  ////////// Botón Pulsado
-     ogs := SeleccionaAlguno(xp, yp);  //verifica si selecciona a un objeto
-     if          Shift = [ssRight] then begin     //Botón derecho
-         if ogs = nil Then begin  //Ninguno seleccionado
+  if EventType = vmeMouseDown then begin
+     o_sel := SelectObjectAt(xp, yp);
+     if          Shift = [ssRight] then begin     //Right button
+         if o_sel = nil Then begin
              SelectNone;
              Refresh;
-             State := EP_SELECMULT;  //inicia seleccion multiple
-             InicRecSeleccion(x_pulso, y_pulso);
-         end else begin //Selecciona a uno, pueden haber otros seleccionados
-             if ogs.Selected Then  begin  //Se marcó sobre un seleccionado
+             State := VS_SELECTINGMULT;
+             startRectangleSeleccion(x_mouse, y_mouse);
+         end else begin //Select one, there may be others selected
+             if o_sel.Selected Then  begin
 //                   if Shift = [] Then SelectNone;
-                 ogs.MouseDown(Self, Button, Shift, xp, yp);  //Pasa el evento
+                 o_sel.MouseDown(Self, Button, Shift, xp, yp);//Pass the event
                  exit;
              end;
-             //Se selecciona a uno que no tenía selección
-             if Shift = [ssRight] Then  //Sin Control ni Shift
+             //You select one that had no selection
+             if Shift = [ssRight] Then  //Without Control or Shift
                SelectNone;
-             ogs.MouseDown(Self, Button, Shift, xp, yp);  //Pasa el evento
+             o_sel.MouseDown(Self, Button, Shift, xp, yp);  //Pass the event
              Refresh;
-              //ParaMover = True       ;  //listo para mover
          end;
-     end else If Shift = [ssLeft] then begin      //Botón izquierdo
-         if ogs = NIL Then  begin  //No selecciona a ninguno
+     end else If Shift = [ssLeft] then begin   // Left button
+         if o_sel = NIL Then  begin
              SelectNone;
              Refresh;
-             State := EP_SELECMULT;  //inicia seleccion multiple
-             InicRecSeleccion(x_pulso, y_pulso);
-         end Else begin     //selecciona a uno, pueden haber otros seleccionados
-             If ogs.Selected Then begin //Se marcó sobre un seleccionado
-                 //No se quita la selección porque puede que se quiera mover
-                 //varios objects seleccionados. Si no se mueve, se quitará la
-                 //selección en PBox_MouseUp
-                 //If Shift = 0 Then Call SelectNone
-                 ogs.MouseDown(Self, Button, Shift, xp, yp);  //Pasa el evento
-                 ParaMover := True;  //listo para mover
-                 Exit;               //Se sale sin desmarcar
+             State := VS_SELECTINGMULT;
+             startRectangleSeleccion(x_mouse, y_mouse);
+         end Else begin     //select one, there may be others selected
+             If o_sel.Selected Then begin
+                 o_sel.MouseDown(Self, Button, Shift, xp, yp);  //Pass the event
+                 Moving := True;
+                 Exit;
              end;
-             //Se selecciona a uno que no tenía selección
-             if Shift = [ssLeft] Then  //Sin Control ni Shift
+             //You select one that had no selection
+             if Shift = [ssLeft] Then  //Without Control or Shift
                 SelectNone;
-             ogs.MouseDown(Self, Button, Shift, xp, yp);  //Pasa el evento
-             ParaMover := True;            //listo para mover
+             o_sel.MouseDown(Self, Button, Shift, xp, yp);  //Pass the event
+             Moving := True;
          end;
-     end else if Shift >= [ssCtrl, ssShift] then begin   //Contiene Shift+Ctrl
-         //Inicia state de ZOOM. Puede convertirse en EP_DESP_PANT
-         //si luego se genera el evento Move()
-         State := EP_RAT_ZOOM;
-         Exit;  //Ya no se necesita procesar
+     end else if Shift >= [ssCtrl, ssShift] then begin
+         State := VS_ZOOMING;
+         Exit;
      end else if (Shift = [ssMiddle]) or (Shift = [ssCtrl, ssShift, ssRight]) then begin
-         //Inicia el modo de desplazamiento
-         State := EP_DESP_PANT;
-     end else if Shift = [ssMiddle, ssShift] then begin  //Botón central y Shift
-         //Inicia el módo de cambio ángulo de visión
-         State := EP_DESP_ANG;
+         State := VS_SCREEN_SCROLLING;
+     end else if Shift = [ssMiddle, ssShift] then begin  //Center button and Shift
+         State := VS_SCREEN_ANG;
      end;
-  end else if EventTyp = vmeMouseMove then begin  /////// Movim. Mouse
-    //CapturoEvento lo actualiza la rutina "VerificarParaMover"
-    If CapturoEvento <> NIL Then begin
-       CapturoEvento.Mover(Xp, Yp, seleccion.Count);
+  end else if EventType = vmeMouseMove then begin
+    If MovingObject <> NIL Then begin
+       MovingObject.MoveR(Xp, Yp, selection.Count);
        Refresh;
-    end Else begin  //Movimiento simple
-        s := VerificarMovimientoRaton(Xp, Yp);
-        if s <> NIL then s.MouseMove(self, Shift, Xp, Yp);  //pasa el evento
+    end Else begin  //Simple movement
+        s := VerifyMouseMovement(Xp, Yp);
+        if s <> NIL then s.MouseMove(self, Shift, Xp, Yp);  //Pass the event  
     end;
-  end else if EventTyp = vmeMouseUp then begin /////// Botón soltado
-      o := SeleccionaAlguno(xp, yp);  //verifica si selecciona a un objeto
-      if Button = mbRight then begin //----- solto derecho -------------------
-(*            If o = NIL Then  //Ninguno seleccionado
-              RaiseEvent ClickDerDiag    //Genera evento
-          Else    ;  //Hay uno que lo selecciona, o más???
-              If Not o.Seleccionado Then Call o.SoltoRaton(Button, Shift, xr, yr)    ;  //Pasa el evento
-              RaiseEvent ClickDerSel     //Genera evento
-          End If*)
-      end else If Button = mbLeft Then begin //----- solto izquierdo -----------
-          If o = NIL Then    //No selecciona a ninguno
-//                SelectNone
-          else begin         //Selecciona a alguno
+  end else if EventType = vmeMouseUp then begin //Released button
+      o := SelectObjectAt(xp, yp);
+      if Button = mbRight then begin
+      end else If Button = mbLeft Then begin
+          If o = NIL Then
+          else begin
               If Shift = [] Then SelectNone;
-              o.Selec;   //selecciona
+              o.Select;
               o.MouseUp(self, Button, Shift, xp, yp, false);
               Refresh;
-              //Verifica si el objeto está pidiendo que lo eliminen
-//Este código se comentó porque no se le encontró ninguna utilidad
-//                if o.Erased then begin
-//                  GraphicObjectDelete(o);
-//                  Refresh;
-//                end;
           End;
-          CapturoEvento := NIL;      //inicia bandera de captura de evento
-          ParaMover := False;        //por si aca
+          MovingObject := NIL;      //start event capture flag
+          Moving := False;
       end;
-  end else if EventTyp = vmeEjecComm then begin /////// Ejecutar comando
+  end else if EventType = vmeCmdStart then begin // Execute command
       if txt = 'LINE' then begin
-        State := EP_COMM_LINE;   //inicia el state
-        CallEventState(State, vmeEjecComm, mbExtra1, [], 0, 0, '');  //para Initiate
+        State := VS_CMD_ADDING_LINE;
+        CallEventState(State, vmeCmdStart, mbExtra1, [], 0, 0, '');
       end else if txt = 'RECTANGLE' then begin
-        State := EP_COMM_RECTAN;   //inicia el state
-        CallEventState(State, vmeEjecComm, mbExtra1, [], 0, 0, '');  //para Initiate
+        State := VS_CMD_ADDING_RECTAN;
+        CallEventState(State, vmeCmdStart, mbExtra1, [], 0, 0, '');
       end else if UpCase(txt) = 'CANCEL' then begin
-        //Cancela todos los comandos activos
+        //Cancels all active commands
         RestoreState;
       end else begin
         if OnSendMessage<>nil then OnSendMessage('Comando desconocido: "' + txt + '"');
       end;
   end;
 end;
-procedure TEditor.proc_SELECMULT(EventTyp: TVisEventTyp;
+procedure TEditor.proc_SELECTINGMULT(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   o: TGraphicObj;
   s: TGraphicObj;
 begin
-  if EventTyp = vmeMouseDown then begin
-  end else if EventTyp = vmeMouseMove then begin
+  if EventType = vmeMouseDown then begin
+  end else if EventType = vmeMouseMove then begin
     x2Sel := xp;
     y2Sel := xp;
-    //verifica los que se encuentran seleccionados
-    if objects.Count < 100 Then begin//sólo anima para pocos objects
+    //check those that are selected
+    if objects.Count < 100 Then begin//iterate for few objects only
         for s In objects do begin
           if s.SelLocked then continue;
-          if enRecSeleccion(s.XCent, s.YCent) And Not s.Selected Then begin
-            s.Selec;
+          if inRectangleSeleccion(s.XCent, s.YCent) And Not s.Selected Then begin
+            s.Select;
           End;
-          if Not enRecSeleccion(s.XCent, s.YCent) And s.Selected Then begin
+          if Not inRectangleSeleccion(s.XCent, s.YCent) And s.Selected Then begin
             s.Deselect;
           end;
         end;
     End;
     Refresh
-  end else if EventTyp = vmeMouseUp then begin
-    if objects.Count > 100 Then begin  //Necesita actualizar porque la selección múltiple es diferente
+  end else if EventType = vmeMouseUp then begin
+    if objects.Count > 100 Then begin  //You need to update because the multiple selection is different
       for o in objects do
-        if enRecSeleccion(o.XCent, o.YCent) And Not o.Selected Then o.Selec;
+        if inRectangleSeleccion(o.XCent, o.YCent) And Not o.Selected Then o.Select;
     end;
-    State := EP_NORMAL;
+    State := VS_NORMAL;
   end;
 end;
-procedure TEditor.proc_MOV_OBJS(EventTyp: TVisEventTyp;
+procedure TEditor.proc_OBJS_MOVING(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   s: TGraphicObj;
   o: TGraphicObj;
 begin
-  if EventTyp = vmeMouseDown then begin
-  end else if EventTyp = vmeMouseMove then begin
-    if OnModify<>nil then OnModify;  //cambio
-    for s in seleccion do
-        s.Mover(xp,yp, seleccion.Count);
+  if EventType = vmeMouseDown then begin
+  end else if EventType = vmeMouseMove then begin
+    if OnModify<>nil then OnModify;
+    for s in selection do
+        s.MoveR(xp,yp, selection.Count);
     Refresh;
-  end else if EventTyp = vmeMouseUp then begin
-//Debug.Print "Esatado EP_MOV_OBJS"
-    for o In seleccion do  //Pasa el evento a la selección
-        o.MouseUp(self, Button, Shift, xp, yp, State = EP_MOV_OBJS);
-    State := EP_NORMAL;  //fin de movimiento
+  end else if EventType = vmeMouseUp then begin
+    for o In selection do  //Pass the event to the selection
+        o.MouseUp(self, Button, Shift, xp, yp, State = VS_OBJS_MOVING);
+    State := VS_NORMAL;  //end of movement
     Refresh;
-    //Genera eventos. Los objects movidos se pueden determinar a partir de la selección.
+    //Generate events The moved objects can be determined from the selection.
     if OnObjectsMoved<>nil then OnObjectsMoved;
   end;
 end;
-procedure TEditor.proc_DESP_PANT(EventTyp: TVisEventTyp;
+procedure TEditor.proc_SCREEN_SCROLLING(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   dx, dy: Single;
 begin
-  if EventTyp = vmeMouseDown then begin
-  end else if EventTyp = vmeMouseMove then begin
-    VirtScreen.ObtenerDesplazXY( xp, yp, x_pulso, y_pulso, dx, dy);
+  if EventType = vmeMouseDown then begin
+  end else if EventType = vmeMouseMove then begin
+    VirtScreen.ObtenerDesplazXY( xp, yp, x_mouse, y_mouse, dx, dy);
     VirtScreen.x_cam -= dx;
     VirtScreen.y_cam -= dy;
-    x_pulso := xp; y_pulso := yp;  {Tal vez deba usar otras variables aparte de x_pulso, e
-                                  y_pulso,  para no interferir}
+    x_mouse := xp; y_mouse := yp;  {Maybe you should use other variables than x_mouse, and
+                                   y_mouse, so as not to interfere}
     Refresh;
-  end else if EventTyp = vmeMouseUp then begin
-    //Si estaba desplazándose, vuelve al state normal
-    State := EP_NORMAL;
+  end else if EventType = vmeMouseUp then begin
+    //If it was moving, it returns to the normal state
+    State := VS_NORMAL;
   end;
 end;
-procedure TEditor.proc_DESP_ANG(EventTyp: TVisEventTyp;
+procedure TEditor.proc_SCREEN_ANG(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   dx, dy: Single;
 begin
-  if EventTyp = vmeMouseDown then begin
-  end else if EventTyp = vmeMouseMove then begin
-    VirtScreen.ObtenerDesplazXY( xp, yp, x_pulso, y_pulso, dx, dy);
+  if EventType = vmeMouseDown then begin
+  end else if EventType = vmeMouseMove then begin
+    VirtScreen.ObtenerDesplazXY( xp, yp, x_mouse, y_mouse, dx, dy);
     VirtScreen.Alfa := VirtScreen.Alfa + dx/100;
     VirtScreen.Fi   := VirtScreen.Fi + dy/100;
-    x_pulso := xp; y_pulso := yp;  {Tal vez deba usar otras variables aparte de x_pulso, e
-                                   y_pulso,  para no interferir}
+    x_mouse := xp; y_mouse := yp;  {Maybe you should use other variables than x_mouse, and
+                                    y_mouse, so as not to interfere}
     Refresh;
-  end else if EventTyp = vmeMouseUp then begin
-    State := EP_NORMAL;
+  end else if EventType = vmeMouseUp then begin
+    State := VS_NORMAL;
   end;
 end;
-procedure TEditor.proc_DIMEN_OBJ(EventTyp: TVisEventTyp;
+procedure TEditor.proc_DIMEN_OBJ(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 begin
-  if EventTyp = vmeMouseDown then begin
-  end else if EventTyp = vmeMouseMove then begin
-      //se está dimensionando un objeto
-      CapturoEvento.Mover(Xp, Yp, seleccion.Count);
+  if EventType = vmeMouseDown then begin
+  end else if EventType = vmeMouseMove then begin
+      //an object is being sizing
+      MovingObject.MoveR(Xp, Yp, selection.Count);
       Refresh;
-  end else if EventTyp = vmeMouseUp then begin
-    //pasa evento a objeto que se estaba dimensionando
-    CapturoEvento.MouseUp(self, Button, Shift, xp, yp, false);
-    //termina state
-    State := EP_NORMAL;
-    CapturoEvento := NIL;      //inicia bandera de captura de evento
-    ParaMover := False;        //por si aca
+  end else if EventType = vmeMouseUp then begin
+    //pass event to object that was being dimensioned
+    MovingObject.MouseUp(self, Button, Shift, xp, yp, false);
+    //ends state
+    State := VS_NORMAL;
+    MovingObject := NIL;      //start event capture flag
+    Moving := False;
   end;
 end;
-procedure TEditor.proc_RAT_ZOOM(EventTyp: TVisEventTyp;
+procedure TEditor.proc_ZOOMING(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 begin
-  if EventTyp = vmeMouseDown then begin
-  end else if EventTyp = vmeMouseMove then begin
-  end else if EventTyp = vmeMouseUp then begin
-    If Button = mbLeft Then AmpliarClick(1.2, xp, yp) ;  //<Shift> + <Ctrl> + click izquierdo
-    If Button = mbRight Then ReducirClick(1.2, xp, yp) ;  //<Shift> + <Ctrl> + click derecho
-    State := EP_NORMAL;
+  if EventType = vmeMouseDown then begin
+  end else if EventType = vmeMouseMove then begin
+  end else if EventType = vmeMouseUp then begin
+    If Button = mbLeft Then ZoomToClick(1.2, xp, yp) ;  //<Shift> + <Ctrl> + left click
+    If Button = mbRight Then ZoomReduceClick(1.2, xp, yp) ;  //<Shift> + <Ctrl> + right click
+    State := VS_NORMAL;
   end;
 end;
-procedure TEditor.proc_COMM_LINE(EventTyp: TVisEventTyp;
+procedure TEditor.proc_CMD_ADDING_LINE(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 const
-  {Usamos constante con tipo porque no hay STATIC en FreePascal, y como este
-  procedimiento irá ejecutándose repetídamente, necesitamos conservar el valor de las
-  variables, entre sesión y sesión.}
-  paso: integer  = 0;
-  lin: TObjGrafDXF = nil;
-  x0: Single = 0;  //Coordenadas iniciales
-  y0: Single = 0;  //Coordenadas iniciales
+  {We use constant with Type because there is no STATIC in FreePascal, and like this
+   procedure will be implemented repeatedly, we need to preserve the value of the
+   variables, between session and session.}
+  step: integer  = 0;
+  line: TDxf = nil;
+  x0: Single = 0;
+  y0: Single = 0;
 var
-  xLin, yLin: Single;
+  xLine, yLine: Single;
 begin
-  if paso = 0 then begin  //Inicio de comando
+  if step = 0 then begin
     OnSendMessage('>> Ingrese punto inicial:');
-    paso := 1;
-  end else if paso = 1 then begin
-    case EventTyp of
-    vmeEjecComm: begin  //Inicio de comando
-      //Esperamos coordenadas iniciales
-      if txt = 'CANCEL' then begin  //válido en cualquier state
-        RestoreState('>> Comando:');   //Termina
-        paso := 0;   //reinicia
+    step := 1;
+  end else if step = 1 then begin
+    case EventType of
+    vmeCmdStart: begin
+      //We expect initial coordinates
+      if txt = 'CANCEL' then begin
+        RestoreState('>> Comando:');
+        step := 0;   //restart
         exit;
       end;
-      if not GetCoords(txt, xLin, yLin) then begin
+      if not GetCoords(txt, xLine, yLine) then begin
         OnSendMessage('>> ERROR: Ingrese punto inicial:');
         exit;
       end;
-      //Agregar recta, con las coord. dadas
-      lin := TObjGrafDXF.Create(VirtScreen);
-      lin.SetP0(xLin, yLin, 0); //Especifica el primer punto
-      lin.SetP1(xvPtr, yvPtr, 0); //Especifica siguiente punto por defecto
-      x0 := xLin; y0 := yLin;  //guarda primer punto
+      //Add straight, with coord. given
+      line := TDxf.Create(VirtScreen);
+      line.SetP0(xLine, yLine, 0); //Specify the first point
+      line.SetP1(xvPt, yvPt, 0); //Specify next default point
+      x0 := xLine; y0 := yLine;  //saves first point
     end;
     vmeMouseDown: begin
-      //Agregar recta, con las coord. dadas
-      lin := TObjGrafDXF.Create(VirtScreen);
-      lin.SetP0(xvPtr, yvPtr, 0); //Esperamos coordenadas
-      lin.SetP1(xvPtr, yvPtr, 0);
-      x0 := xvPtr; y0 := yvPtr;  //guarda primer punto
+      //Add straight, with coord. given
+      line := TDxf.Create(VirtScreen);
+      line.SetP0(xvPt, yvPt, 0);
+      line.SetP1(xvPt, yvPt, 0);
+      x0 := xvPt; y0 := yvPt;
     end;
-    else exit;  //Sale para los otros eventos, sino puede generar errro
+    else exit;  //It goes out for the other events, but it can generate error
     end;
-    GraphicObjectAdd(lin);
+    GraphicObjectAdd(line);
     Refresh;
     OnSendMessage('>> Ingrese siguiente punto ([C]errar):');
-    paso := 2;
-  end else if paso = 2 then begin
-    case EventTyp of
-    vmeEjecComm: begin  //Inicio de comando
-      //Esperamos coordenadas finales
+    step := 2;
+  end else if step = 2 then begin
+    case EventType of
+    vmeCmdStart: begin
       if txt = 'CANCEL' then begin
-        //Se debe eliminar la última recta
-        GraphicObjectDelete(lin);   //Mejor sería, si se hace con un UNDO
+        //The last straight line must be eliminated
+        GraphicObjectDelete(line);   //It would be better, if done with an UNDO
         Refresh;
-        RestoreState('>> Comando:');   //Termina
-        paso := 0;   //reinicia
+        RestoreState('>> Comando:');  // Ends
+        step := 0;   //restart
         exit;
       end;
       if txt = 'C' then begin
-        //Cerrar líneas
-        lin.SetP1(x0, y0, 0);
+        // Close lines
+        line.SetP1(x0, y0, 0);
         Refresh;
-        paso := 0;   //reinicia
+        step := 0;   //restart
         exit;
       end;
-      if not GetCoords(txt, xLin, yLin) then begin
+      if not GetCoords(txt, xLine, yLine) then begin
         OnSendMessage('>> Ingrese siguiente punto ([C]errar):');
         exit;
       end;
-      lin.SetP1(xLin, yLin, 0);
+      line.SetP1(xLine, yLine, 0);
       Refresh;
 
-      //Inicia otra recta, sin salir del state
-      lin := TObjGrafDXF.Create(VirtScreen);
-      lin.SetP0(xLin, yLin, 0); //Esperamos coordenadas
-      lin.SetP1(xvPtr, yvPtr, 0);
-      GraphicObjectAdd(lin);
+      //Start another line, without leaving the state
+      line := TDxf.Create(VirtScreen);
+      line.SetP0(xLine, yLine, 0);
+      line.SetP1(xvPt, yvPt, 0);
+      GraphicObjectAdd(line);
       Refresh;
       OnSendMessage('>> Ingrese siguiente punto ([C]errar):');
-//        //Terminó el comando
-//        RestoreState('>> Comando:');
-//        paso := 0;
-//        lin := nil;
     end;
     vmeMouseMove: begin
-      //En esta fase, se debe hacer la animación por si se usa el Mouse para PlaceAt
-        //el siguiente punto.
-      lin.SetP1(xvPtr, yvPtr, 0);
+      line.SetP1(xvPt, yvPt, 0);
       Refresh;
     end;
     vmeMouseDown: begin
-      //Esperamos coordenadas finales
-      lin.SetP1(xvPtr, yvPtr, 0);
+      line.SetP1(xvPt, yvPt, 0);
       Refresh;
-
-      //Inicia otra recta, sin salir del state
-      lin := TObjGrafDXF.Create(VirtScreen);
-      lin.SetP0(xvPtr, yvPtr, 0); //Esperamos coordenadas
-      lin.SetP1(xvPtr, yvPtr, 0);
-      GraphicObjectAdd(lin);
+      //Start another line, without leaving the state
+      line := TDxf.Create(VirtScreen);
+      line.SetP0(xvPt, yvPt, 0);
+      line.SetP1(xvPt, yvPt, 0);
+      GraphicObjectAdd(line);
       Refresh;
       OnSendMessage('>> Ingrese siguiente punto:');
-
-//        //Terminó el comando
-//        RestoreState('>> Comando:');
-//        paso := 0;
-//        lin := nil;
     end;
     end;
   end;
 end;
-procedure TEditor.proc_COMM_RECTAN(EventTyp: TVisEventTyp;
+procedure TEditor.proc_COMM_RECTAN(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 const
-  {Usamos constante con tipo porque no hay STATIC en FreePascal, y como este
-  procedimiento irá ejecutándose repetídamente, necesitamos conservar el valor de las
-  variables, entre sesión y sesión.}
-  paso: integer  = 0;
-  lin: TObjGrafDXF = nil;
+  {We use constant with Type because there is no STATIC in FreePascal, and like this
+   procedure will be implemented repeatedly, we need to preserve the value of the
+   variables, between session and session.}
+  step: integer  = 0;
+  line: TDxf = nil;
 var
-  xLin, yLin: Single;
+  xline, yline: Single;
 begin
-  case EventTyp of
-  vmeEjecComm: begin  //Inicio de comando
-      if paso = 0 then begin  //Inicio de comando
+  case EventType of
+  vmeCmdStart: begin
+      if step = 0 then begin
         OnSendMessage('>> Ingrese punto inicial:');
-        paso := 1;
-      end else if paso = 1 then begin
-        if txt = 'CANCEL' then begin  //válido en cualquier state
-          RestoreState('>> Comando:');   //Termina
-          paso := 0;   //reinicia
+        step := 1;
+      end else if step = 1 then begin
+        if txt = 'CANCEL' then begin
+          RestoreState('>> Comando:');
+          step := 0;
           exit;
         end;
-        //Esperamos coordenadas iniciales
-        if not GetCoords(txt, xLin, yLin) then begin
+        if not GetCoords(txt, xline, yline) then begin
           OnSendMessage('>> ERROR: Ingrese punto inicial:');
           exit;
         end;
-        //Agregar recta, con las coord. dadas
-        lin := TObjGrafDXF.Create(VirtScreen);
-        lin.SetP0(xLin, yLin, 0); //Especifica el primer punto
-        lin.SetP1(xvPtr, yvPtr, 0); //Especifica el primer punto
-        GraphicObjectAdd(lin);
+        //Add straight, with coord. given
+        line := TDxf.Create(VirtScreen);
+        line.SetP0(xline, yline, 0); //Specify the first point
+        line.SetP1(xvPt, yvPt, 0);
+        GraphicObjectAdd(line);
         Refresh;
         OnSendMessage('>> Ingrese siguiente punto:');
-        paso := 2;
-      end else if paso = 2 then begin
+        step := 2;
+      end else if step = 2 then begin
         if txt = 'CANCEL' then begin
-          //Se debe eliminar la última recta
-          GraphicObjectDelete(lin);   //Mejor sería, si se hace con un UNDO
+          //The last straight line must be eliminated
+          GraphicObjectDelete(line);
           Refresh;
-          RestoreState('>> Comando:');   //Termina
-          paso := 0;   //reinicia
+          RestoreState('>> Comando:');
+          step := 0;
           exit;
         end;
-        //Esperamos coordenadas finales
-        if not GetCoords(txt, xLin, yLin) then begin
+        if not GetCoords(txt, xline, yline) then begin
           OnSendMessage('>> ERROR: Ingrese punto inicial:');
           exit;
         end;
-        lin.SetP1(xLin, yLin, 0);
+        line.SetP1(xline, yline, 0);
         Refresh;
 
-        //Terminó el comando
         RestoreState('>> Comando:');
-        paso := 0;
-        lin := nil;
+        step := 0;
+        line := nil;
       end;
     end;
   vmeMouseMove: begin
-    if paso = 2 then begin
-        //En esta fase, se debe hacer la animación por si se usa el Mouse para PlaceAt
-        //el siguiente punto.
-        lin.SetP1(xvPtr, yvPtr, 0);
+    if step = 2 then begin
+        {
+     In this phase, the animation should be done if the Mouse is used for PlaceAt
+         the next point.
+        }
+        line.SetP1(xvPt, yvPt, 0);
         Refresh;
     end;
   end;
   vmeMouseDown: begin
-      if paso = 1 then begin
-        //Agregar recta, con las coord. dadas
-        lin := TObjGrafDXF.Create(VirtScreen);
-        lin.SetP0(xvPtr, yvPtr, 0); //Esperamos coordenadas
-        lin.SetP1(xvPtr, yvPtr, 0);
-        GraphicObjectAdd(lin);
+      if step = 1 then begin
+        //Add straight, with coord. given
+        line := TDxf.Create(VirtScreen);
+        line.SetP0(xvPt, yvPt, 0);
+        line.SetP1(xvPt, yvPt, 0);
+        GraphicObjectAdd(line);
         Refresh;
         OnSendMessage('>> Ingrese siguiente punto:');
-        paso := 2;
-      end else if paso = 2 then begin
-        //Esperamos coordenadas finales
-        lin.SetP1(xvPtr, yvPtr, 0);
+        step := 2;
+      end else if step = 2 then begin
+        line.SetP1(xvPt, yvPt, 0);
         Refresh;
 
-        //Inicia otra recta, sin salir del state
-        lin := TObjGrafDXF.Create(VirtScreen);
-        lin.SetP0(xvPtr, yvPtr, 0); //Esperamos coordenadas
-        lin.SetP1(xvPtr, yvPtr, 0);
-        GraphicObjectAdd(lin);
+        //Start another line, without leaving the state
+        line := TDxf.Create(VirtScreen);
+        line.SetP0(xvPt, yvPt, 0);
+        line.SetP1(xvPt, yvPt, 0);
+        GraphicObjectAdd(line);
         Refresh;
         OnSendMessage('>> Ingrese siguiente punto:');
-
-//        //Terminó el comando
-//        RestoreState('>> Comando:');
-//        paso := 0;
-//        lin := nil;
       end;
     end;
   end;
 end;
-//Inicialización
+//Initialization
 procedure TEditor.RestoreState(msg: string='');
-{Resatura el state del Visor, poniéndolo en state EP_NORMAL.
-Si se indica "msg", se genera el evento OnSendMessage().}
+{Resaturate the state of the Viewer, putting it in the VS_NORMAL state.
+If "msg" is indicated, the OnSendMessage () event is generated.}
 begin
-  State := EP_NORMAL;
-  ParaMover := false;
-  CapturoEvento := nil;
-  ultMarcado := nil;
-  PBox.Cursor := CUR_DEFEC;        //define cursor
+  State := VS_NORMAL;
+  Moving := false;
+  MovingObject := nil;
+  MarkedObject := nil;
+  PBox.Cursor := CUR_DEFAULT;
   if msg<>'' then OnSendMessage(msg);
 end;
 constructor TEditor.Create(PB0: TPaintBox; objectList: TEditorObjList);
-{Metodo de inicialización de la clase Visor. Debe indicarse el PaintBox de
-salida donde se controlarán los objects gráficos.
-y también debe recibir la lista de objects a administrar.}
+{Initialization method of the Viewer class. The PaintBox should be indicated
+output where the graphic objects will be controlled.
+and you should also receive the list of objects to be managed.}
 var
   argGraphicObject: TMyObject;
 begin
-  PBox := PB0;  //asigna control de salida
+  PBox := PB0;
   objects := objectList;
-  //Intercepta eventos
+  //Intercept events
   PBox.OnMouseUp   := @PBox_MouseUp;
   PBox.OnMouseDown := @PBox_MouseDown;
   PBox.OnMouseMove := @PBox_MouseMove;
@@ -1407,35 +1351,33 @@ begin
   PBox.OnDblClick  := @PBox_DblClick;
   PBox.OnPaint     := @PBox_Paint;
   PBox.OnResize    := @PBox_Resize;
-  //Inicia motor
-  VirtScreen := TVirtScreen.Create(PBox);    //Inicia motor gráfico
-  VirtScreen.SetFont('MS Sans Serif');  //define tipo de letra
-  VirtScreen.OnChangeView:=@v2d_ChangeView;
-  seleccion := TEditorObjList.Create(FALSE);  {crea lista sin posesión", porque la
-                                             administración la hará "objects".}
+  VirtScreen := TVirtScreen.Create(PBox);
+  VirtScreen.SetFont('MS Sans Serif');
+  VirtScreen.OnChangeView:=@VirtualScreen_ChangeView;
+  selection := TEditorObjList.Create(FALSE);  {create list without possession ", because the
+                                              administration will do "objects".}
   RestoreState;
-  incWheel  := 0.1;
-  ClearEventState;   //Limpia tabla de eventos de state, por seguridad
-  //Crea lista de eventos. Debe crearse para todos los valores de TViewState
-  RegisterState(EP_NORMAL   , @proc_NORMAL);
-  RegisterState(EP_SELECMULT, @proc_SELECMULT);
-  RegisterState(EP_MOV_OBJS , @proc_MOV_OBJS);
-  RegisterState(EP_DESP_PANT, @proc_DESP_PANT);
-  RegisterState(EP_DESP_ANG , @proc_DESP_ANG);
-  RegisterState(EP_DIMEN_OBJ, @proc_DIMEN_OBJ);
-  RegisterState(EP_RAT_ZOOM , @proc_RAT_ZOOM);
-  //Comandos
-  RegisterState(EP_COMM_LINE, @proc_COMM_LINE);
-  RegisterState(EP_COMM_RECTAN, @proc_COMM_RECTAN);
-  ///////////!!!!!!!!!!!!!!!!!!!!!!
+  Wheel_step  := 0.1;
+  ClearEventState;
+  //Create list of events. Must be created for all TViewState values
+  RegisterState(VS_NORMAL   , @proc_NORMAL);
+  RegisterState(VS_SELECTINGMULT, @proc_SELECTINGMULT);
+  RegisterState(VS_OBJS_MOVING , @proc_OBJS_MOVING);
+  RegisterState(VS_SCREEN_SCROLLING, @proc_SCREEN_SCROLLING);
+  RegisterState(VS_SCREEN_ANG , @proc_SCREEN_ANG);
+  RegisterState(VS_DIMEN_OBJ, @proc_DIMEN_OBJ);
+  RegisterState(VS_ZOOMING , @proc_ZOOMING);
+  //Commands
+  RegisterState(VS_CMD_ADDING_LINE, @proc_CMD_ADDING_LINE);
+  RegisterState(VS_CMD_ADDING_RECTAN, @proc_COMM_RECTAN);
 argGraphicObject := TMyObject.Create(VirtScreen);
 GraphicObjectAdd(argGraphicObject);
 end;
 destructor TEditor.Destroy;
 begin
-  seleccion.Free;
-  VirtScreen.Free;      //Libera
-  //resatura eventos
+  selection.Free;
+  VirtScreen.Free;
+  //reset events
   PBox.OnMouseUp:=nil;
   PBox.OnMouseDown:=nil;
   PBox.OnMouseMove:=nil;
@@ -1443,7 +1385,7 @@ begin
   PBox.OnDblClick:=nil;
   PBox.OnPaint:=nil;
   PBox.OnResize:=nil;
-  inherited;     //llama al destructor
+  inherited;
 end;
 
 end.

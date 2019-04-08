@@ -38,7 +38,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   //translate caption of controls
   TransCapCtrls(self, 'Send','Enviar');
-  TransCapCtrls(self, 'Name:','Nombre:');
+  TransCapCtrls(self, 'Name:','Name:');
   //add keys for translate the message
   dicSet('Hello','Hola');
 end;

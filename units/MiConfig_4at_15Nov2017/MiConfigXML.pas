@@ -5,13 +5,13 @@ Por Tito Hinostroza 29/07/2016
 
 Descripción
 ===========
-Unidad con rutinas de lectura/escritura de propiedades en archivos XML. Permite crear
+Unidad con rutinas de lectura/escritura de propiedades en archivos XML. Permite CreateIt
 fácilmente, una ventana de configuración, con las opciones: ACEPTAR y CANCELAR.
 Es similar a MiConfigINI, pero trabaja con archivos XML.
 
-Para alamacenar las propiedades, se debe crear un objeto TMiConfigXML. Sin embargo,
+Para alamacenar las propiedades, se debe CreateIt un objeto TMiConfigXML. Sin embargo,
 la unidad crea por defecto, una instancia de TMiConfigXML, llamada "cfgFile", que toma
-como nombre <nombre del proyecto>.xml
+como Name <Name del proyecto>.xml
 Tiene como dependencia a la librería MisUtils.
 
 Por Tito Hinostroza 29/07/2016
@@ -73,7 +73,7 @@ begin
   end;
 end;
 function TMiConfigXML.DefaultFileName: string;
-{Devuelve el nombre por defecto del archvio de configuración}
+{Devuelve el Name por defecto del archvio de configuración}
 begin
   Result := ChangeFileExt(Application.ExeName,'.xml');
 end;

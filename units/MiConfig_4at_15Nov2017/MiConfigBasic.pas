@@ -1,5 +1,5 @@
 {Unidad con definiciones básicas para las clases MiConfigINI y MiConfigXML.
-Aquí se define la clase TMiConfigBasic, que incluye los métodos para crear las
+Aquí se define la clase TMiConfigBasic, que incluye los métodos para CreateIt las
 asociaciones entre las variables (propiedades) y los controles.
 También incluye las rutinas para mover datos entre los controles y las variables.
 
@@ -13,19 +13,19 @@ solamente entre controles y variables:
 +------------+                              +------------+
 
 Pero como es común salvar los datos a disco, se le debe agregar las funcionalidades
-de accesos a disco, como se hace en las unidades MiConfigINI y MiConfigXML.
+de accesos a disco, como se hace en las MeasureUnits MiConfigINI y MiConfigXML.
 
 Las asociaciones entre variables y controles, se hacen con los métodos:
 Asoc_Int, Asoc_Dbl, Asoc_Str, ... que están sobrecargados para manejar diversos controles
-o crear la asociación sin control.
+o CreateIt la asociación sin control.
 Solo se han creado asociaciones entre tipos comunes y controles comunes.
 
-Para agregar un nuevo tipo de asociación, en esta unidad se debe:
-  1. Crear el identificador de la nueva asociación en el tipo TTipPar.
-  2. Crear el nuevo método de asociación (Asoc_XXX) o sobrecargar uno existente.
-  3. Actualizar el método TMiConfigBasic.PropertyWindow(), con el nuevo tipo.
+Para agregar un nuevo btnType de asociación, en esta unidad se debe:
+  1. CreateIt el identificador de la nueva asociación en el btnType TTipPar.
+  2. CreateIt el nuevo método de asociación (Asoc_XXX) o sobrecargar uno existente.
+  3. Actualizar el método TMiConfigBasic.PropertyWindow(), con el nuevo btnType.
 Luego también debe implementarse el acceso a disco, para esta nueva asociación, en las
-unidades MiConfigINI y MiConfigXML.
+MeasureUnits MiConfigINI y MiConfigXML.
 
                                                  Por Tito Hinostroza 29/07/2016
 }
@@ -93,7 +93,7 @@ type
   public
     pVar   : pointer;  //referencia a la variable
     lVar   : integer;  //tamaño de variable. (Cuando no sea conocido)
-    tipPar : TTipPar;  //tipo de par agregado
+    tipPar : TTipPar;  //btnType de par agregado
     etiqVar: string;   //etiqueta usada para grabar la variable en archivo INI o XML
     categ  : integer;  //Categoría. Usada para leer selectivamente con
     //Campos para configurar la grilla, cuando se use
@@ -105,11 +105,11 @@ type
     OnFileToProperty: procedure of object;   //después de guardar el elemento a disco
     OnPropertyToFile: procedure of object;   //antes de guardar el elemento a disco
   public  //valores por defecto
-    defInt: integer;   //valor entero por defecto al leer de archivo
-    defDbl: Double;    //valor double por defecto al leer de archivo
-    defStr: string;    //valor string por defecto al leer de archivo
-    defBol: boolean;   //valor booleano por defecto al leer de archivo
-    defCol: TColor;    //valor TColor por defecto al leer de archivo
+    defInt: integer;   //value entero por defecto al leer de archivo
+    defDbl: Double;    //value double por defecto al leer de archivo
+    defStr: string;    //value string por defecto al leer de archivo
+    defBol: boolean;   //value booleano por defecto al leer de archivo
+    defCol: TColor;    //value TColor por defecto al leer de archivo
   public  //propiedades para facilitar el acceso a pVar^, usando diversos tipos
     property AsInteger: integer read GetAsInteger write SetAsInteger;
     property AsDouble: double read GetAsDouble write SetAsDouble;
@@ -123,8 +123,8 @@ type
   { TMiConfigBasic }
   TMiConfigBasic = class
   protected
-    valInt: integer;  //valor entero de salida
-    valDbl: Double;  //valor double de salida
+    valInt: integer;  //value entero de salida
+    valDbl: Double;  //value double de salida
     listParElem : TParElem_list;
     procedure PropertyWindow(r: TParElem; PropToWindow: boolean);
   public  //Rutinas de movimientos entre: Controles <-> Propiedades <-> Archivo
@@ -336,7 +336,7 @@ begin
           else r.radButs[0].checked := true  //activa segundo
         end;
     end else begin
-        //busca el que está marcado
+        //busca el que está Marked
         if high(r.radButs)>=1 then begin
            if r.radButs[1].checked then r.AsBoolean := true
            else r.AsBoolean := false;
@@ -355,10 +355,10 @@ begin
           exit;
         end;
     end else begin
-        //busca el que está marcado
+        //busca el que está Marked
         for j:=0 to high(r.radButs) do begin
            if r.radButs[j].checked then begin
-             //debe fijar el valor del enumerado
+             //debe fijar el value del enumerado
              if r.lVar = 4 then begin  //se puede manejar como entero
                r.AsInt32 := j;  //guarda
                break;
@@ -380,7 +380,7 @@ begin
           exit;
         end;
     end else begin
-       //debe fijar el valor del enumerado
+       //debe fijar el value del enumerado
        if r.lVar = 4 then begin  //se puede manejar como entero
          r.AsInt32 := TRadioGroup(r.pCtl).ItemIndex;  //lee
        end else begin  //tamaño no implementado
@@ -485,10 +485,10 @@ begin
 end;
 //Rutinas de validación
 function TMiConfigBasic.EditValidateInt(edit: TEdit; min: integer; max: integer): boolean;
-{Valida el contenido de un TEdit, para ver si se puede convertir a un valor entero.
+{Valida el contenido de un TEdit, para ver si se puede convertir a un value entero.
 Si no se puede convertir, devuelve FALSE, devuelve el mensaje de error en "strErr", y
 pone el TEdit con enfoque.
-Si se puede convertir, devuelve TRUE, y el valor convertido en "valInt".}
+Si se puede convertir, devuelve TRUE, y el value convertido en "valInt".}
 var
   tmp : string;
   c : char;
@@ -534,14 +534,14 @@ begin
     exit;
   end;
   //pasó las validaciones
-  valInt:=n;  //actualiza valor
+  valInt:=n;  //actualiza value
   Result := true;   //tuvo éxito
 end;
 function TMiConfigBasic.EditValidateDbl(edit: TEdit; min: Double; max: Double): boolean;
-{Valida el contenido de un TEdit, para ver si se puede convertir a un valor Double.
+{Valida el contenido de un TEdit, para ver si se puede convertir a un value Double.
 Si no se puede convertir, devuelve FALSE, devuelve el mensaje de error en "strErr", y
 pone el TEdit con enfoque.
-Si se puede convertir, devuelve TRUE, y el valor convertido en "valDbl".}
+Si se puede convertir, devuelve TRUE, y el value convertido en "valDbl".}
 var
   d: double;
 begin
@@ -564,7 +564,7 @@ begin
     exit;
   end;
   //pasó las validaciones
-  valDbl:=d;  //actualiza valor
+  valDbl:=d;  //actualiza value
   Result := true;   //tuvo éxito
 end;
 //Métodos de asociación
@@ -576,7 +576,7 @@ var
 begin
   r := TParElem.Create;
   r.pVar   := ptrInt;  //toma referencia
-  r.tipPar := tp_Int;  //tipo de par
+  r.tipPar := tp_Int;  //btnType de par
   r.etiqVar:= etiq;
   r.defInt := defVal;
   listParElem.Add(r);
@@ -588,7 +588,7 @@ function TMiConfigBasic.Asoc_Int(etiq: string; ptrInt: pointer; edit: TEdit;
 begin
   Result := Asoc_Int(etiq, ptrInt, defVal);
   Result.pCtl   := edit;    //toma referencia
-  Result.tipPar := tp_Int_TEdit;  //tipo de par
+  Result.tipPar := tp_Int_TEdit;  //btnType de par
   Result.minEnt := minVal;    //protección de rango
   Result.maxEnt := maxVal;    //protección de rango
 end;
@@ -598,7 +598,7 @@ function TMiConfigBasic.Asoc_Int(etiq: string; ptrInt: pointer;
 begin
   Result := Asoc_Int(etiq, ptrInt, defVal);
   Result.pCtl   := spEdit;    //toma referencia
-  Result.tipPar := tp_Int_TSpinEdit;  //tipo de par
+  Result.tipPar := tp_Int_TSpinEdit;  //btnType de par
 end;
 function TMiConfigBasic.Asoc_Int(etiq: string; ptrInt: pointer;
   radGroup: TRadioGroup; defVal: integer): TParElem;
@@ -606,7 +606,7 @@ function TMiConfigBasic.Asoc_Int(etiq: string; ptrInt: pointer;
 begin
   Result := Asoc_Int(etiq, ptrInt, defVal);
   Result.pCtl   := radGroup;    //toma referencia
-  Result.tipPar := tp_Int_TRadioGroup;  //tipo de par
+  Result.tipPar := tp_Int_TRadioGroup;  //btnType de par
 end;
 //---------------------------------------------------------------------
 function TMiConfigBasic.Asoc_Dbl(etiq: string; ptrDbl: PDouble; defVal: double
@@ -616,7 +616,7 @@ var
 begin
   r := TParElem.Create;
   r.pVar   := ptrDbl;  //toma referencia
-  r.tipPar := tp_Dbl;  //tipo de par
+  r.tipPar := tp_Dbl;  //btnType de par
   r.etiqVar:= etiq;
   r.defDbl := defVal;
   listParElem.Add(r);
@@ -628,7 +628,7 @@ function TMiConfigBasic.Asoc_Dbl(etiq: string; ptrDbl: PDouble; edit: TEdit;
 begin
   Result := Asoc_Dbl(etiq, ptrDbl, defVal);
   Result.pCtl   := edit;    //toma referencia
-  Result.tipPar := tp_Dbl_TEdit;  //tipo de par
+  Result.tipPar := tp_Dbl_TEdit;  //btnType de par
   Result.minDbl := minVal;    //protección de rango
   Result.maxDbl := maxVal;    //protección de rango
 end;
@@ -637,7 +637,7 @@ function TMiConfigBasic.Asoc_Dbl(etiq: string; ptrDbl: PDouble;
 begin
   Result := Asoc_Dbl(etiq, ptrDbl, defVal);
   Result.pCtl   := spEdit;    //toma referencia
-  Result.tipPar := tp_Dbl_TFloatSpinEdit;  //tipo de par
+  Result.tipPar := tp_Dbl_TFloatSpinEdit;  //btnType de par
 end;
 //---------------------------------------------------------------------
 function TMiConfigBasic.Asoc_Str(etiq: string; ptrStr: pointer; defVal: string
@@ -648,7 +648,7 @@ var
 begin
   r := TParElem.Create;
   r.pVar   := ptrStr;  //toma referencia
-  r.tipPar := tp_Str;  //tipo de par
+  r.tipPar := tp_Str;  //btnType de par
   r.etiqVar:= etiq;
   r.defStr := defVal;
   listParElem.Add(r);
@@ -660,7 +660,7 @@ function TMiConfigBasic.Asoc_Str(etiq: string; ptrStr: pointer;
 begin
   Result := Asoc_Str(etiq, ptrStr, defVal);
   Result.pCtl   := edit;    //toma referencia
-  Result.tipPar := tp_Str_TEdit;  //tipo de par
+  Result.tipPar := tp_Str_TEdit;  //btnType de par
 end;
 function TMiConfigBasic.Asoc_Str(etiq: string; ptrStr: pointer;
   edit: TCustomEditButton; defVal: string): TParElem;
@@ -668,7 +668,7 @@ function TMiConfigBasic.Asoc_Str(etiq: string; ptrStr: pointer;
 begin
   Result := Asoc_Str(etiq, ptrStr, defVal);
   Result.pCtl   := edit;    //toma referencia
-  Result.tipPar := tp_Str_TEditButton;  //tipo de par
+  Result.tipPar := tp_Str_TEditButton;  //btnType de par
 end;
 function TMiConfigBasic.Asoc_Str(etiq: string; ptrStr: pointer;
   cmbBox: TComboBox; defVal: string): TParElem;
@@ -676,7 +676,7 @@ function TMiConfigBasic.Asoc_Str(etiq: string; ptrStr: pointer;
 begin
   Result := Asoc_Str(etiq, ptrStr, defVal);
   Result.pCtl   := cmbBox;   //toma referencia
-  Result.tipPar := tp_Str_TCmbBox;  //tipo de par
+  Result.tipPar := tp_Str_TCmbBox;  //btnType de par
 end;
 //---------------------------------------------------------------------
 function TMiConfigBasic.Asoc_Bol(etiq: string; ptrBol: pointer; defVal: boolean
@@ -686,7 +686,7 @@ var
 begin
   r := TParElem.Create;
   r.pVar   := ptrBol;  //toma referencia
-  r.tipPar := tp_Bol;  //tipo de par
+  r.tipPar := tp_Bol;  //btnType de par
   r.etiqVar:= etiq;
   r.defBol := defVal;
   listParElem.Add(r);
@@ -698,7 +698,7 @@ function TMiConfigBasic.Asoc_Bol(etiq: string; ptrBol: pointer; chk: TCheckBox;
 begin
   Result := Asoc_Bol(etiq, ptrBol, defVal);
   Result.pCtl   := chk;    //toma referencia
-  Result.tipPar := tp_Bol_TCheckBox;  //tipo de par
+  Result.tipPar := tp_Bol_TCheckBox;  //btnType de par
 end;
 function TMiConfigBasic.Asoc_Bol(etiq: string; ptrBol: pointer;
   radButs: array of TRadioButton; defVal: boolean): TParElem;
@@ -709,7 +709,7 @@ var
 begin
   Result := Asoc_Bol(etiq, ptrBol, defVal);
 //  Result.pCtl   := ;    //toma referencia
-  Result.tipPar := tp_Bol_TRadBut;  //tipo de par
+  Result.tipPar := tp_Bol_TRadBut;  //btnType de par
   //guarda lista de controles
   setlength(Result.radButs, high(radButs)+1);  //hace espacio
   for i:=0 to high(radButs) do
@@ -724,7 +724,7 @@ begin
   r := TParElem.Create;
   r.pVar   := ptrEnum;  //toma referencia
   r.lVar   := EnumSize;  //necesita el tamaño para modificarlo luego
-  r.tipPar := tp_Enum;  //tipo de par
+  r.tipPar := tp_Enum;  //btnType de par
   r.etiqVar:= etiq;
   r.defInt := defVal;   //se maneja como entero
   listParElem.Add(r);
@@ -739,7 +739,7 @@ var
 begin
   Result := Asoc_Enum(etiq, ptrEnum, EnumSize, defVal);
 //  Result.pCtl   := ;    //toma referencia
-  Result.tipPar := tp_Enum_TRadBut;  //tipo de par
+  Result.tipPar := tp_Enum_TRadBut;  //btnType de par
   //guarda lista de controles
   setlength(Result.radButs, high(radButs)+1);  //hace espacio
   for i:=0 to high(radButs) do
@@ -752,7 +752,7 @@ function TMiConfigBasic.Asoc_Enum(etiq: string; ptrEnum: pointer; EnumSize: inte
 begin
   Result := Asoc_Enum(etiq, ptrEnum, EnumSize, defVal);
   Result.pCtl   := radGroup;  //toma referencia a control
-  Result.tipPar := tp_Enum_TRadGroup;  //tipo de par
+  Result.tipPar := tp_Enum_TRadGroup;  //btnType de par
 end;
 //---------------------------------------------------------------------
 function TMiConfigBasic.Asoc_TCol(etiq: string; ptrTCol: pointer;
@@ -764,7 +764,7 @@ begin
   r := TParElem.Create;
   r.pVar   := ptrTCol;    //toma referencia
   r.pCtl   := colBut;    //toma referencia a control
-  r.tipPar := tp_TCol_TColBut;  //tipo de par
+  r.tipPar := tp_TCol_TColBut;  //btnType de par
   r.etiqVar:= etiq;
   r.defCol := defVal;
   listParElem.Add(r);
@@ -779,7 +779,7 @@ begin
   r := TParElem.Create;
   r.pVar   := ptrTCol;    //toma referencia
   r.pCtl   := colBut;    //toma referencia a control
-  r.tipPar := tp_TCol_TColBox;  //tipo de par
+  r.tipPar := tp_TCol_TColBox;  //btnType de par
   r.etiqVar:= etiq;
   r.defCol := defVal;
   listParElem.Add(r);
@@ -796,7 +796,7 @@ begin
   r := TParElem.Create;
   r.pVar   := ptrStrList;  //toma referencia
 //  r.pCtl   := colBut;    //toma referencia
-  r.tipPar := tp_StrList;  //tipo de par
+  r.tipPar := tp_StrList;  //btnType de par
   r.etiqVar:= etiq;
 //  r.defCol := defVal;
   listParElem.Add(r);
@@ -810,7 +810,7 @@ begin
   r := TParElem.Create;
   r.pVar   := ptrStrList;  //toma referencia
   r.pCtl   := lstBox;    //toma referencia
-  r.tipPar := tp_StrList_TlistBox;  //tipo de par
+  r.tipPar := tp_StrList_TlistBox;  //btnType de par
   r.etiqVar:= etiq;
 //  r.defCol := defVal;
   listParElem.Add(r);

@@ -22,7 +22,7 @@ The class hierarchy is:
 
 TObjVisible ----------------------------------------> TGraphicObj ---> Derive objects here
               |                                          |
-               --> TPtoCtrl --(They are included in)------
+               --> TControlPoint --(They are included in)------
               |                                          |
                --> TogButton --(They can be included in)--
 
@@ -31,92 +31,88 @@ unit sketchCore;
 {$mode objfpc}{$H+}
 interface
 uses
-  Classes, Controls, SysUtils, Fgl, Graphics, GraphType, Types, ExtCtrls, MotGraf3D;
+  Classes, Controls, SysUtils, Fgl, Graphics, GraphType, Types, ExtCtrls, MotGraf3d;
 
 const
-  ANCHO_MIN = 20;    //Ancho mínimo de objects gráficos en pixels (Coord Virtuales)
-  ALTO_MIN = 20;     //Alto mínimo de objects gráficos en Twips (Coord Virtuales)
+  MINWIDTH = 20;//Minimum width of graphic objects in pixels (Virtual Coord)
+  MINHEIGHT = 20;//High minimum of graphic objects in Twips (Virtual Coord)
 
 type
   { TObjVsible }
-  //Clase base para todos los objects visibles
+  //Base class for all visible objects
   TObjVsible = class
   protected
-    fx,fy,fz  : Single;    //coordenadas virtuales
-    VirtScreen       : TVirtScreen;  //motor gráfico
-    Xant,Yant : Integer;   //coordenadas anteriores
+    Xvirt,Yvirt,Zvirt  : Single;//virtual coordinates
+    VirtScreen       : TVirtScreen;
+    Xprev,Yprev : Integer;   //previous coordinates
   public
-    Id        : Integer;   //Identificador del Objeto. No usado por la clase. Se deja para facilidad de identificación.
-    Width     : Single;    //ancho
-    Height    : Single;    //alto
-    Selected  : Boolean;   //indica si el objeto está seleccionado
-    Visible   : boolean;   //indica si el objeto es visible
-    procedure Crear(mGraf: TVirtScreen; ancho0, alto0: Integer);  //no es constructor
-    procedure PlaceAt(const xv, yv, zv: Single);  //Fija posición
-    procedure PlaceAt(const P: TMotPoint);  //Fija posición
-    function LoSelec(xp, yp: Integer): Boolean;
+    Id        : Integer;   //Identifier of the Object. Not used by the class. It is left for easy identification.
+    Width     : Single;
+    Height    : Single;
+    Selected  : Boolean;
+    Visible   : boolean;
+    procedure CreateIt(argVirtScreen: TVirtScreen; argWidth, argHeight: Integer); 
+    procedure PlaceAt(const xv, yv, zv: Single);
+    procedure PlaceAt(const P: TPoint3D);
+    function isSelected(xp, yp: Integer): Boolean;
     function StartMove(xr, yr: Integer): Boolean;
-    property x: Single read fx;
-    property y: Single read fy;
+    property x: Single read Xvirt;
+    property y: Single read Yvirt;
     constructor Create; virtual;
     destructor Destroy; override;
   end;
 
-  TPosicPCtrol = (   //tipo de desplazamiento de punto de control
-    TD_SIN_POS,  //sin posición. No se reubicará automáticamente
-    TD_SUP_IZQ,  //superior izquierda, desplaza ancho (por izquierda) y alto (por arriba)
-    TD_SUP_CEN,  //superior central, desplaza alto por arriba
-    TD_SUP_DER,  //superior derecha, desplaza ancho (por derecha) y alto (por arriba)
+  TControlPointOffs = (//Type of control point offset
+    CPO_NO_POS,//without position. It will not be relocated automatically
+    CPO_TOP_LEFT,  //top left, moves wide (for left) and high (for top)
+    CPO_TOP_CENTER,  //upper center, moves high on top
+    CPO_TOP_RIGHT,  //top right, moves wide (for right) and high (for top)
 
-    TD_CEN_IZQ,  //central izquierda, desplaza ancho (por izquierda)
-    TD_CEN_DER,  //central derecha, desplaza ancho (por derecha)
+    CPO_CENTER_LEFT,  //left center, moves wide (left)
+    CPO_CENTER_RIGHT,  //center right, moves wide (by right)
 
-    TD_INF_IZQ,  //inferior izquierda
-    TD_INF_CEN,  //inferior central
-    TD_INF_DER   //inferior izquierda
+    CPO_BOTTOM_LEFT,  //lower left
+    CPO_BOTTOM_CENTER,  //lower central
+    CPO_BOTTOM_RIGHT   //lower right
    );
 
-  {Evento que genera un putno de control cuando está siendo desplazado Proj el Moues.
-  (xvTra, yvTar) es el punto objetivo a donde se espera que se ubique el punto de
-  control, y dxv/dyv, son los desplazamientos esperados de acuerdo al desplazamiento
-  del ratón. El desplazamiento final se puede obtener solo con dx y dy, pero se envía
-  también el punto objetivo, para cuando se quiera limitar el desplazamiento de un
-  punto de control.}
-  TEvPtoCtrlMoveXY = procedure(xvTar, yvTar, dxv, dyv: Single) of object;
+  {
+Event that generates a control point when it is being moved by the Moues.
+   (x_vPoint, y_vPoint) is the objective point where the control point is expected to be located, and x_dv / y_dv, are the expected displacements according to the displacement of the mouse. The final displacement can be obtained only with dx and dy, but it is sent also the objective point, for when you want to limit the displacement of a check Point.}
+  TEvPointCtrlMoveXY = procedure(x_vPoint, y_vPoint, x_dv, y_dv: Single) of object;
 
-  { TPtoCtrl }
-  TPtoCtrl = class(TObjVsible)
+  { TControlPoint }
+  TControlPoint = class(TObjVsible)
   private
-    fTipDesplaz: TPosicPCtrol;
-    procedure SetTipDesplaz(AValue: TPosicPCtrol);
+    ControlPointOffs: TControlPointOffs;
+    procedure SetControlPointOffs(AValue: TControlPointOffs);
   public
-    //El tipo de desplazamiento, por lo general debe depender  nicamente de la posicion
-    property tipDesplaz: TPosicPCtrol read fTipDesplaz write SetTipDesplaz;
-    constructor Crear(mGraf: TVirtScreen; tipDesplaz0: TPosicPCtrol;
-      ProcMove: TEvPtoCtrlMoveXY);
-    procedure Dibujar();
+    //The type of displacement, in general, must depend solely on the position
+    property displacementType: TControlPointOffs read ControlPointOffs write SetControlPointOffs;
+    constructor CreateIt(argVirtScreen: TVirtScreen; argDdisplaceType: TControlPointOffs;
+      ProcMove: TEvPointCtrlMoveXY);
+    procedure Draw();
     procedure StartMove(xr, yr: Integer; x0, y0: Single);
-    procedure Mover(xr, yr: Integer);  //Dimensiona las variables indicadas
+    procedure MoveR(xr, yr: Integer);  //Dimension the indicated variables
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
-    function LoSelec(xp, yp: Integer):boolean;
+    function isSelected(xp, yp: Integer):boolean;
   private
-    tipPuntero: Integer;  //Tipo de puntero
-    OnPtoCtrlMoveXY : TEvPtoCtrlMoveXY;  //Evento de desplazamiento del Pto de Control.
-    xvTar, yvTar: Single;  {Coordenadas objetivo para las dimensiones. Usada para generar
-                            el evento OnPCdimen}
+    typeOfPoint: Integer;  //Type of point
+    OnPointCtrlMoveXY : TEvPointCtrlMoveXY;//Control Point shift event.
+    x_vPoint, y_vPoint: Single;  {Target coordinates for the dimensions. Used to generate the OnPCdimen event}
   end;
-  TPtosControl = specialize TFPGObjectList<TPtoCtrl>;  //Lista para gestionar los puntos de control
+  TPtosControls = specialize TFPGObjectList<TControlPoint>; //Ready to manage control points
 
-  { Objeto Tbot - Permite gestionar los botones}
+  {Tbot Object - Allows you to manage the buttons}
 
-//Procedimiento-evento para evento Click en Botón
+//Procedure-event for event Click on Button
   TEvenBTclk = procedure(state: Boolean) of object;
 
-  TTipBot =
-   (BOT_CERRAR,   //botón cerrar
-    BOT_EXPAND,   //botón expandir/contraer
-    BOT_CHECK,    //check
-    BOT_REPROD);   //reproducir/detener
+  TBtnType =
+   (BTN_CLOSE,   //close button
+    BTN_EXPAND,   // expand/collapse
+    BTN_CHECK,    //check
+    BTN_PLAY);   //play / stop
 
   TSBOrientation =
    (SB_HORIZONT,    //horizontal
@@ -124,75 +120,70 @@ type
 
   { TogButton }
   TogButton = class(TObjVsible)
-    state     : Boolean;   //Permite Show el state del botón o el check
-    drawBack   : boolean;   //indica si debe dibujar el fondo
-    constructor Create(mGraf: TVirtScreen; tipo0: TTipBot; EvenBTclk0: TEvenBTclk);
-    procedure Dibujar;
+    state     : Boolean;//Allows Show the state of the button or check
+    drawBackground   : boolean;//indicates whether Draw the background
+    constructor Create(argVirtScreen: TVirtScreen; argType: TBtnType; argEvenBTclk: TEvenBTclk);
+    procedure Draw;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
   private
-    tipo       : TTipBot;
+    btnType : TBtnType;
     OnClick: TEvenBTclk
   end;
 
-  TogButtons = specialize TFPGObjectList<TogButton>;       //Para gestionar los botones
+  ButtonsList = specialize TFPGObjectList<TogButton>;//To manage the buttons
 
   TGraphicObj = class;
-  TEventSelec = procedure(obj: TGraphicObj) of object; //Procedimiento-evento para seleccionar
-  TEventCPunt = procedure(TipPunt: Integer) of object; //Procedimiento-evento para cambiar puntero
+  TEventSelect = procedure(obj: TGraphicObj) of object;//Procedure-event to select
+  TEventChPoint = procedure(PointType: Integer) of object; //Procedure-event to change point
 
   { TGraphicObj }
-  {Este es el Objeto padre de todos los objects gráficos visibles que son administrados por el
-   motor de edición}
+  {This is the parent Object of all visible graphic objects that are managed by the editing engine}
   TGraphicObj = class(TObjVsible)
   private
   protected
-    pcx        : TPtoCtrl;      //variable para Punto de Control
-    PtosControl: TPtosControl;  //Lista de puntos de control
-    Buttons    : TogButtons;    //Lista para contener botones
+    ControlPoint        : TControlPoint;      //variable for Control Point
+    ControlPoints: TPtosControls; 
+    Buttons    : ButtonsList;
     procedure RelocateElements; virtual;
-    procedure ReConstGeom; virtual; //Reconstruye la geometría del objeto
-    function SelecPtoControl(xp, yp: integer): TPtoCtrl;
+    procedure ReconstructGeom; virtual;//Rebuild the geometry of the object
+    function getSelectedControlPoint(xp, yp: integer): TControlPoint;
   public
-    Nombre      : String;    //Identificación del objeto
-    Marcado     : Boolean;   //Indica que está marcado, porque el ratón pasa por encima
-    DibSimplif  : Boolean;   //indica que se está en modo de dibujo simplificado
-    Highlight   : Boolean;   //indica si permite el resaltado del objeto
-    SizeLocked  : boolean;   //protege al objeto de redimensionado
-    PosLocked   : Boolean;   //Indica si el objeto está bloqueado para movimiento
-    SelLocked   : Boolean;   //Indica si el objeto está bloqueado para selección
-    Tipo        : Integer;   //Tipo de objeto. No usado por la librería. Queda para el usuario.
-    Data        : string;    //Dato adicional. No usado por la librería. Queda para el usuario.
-    Obj         : pointer;   //Dato adicional. No usado por la librería. Queda para el usuario.
-    Relleno     : TColor;    //Color de relleno
-    Proceso     : Boolean;   //Bandera
-    Resizing    : boolean;  //indica que el objeto está dimensionándose
-    Erased      : boolean;   //bandera para eliminar al objeto
-    //Eventos de la clase
-    OnSelect  : TEventSelec;
-    OnDeselect: TEventSelec;
-    OnCamPoint: TEventCPunt;
-    function XCent: Single;  //Coordenada Xcentral del objeto
-    function YCent: Single;  //Coordenada Ycentral del objeto
+    Name      : String;//Identificación del objeto
+    Marked     : Boolean;//Indicates that it is marked, because the mouse passes over
+    SimpleDrawingMode  : Boolean;//indicates that you are in simplified drawing mode
+    canHighlight   : Boolean;//indicates whether it allows the highlighting of the object
+    SizeLocked  : boolean;//protects the resized object
+    PosLocked   : Boolean;
+    SelLocked   : Boolean; 
+    ObjType        : Integer;//ObjType of object. Not used by the library. It remains for the user.
+    Data        : string;//Additional information Not used by the library. It remains for the user.
+    Obj         : pointer;//Additional information Not used by the library. It remains for the user.
+    ColorFill     : TColor;//Fill color
+    Processing     : Boolean;   //flag
+    Resizing    : boolean;  //indicates that the object is being sized
+    Erased      : boolean;  
+    //Class events
+    OnSelect  : TEventSelect;
+    OnDeselect: TEventSelect;
+    OnCamPoint: TEventChPoint;
+    function XCent: Single;
+    function YCent: Single; 
     procedure PlaceAt(x0, y0: Single);
-    procedure Selec;         //Método único para seleccionar al objeto
-    procedure Deselect;       //Método único para quitar la selección del objeto
-    procedure Delete;        //Método para eliminar el objeto
-    procedure Mover(xr, yr : Integer; nobjetos : Integer); virtual;
-    function LoSelecciona(xr, yr:integer): Boolean; virtual;
-    procedure Dibujar; virtual;  //Dibuja el objeto gráfico
+    procedure Select;//Unique method to select the object
+    procedure Deselect;  
+    procedure Delete;
+    procedure MoveR(xr, yr : Integer; nobjetos : Integer); virtual;
+    function isSelected(xr, yr:integer): Boolean; virtual;
+    procedure Draw; virtual;  //Dibuja el objeto gráfico
     procedure StartMove(xr, yr : Integer);
-    procedure MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
-       xp, yp: Integer); virtual;  //Metodo que funciona como evento mouse_down
-    procedure MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
-       xp, yp: Integer; solto_objeto: Boolean); virtual;
+    procedure MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; xp, yp: Integer); virtual;//Method that works as a mouse_down event
+    procedure MouseUp(Sender: TObject; mbtn: TMouseButton; Shift: TShiftState; xp, yp: Integer; solto_objeto: Boolean); virtual;
     procedure MouseMove(Sender: TObject; Shift: TShiftState; xp, yp: Integer); virtual;
-    procedure MouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer;
-                 MousePos: TPoint; var Handled: Boolean); virtual;
-    function AddPtoControl(tipDesplaz0: TPosicPCtrol; ProcDimen: TEvPtoCtrlMoveXY
-      ): TPtoCtrl;
-    function AddButton(ancho0, alto0: Integer; tipo0: TTipBot;
-      EvenBTclk0: TEvenBTclk): TogButton;
-    constructor Create(mGraf: TVirtScreen); virtual;
+    procedure MouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean); virtual;
+    function AddControlPoint(argDdisplaceType: TControlPointOffs; ProcDimen: TEvPointCtrlMoveXY): TControlPoint;
+    function AddButton(argWidth, argHeight: Integer; argType: TBtnType;
+      argEvenBTclk: TEvenBTclk): TogButton;
+    constructor Create(argVirtScreen: TVirtScreen); virtual;
     destructor Destroy; override;
   end;
 
@@ -200,48 +191,48 @@ type
 
 implementation
 const
-  ANC_PCT2 = 5;       //mitad del ancho de punto de control
+  WIDTH_CONTROLPOINT2 = 5;//half the width of control point width_
 
 { TObjVsible }
-procedure TObjVsible.Crear(mGraf: TVirtScreen; ancho0, alto0: Integer);
+procedure TObjVsible.CreateIt(argVirtScreen: TVirtScreen; argWidth, argHeight: Integer);
 begin
-  VirtScreen := mGraf;
-  width:=ancho0;
-  height :=alto0;
+  VirtScreen := argVirtScreen;
+  width:=argWidth;
+  height :=argHeight;
   visible := true;
 end;
 procedure TObjVsible.PlaceAt(const xv, yv, zv: Single);
-{Ubica en coordenadas virtuales}
+{Locate in virtual coordinates}
 begin
-  fx := xv;
-  fy := yv;
-  fz := zv;
+  Xvirt := xv;
+  Yvirt := yv;
+  Zvirt := zv;
 end;
-procedure TObjVsible.PlaceAt(const P: TMotPoint);
-{Ubica en coordenadas virtuales}
+procedure TObjVsible.PlaceAt(const P: TPoint3D);
+{Locate in virtual coordinates}
 begin
-  fx := P.x;
-  fy := P.y;
-  fz := P.z;
+  Xvirt := P.x;
+  Yvirt := P.y;
+  Zvirt := P.z;
 end;
 
-function TObjVsible.LoSelec(xp, yp: Integer): Boolean;
-//Indica si las coordenadas de ratón seleccionan al objeto en su posición actual
-var xv, yv: Single;    //coordenadas virtuales
+function TObjVsible.isSelected(xp, yp: Integer): Boolean;
+//Indicates whether the mouse coordinates select the object in its current position
+var xv, yv: Single;    //virtual coordinates
 begin
     VirtScreen.XYvirt(xp, yp, 0, xv, yv);
-    LoSelec := False;    //valor por defecto
-    If (xv > fx - 2) And (xv < fx + width + 2) And
-       (yv > fy - 2) And (yv < fy + height + 2) Then
-        LoSelec := True;
+    isSelected := False;    //Default value
+    If (xv > Xvirt - 2) And (xv < Xvirt + width + 2) And
+       (yv > Yvirt - 2) And (yv < Yvirt + height + 2) Then
+        isSelected := True;
 end;
 function TObjVsible.StartMove(xr, yr: Integer): Boolean;
 begin
-  Result := false;  //por el momento, no devuelve valor
-  if not visible then exit;    //validación
-  //captura posición actual, para calcular los desplazamientos
-  Xant := xr;
-  Yant := yr;
+  Result := false; 
+  if not visible then exit;  
+  // current position capture, to calculate the displacements
+  Xprev := xr;
+  Yprev := yr;
 end;
 constructor TObjVsible.Create;
 begin
@@ -253,59 +244,59 @@ begin
 end;
 
 { TogButton }
-constructor TogButton.Create(mGraf: TVirtScreen; tipo0: TTipBot;
-  EvenBTclk0: TEvenBTclk);
+constructor TogButton.Create(argVirtScreen: TVirtScreen; argType: TBtnType;
+  argEvenBTclk: TEvenBTclk);
 begin
-   inherited Crear(mGraf, 16, 16);    //crea
-   tipo := tipo0;
-   OnClick := EvenBTclk0;
-   state := FALSE;   //inicia en 0 (check no marcado, o botón por contraer)
-   drawBack := true;
+   inherited CreateIt(argVirtScreen, 16, 16);    //crea
+   btnType := argType;
+   OnClick := argEvenBTclk;
+   state := FALSE;//start at 0 (check not Marked, or button to be contracted)
+   drawBackground := true;
 end;
-procedure TogButton.Dibujar;
-//Dibuja el botón de acuerdo a su tipo y state
+procedure TogButton.Draw;
+//Draw the button according to your btnType and state
 begin
-{  case tipo of
-  BOT_CERRAR: begin
-       if drawBack then VirtScreen.DibBorBoton(fx,fy,width,height);
-       VirtScreen.DibVnormal(fx+2,fy+2,10,5);
-       VirtScreen.DibVnormal(fx+2,fy+12,10,-5);
+{  case btnType of
+  BTN_CLOSE: begin
+       if drawBackground then VirtScreen.DibBorBoton(Xvirt,Yvirt,width,height);
+       VirtScreen.DibVnormal(Xvirt+2,Yvirt+2,10,5);
+       VirtScreen.DibVnormal(Xvirt+2,Yvirt+12,10,-5);
      end;
-  BOT_EXPAND:
+  BTN_EXPAND:
       if state then begin
-        if drawBack then VirtScreen.DibBorBoton(fx,fy,width,height);
-//         VirtScreen.DibVnormal(fx+2,fy+7,10,-5);
-//         VirtScreen.DibVnormal(fx+2,fy+11,10,-5);
+        if drawBackground then VirtScreen.DibBorBoton(Xvirt,Yvirt,width,height);
+//         VirtScreen.DibVnormal(Xvirt+2,Yvirt+7,10,-5);
+//         VirtScreen.DibVnormal(Xvirt+2,Yvirt+11,10,-5);
          VirtScreen.FijaColor(COL_GRIS, COL_GRIS, 1);
-         VirtScreen.DrawTrianUp(fx+2,fy+4,width-4,height-10);
+         VirtScreen.DrawTrianUp(Xvirt+2,Yvirt+4,width-4,height-10);
       end else begin
-         if drawBack then VirtScreen.DibBorBoton(fx,fy,width,height);
-//         VirtScreen.DibVnormal(fx+2,fy+2,10,5);
-//         VirtScreen.DibVnormal(fx+2,fy+6,10,5);
+         if drawBackground then VirtScreen.DibBorBoton(Xvirt,Yvirt,width,height);
+//         VirtScreen.DibVnormal(Xvirt+2,Yvirt+2,10,5);
+//         VirtScreen.DibVnormal(Xvirt+2,Yvirt+6,10,5);
         VirtScreen.FijaColor(COL_GRIS, COL_GRIS, 1);
-        VirtScreen.DrawTrianDown(fx+2,fy+5,width-4,height-10);
+        VirtScreen.DrawTrianDown(Xvirt+2,Yvirt+5,width-4,height-10);
       end;
-  BOT_CHECK: begin  //botón check
+  BTN_CHECK: begin  //botón check
      if state then begin   //dibuja solo borde
-        VirtScreen.DibBorBoton(fx,fy,15,15);
+        VirtScreen.DibBorBoton(Xvirt,Yvirt,15,15);
      end else begin         //dibuja con check
-        VirtScreen.DibBorBoton(fx,fy,15,15);
-        VirtScreen.DibCheck(fx+2,fy+2,10,8);
+        VirtScreen.DibBorBoton(Xvirt,Yvirt,15,15);
+        VirtScreen.DibCheck(Xvirt+2,Yvirt+2,10,8);
      end;
     end;
-  BOT_REPROD: begin  //botón reproducir
+  BTN_PLAY: begin  //botón reproducir
      if state then begin   //dibuja solo borde
        VirtScreen.FijaColor(clBlack, TColor($E5E5E5), 1);
-       VirtScreen.RectRedonR(fx,fy,fx+width, fy+height);
+       VirtScreen.RectRedonR(Xvirt,Yvirt,Xvirt+width, Yvirt+height);
        VirtScreen.FijaColor(clBlack, clBlack, 1);
-       VirtScreen.RectangR(fx+6,fy+6,fx+width-6, fy+height-6);
+       VirtScreen.RectangR(Xvirt+6,Yvirt+6,Xvirt+width-6, Yvirt+height-6);
      end else begin         //dibuja con check
        VirtScreen.FijaColor(clBlack, TColor($E5E5E5), 1);
-       VirtScreen.RectRedonR(fx,fy,fx+width, fy+height);
+       VirtScreen.RectRedonR(Xvirt,Yvirt,Xvirt+width, Yvirt+height);
        VirtScreen.FijaColor(clBlack, clBlack, 1);
-       VirtScreen.poligono(fx+6, fy+3,
-                    fx+18, fy + height/2,
-                    fx+6, fy + height - 4);
+       VirtScreen.poligono(Xvirt+6, Yvirt+3,
+                    Xvirt+18, Yvirt + height/2,
+                    Xvirt+6, Yvirt + height - 4);
      end;
     end;
   end;
@@ -313,181 +304,173 @@ begin
 end;
 procedure TogButton.MouseUp(Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
 begin
-   if LoSelec(xp,yp) then begin    //se soltó en el botón
-      //cambia el state, si aplica
-      if tipo in [BOT_EXPAND, BOT_CHECK, BOT_REPROD] then state := not state;
+   if isSelected(xp,yp) then begin    //he let go on the button
+      //change the state, if applicable
+      if btnType in [BTN_EXPAND, BTN_CHECK, BTN_PLAY] then state := not state;
       if Assigned(OnClick) then
-         OnClick(state);    //ejecuta evento
+         OnClick(state);    //run event
    end;
 end;
 
 { TGraphicObj }
-function TGraphicObj.SelecPtoControl(xp, yp:integer): TPtoCtrl;
-//Indica si selecciona a algún punto de control y devuelve la referencia.
-var pdc: TPtoCtrl;
+function TGraphicObj.getSelectedControlPoint(xp, yp:integer): TControlPoint;
+//Indicates if you select any control point and returns the reference.
+var point: TControlPoint;
 begin
-  SelecPtoControl := NIL;      //valor por defecto
-  for pdc in PtosControl do
-      if pdc.LoSelec(xp,yp) then begin SelecPtoControl := pdc; Exit; end;
+  getSelectedControlPoint := NIL;//Default value
+  for point in ControlPoints do
+      if point.isSelected(xp,yp) then begin getSelectedControlPoint := point; Exit; end;
 end;
 function TGraphicObj.XCent: Single;
 begin
-   Result := fx + width / 2;
+   Result := Xvirt + width / 2;
 end;
 function TGraphicObj.YCent: Single;
 begin
-   Result := fy + height / 2;
+   Result := Yvirt + height / 2;
 end;
-procedure TGraphicObj.Selec;
+procedure TGraphicObj.Select;
 begin
-   if Selected then exit;    //ya está Selected
-   Selected := true; //se marca como Selected
-   //Llama al evento que selecciona el objeto. El editor debe responder
-   if Assigned(OnSelect) then OnSelect(self);   //llama al evento
-   { TODO : Aquí se debe activar los controles para dimensionar el objeto }
+   if Selected then exit; 
+   Selected := true; 
+   //Call the event that selects the object. The editor must respond
+   if Assigned(OnSelect) then OnSelect(self);//call the event
 end;
 procedure TGraphicObj.Deselect;
 begin
-   if not Selected then exit;    //ya está Selected
-   Selected := false; //se marca como selccionado
-   //Llama al evento que selecciona el objeto. El editor debe responder
+   if not Selected then exit; 
+   Selected := false; 
+   //Call the event that selects the object. The editor must respond
    if Assigned(OnDeselect) then OnDeselect(self);  //llama al evento
-   { TODO : Aquí se debe desactivar los controles para dimensionar el objeto }
 end;
 procedure TGraphicObj.Delete;
 begin
-  //Marca para eliminarse
   Erased := true;
 end;
-procedure TGraphicObj.Mover(xr, yr: Integer; nobjetos: Integer);
-{Metodo que funciona como evento MouseMove del objeto. Lo normales que produzca un
- desplazamiento del objeto.
-"nobjetos" es la cantidad de objects que se mueven. Usualmente es sólo uno}
+procedure TGraphicObj.MoveR(xr, yr: Integer; nobjetos: Integer);
+{Method that works as MouseMove event of the object. The normal thing that produces a displacement of the object.
+"nobjects" is the number of objects that move. Usually it's just one}
 var dx , dy: Single;
 begin
-//     If ArrastBoton Then Exit;       //Arrastrando botón  { TODO : Revisar }
-//     If ArrastFila Then Exit;        //Arrastrando botón  { TODO : Revisar }
      If Selected Then begin
-        VirtScreen.ObtenerDesplazXY( xr, yr, Xant, Yant, dx, dy);
-        if Proceso then   //algún elemento del objeto ha procesado el evento de movimiento
+        VirtScreen.ObtenerDesplazXY( xr, yr, Xprev, Yprev, dx, dy);
+        if Processing then//some element of the object has processed the movement event
            begin
-              if pcx <> NIL then begin
-                 //hay un punto de control procesando el evento MouseMove
+              if ControlPoint <> NIL then begin
+                 //there is a control point processing the MouseMove event
                  if not SizeLocked then
-                   pcx.Mover(xr, yr);   //permite dimensionar el objeto
+                   ControlPoint.MoveR(xr, yr);//allows to size the object
               end;
-//              Proceso := True;  'ya alguien ha capturado el evento
+//              Processing := True;  'ya alguien ha capturado el evento
            end
         else  //ningún elemento del objeto lo ha procesado, pasamos a mover todo el objeto
            begin
-              fx := fx + dx; fy := fy + dy;
-              RelocateElements;  //reubica los elementos
-              Proceso := False;
+              Xvirt := Xvirt + dx; Yvirt := Yvirt + dy;
+              RelocateElements;  //relocate the elements
+              Processing := False;
            End;
-        Xant := xr; Yant := yr;
+        Xprev := xr; Yprev := yr;
      End;
 end;
 
-function TGraphicObj.LoSelecciona(xr, yr:integer): Boolean;
-//Devuelve verdad si la coordenada de pantalla xr,yr cae en un punto tal
-//que "lograria" la seleccion de la forma.
-var xv , yv : Single; //corodenadas virtuales
+function TGraphicObj.isSelected(xr, yr:integer): Boolean;
+{ Returns true if the screen coordinate xr, yr falls at such a point
+that "would" the selection of the form. }
+var xv , yv : Single; //virtual corodinates
 begin
     VirtScreen.XYvirt(xr, yr, 0, xv, yv);
-    LoSelecciona := False; //valor por defecto
-    //verifica área de selección
-    If (xv > fx - 1) And (xv < fx + width + 1) And (yv > fy - 1) And (yv < fy + height + 1) Then
-      LoSelecciona := True;
-    if Selected then begin   //Selected, tiene un área mayor de selección
-      if SelecPtoControl(xr,yr) <> NIL then LoSelecciona := True;
+    isSelected := False; //Default value
+    //check selection area
+    If (xv > Xvirt - 1) And (xv < Xvirt + width + 1) And (yv > Yvirt - 1) And (yv < Yvirt + height + 1) Then
+      isSelected := True;
+    if Selected then begin//Selected, has a larger selection area
+      if getSelectedControlPoint(xr,yr) <> NIL then isSelected := True;
     end;
 End;
-procedure TGraphicObj.Dibujar;
+procedure TGraphicObj.Draw;
 const tm = 3;
 var
-  pdc  : TPtoCtrl;
-  bot  : TogButton;
+  pdc  : TControlPoint;
+  button  : TogButton;
 begin
-  //dibuja Buttons
-  for bot in Buttons do bot.Dibujar;     //Dibuja Buttons
-  //---------------dibuja remarcado --------------
-  If Marcado and Highlight Then begin
+  //draw Buttons
+  for button in Buttons do button.Draw; 
+  //---------------draw highlighted --------------
+  If Marked and canHighlight Then begin
     VirtScreen.SetPen(clBlue, 2, psSolid);   //RGB(128, 128, 255)
-    VirtScreen.rectangXY(fx - tm, fy - tm, fx + width + tm, fy + height + tm,0);
+    VirtScreen.rectangXY(Xvirt - tm, Yvirt - tm, Xvirt + width + tm, Yvirt + height + tm,0);
   End;
-  //---------------dibuja marca de seleccion--------------
+  //---------------dibuja marca de selection--------------
   If Selected Then begin
 //    VirtScreen.FijaLapiz(psSolid, 1, clGreen);
-//    VirtScreen.rectang(fx, fy, fx + width, fy + height);
-     for pdc in PtosControl do pdc.Dibujar;   //Dibuja puntos de control
+//    VirtScreen.rectang(Xvirt, Yvirt, Xvirt + width, Yvirt + height);
+     for pdc in ControlPoints do pdc.Draw;   //Draw control points
   End;
 end;
 procedure TGraphicObj.StartMove(xr, yr: Integer);
-//Procedimiento para procesar el evento StartMove de los objects gráficos
-//Se ejecuta al inicio de movimiento al objeto
+{ Procedure to process the StartMove event of the graphic objects
+It is executed at the beginning of movement to the object }
 begin
-  Xant := xr; Yant := yr;
-  Proceso := False;
-  if not Selected then exit;   //para evitar que responda antes de seleccionarse
-  //Busca si algún punto de control lo procesa
-  pcx := SelecPtoControl(xr,yr);
-  if pcx <> NIL  then begin
-      pcx.StartMove(xr, yr, fx, fy);     //prepara para movimiento fy dimensionamiento
-      Proceso := True;      //Marcar para indicar al editor fy a Mover() que este objeto procesará
-                            //el evento fy no se lo pasé a los demás que pueden estar seleccionados.
-      Resizing := True; //Marca bandera
+  Xprev := xr; Yprev := yr;
+  Processing := False;
+  if not Selected then exit;//to prevent it from responding before being selected
+  //Search if any control point processes it
+  ControlPoint := getSelectedControlPoint(xr,yr);
+  if ControlPoint <> NIL  then begin
+      ControlPoint.StartMove(xr, yr, Xvirt, Yvirt);//ready for movement Yvirt sizing
+      Processing := True;{ Mark to tell the Yvirt editor to MoveR () that this object will process the Yvirt event, I did not pass it on to the others that may be selected. }
+      Resizing := True; 
    end;
-  { TODO : Verificar por qué, a veces se puede Initiate el movimiento del objeto cuando el puntero está en modo de dimensionamiento. }
 end;
 procedure TGraphicObj.MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
-//Metodo que funciona como evento "MouseDown"
+//Method that works as an "MouseDown" event
 begin
-//  CapturoEvento := NIL;
-  Proceso := False;
-  If LoSelecciona(xp, yp) Then begin  //sólo responde instantáneamente al caso de selección
-    If Not Selected Then Selec;
-    Proceso := True;{ TODO : Verificar si es útil la bandera "Proceso" }
+//  MovingObject := NIL;
+  Processing := False;
+  If isSelected(xp, yp) Then begin  //only responds instantly to the selection case
+    If Not Selected Then Select;
+    Processing := True;
   End;
 End;
-procedure TGraphicObj.MouseUp(Sender: TObject; Button: TMouseButton;
+procedure TGraphicObj.MouseUp(Sender: TObject; mbtn: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; solto_objeto: Boolean);
-//Metodo que funciona como evento MouseUp
-//la bandera "solto_objeto" indica que se ha soltado el objeto despues de estarlo arrastrando
+{ Method that works as a MouseUp event the "solto_objeto" flag indicates that
+the object has been dropped after being dragged }
 var
-  bot: TogButton;
+  btn: TogButton;
 begin
-    Proceso := False;
-    //verifica si cae de un arrastre
+    Processing := False;
+    //check if it falls from a drag
     If solto_objeto And Selected Then begin
-        Proceso := True; Exit;    //no quita la selección
+        Processing := True; Exit;    //does not remove the selection
     end;
-    //Se soltó el ratón
-    If Button = mbLeft Then  begin          //soltó izquierdo
-       //pasa evento a los controles
-       for bot in Buttons do bot.MouseUp(Button, Shift, xp, yp);
-    end else If Button = mbRight Then begin //soltó derecho
-        If LoSelecciona(xp, yp) Then
-            Proceso := True;
+    //The mouse was released
+    If mbtn = mbLeft Then  begin          //let go left
+       //pass event to controls
+       for btn in Buttons do btn.MouseUp(mbtn, Shift, xp, yp);
+    end else If mbtn = mbRight Then begin //let go right
+        If isSelected(xp, yp) Then
+            Processing := True;
     end;
-    //Restaura puntero si estaba dimensionándose por si acaso
+    //Restore point if it was being sized just in case
     if Resizing then begin
-       if not pcx.LoSelec(xp,yp) then //se salio del foco
-          if Assigned(OnCamPoint) then OnCamPoint(crDefault);  //pide retomar el puntero
-       Resizing := False;    //quita bandera, por si estaba Resizing
+       if not ControlPoint.isSelected(xp,yp) then //it went out of focus
+          if Assigned(OnCamPoint) then OnCamPoint(crDefault);//asks to retake the point
+       Resizing := False;//remove flag, in case it was Resizing
        exit;
     end;
 end;
 procedure TGraphicObj.MouseMove(Sender: TObject; Shift: TShiftState; xp, yp: Integer);
-//Respuesta al evento MouseMove. Se debe recibir cuando el Mouse pasa por encima del objeto
-var pc: TPtoCtrl;
+//Response to the MouseMove event. Must be received when the Mouse passes over the object
+var pc: TControlPoint;
 begin
     if not Selected then Exit;
-    //Aquí se supone que tomamos el control porque está Selected
-    //Procesa el cambio de puntero.
+   { Here we're supposed to take control because it's Selected
+     Process the pointer change. }
     if Assigned(OnCamPoint) then begin
-        pc := SelecPtoControl(xp,yp);
+        pc := getSelectedControlPoint(xp,yp);
         if pc<> NIL then
-           OnCamPoint(pc.tipPuntero)  //cambia a supuntero
+           OnCamPoint(pc.typeOfPoint)//change to supuntero
         else
            OnCamPoint(crDefault);
     end;
@@ -497,138 +480,137 @@ procedure TGraphicObj.MouseWheel(Sender: TObject; Shift: TShiftState;
 begin
 
 end;
-constructor TGraphicObj.Create(mGraf: TVirtScreen);
+constructor TGraphicObj.Create(argVirtScreen: TVirtScreen);
 begin
   inherited Create;
   erased := false;
-  VirtScreen := mGraf;   //asigna motor gráfico
-  width := 100;   //width por defecto
-  height := 100;    //height por defecto
-  fx := 100;
-  fy := 100;
-  PtosControl:= TPtosControl.Create(True);   //Crea lista con administración de objects
-  Buttons    := TogButtons.Create(True);     //Crea lista con administración de objects
+  VirtScreen := argVirtScreen;
+  width := 100;   //width by default
+  height := 100;    //height by default
+  Xvirt := 100;
+  Yvirt := 100;
+  ControlPoints:= TPtosControls.Create(True);
+  Buttons    := ButtonsList.Create(True); 
   Selected := False;
-  Marcado := False;
-  Proceso := false;
-  DibSimplif := false;
-  Highlight := true;
+  Marked := False;
+  Processing := false;
+  SimpleDrawingMode := false;
+  canHighlight := true;
 end;
+
 procedure TGraphicObj.RelocateElements;
 begin
-  //Deberúa PlaceAt puntos de control, pero eso es tarea de la implementación
-
 end;
-procedure TGraphicObj.ReConstGeom;
+
+procedure TGraphicObj.ReconstructGeom;
 begin
-  RelocateElements;   //Reubicación de elementos
+  RelocateElements;
 end;
 destructor TGraphicObj.Destroy;
 begin
-  Buttons.Free;        //Libera Buttons fy Lista
-  PtosControl.Free;    //Libera Puntos de Control fy lista
+  Buttons.Free; 
+  ControlPoints.Free;
   inherited Destroy;
 end;
 procedure TGraphicObj.PlaceAt(x0, y0: Single);
-//Ubica al objeto en unas coordenadas específicas
+//Locate the object in specific coordinates
 begin
-  fx := x0;
-  fy := y0;
-  RelocateElements;   //reubica sus elementos
+  Xvirt := x0;
+  Yvirt := y0;
+  RelocateElements;
 end;
-function TGraphicObj.AddButton(ancho0, alto0: Integer; tipo0: TTipBot;
-  EvenBTclk0: TEvenBTclk): TogButton;
-//Agrega un botón al objeto.
+function TGraphicObj.AddButton(argWidth, argHeight: Integer; argType: TBtnType;
+  argEvenBTclk: TEvenBTclk): TogButton;
+//Add a button to the object.
 begin
-  Result := TogButton.Create(VirtScreen, tipo0, EvenBTclk0);
-  Result.width := ancho0;
-  Result.height := alto0;
+  Result := TogButton.Create(VirtScreen, argType, argEvenBTclk);
+  Result.width := argWidth;
+  Result.height := argHeight;
   Buttons.Add(Result);
 end;
-function TGraphicObj.AddPtoControl(tipDesplaz0: TPosicPCtrol; ProcDimen: TEvPtoCtrlMoveXY): TPtoCtrl;
-//Agrega un punto de control
+function TGraphicObj.AddControlPoint(argDdisplaceType: TControlPointOffs; ProcDimen: TEvPointCtrlMoveXY): TControlPoint;
+//Add a control point
 begin
-  Result := TPtoCtrl.Crear(VirtScreen, tipDesplaz0, ProcDimen);
-  PtosControl.Add(Result);
+  Result := TControlPoint.CreateIt(VirtScreen, argDdisplaceType, ProcDimen);
+  ControlPoints.Add(Result);
 end;
- //////////////////////////////  TPtoCtrl  //////////////////////////////
-procedure TPtoCtrl.SetTipDesplaz(AValue: TPosicPCtrol);
-//CAmbiando el tipo de desplazamiento se define el tipo de puntero
+ //////////////////////////////  TControlPoint  //////////////////////////////
+procedure TControlPoint.SetControlPointOffs(AValue: TControlPointOffs);
 begin
-  if fTipDesplaz=AValue then Exit;
-  fTipDesplaz:=AValue;
-  //actualiza tipo de puntero
-  case tipDesplaz of
-  TD_SUP_IZQ: tipPuntero := crSizeNW;
-  TD_SUP_CEN: tipPuntero := crSizeNS;
-  TD_SUP_DER: tipPuntero := crSizeNE;
+  if ControlPointOffs=AValue then Exit;
+  ControlPointOffs:=AValue;
+  //update point btnType
+  case displacementType of
+  CPO_TOP_LEFT: typeOfPoint := crSizeNW;
+  CPO_TOP_CENTER: typeOfPoint := crSizeNS;
+  CPO_TOP_RIGHT: typeOfPoint := crSizeNE;
 
-  TD_CEN_IZQ: tipPuntero := crSizeWE;
-  TD_CEN_DER: tipPuntero := crSizeWE;
+  CPO_CENTER_LEFT: typeOfPoint := crSizeWE;
+  CPO_CENTER_RIGHT: typeOfPoint := crSizeWE;
 
-  TD_INF_IZQ: tipPuntero := crSizeNE;
-  TD_INF_CEN: tipPuntero := crSizeNS;
-  TD_INF_DER: tipPuntero := crSizeNW;
-  else        tipPuntero := crDefault ;
+  CPO_BOTTOM_LEFT: typeOfPoint := crSizeNE;
+  CPO_BOTTOM_CENTER: typeOfPoint := crSizeNS;
+  CPO_BOTTOM_RIGHT: typeOfPoint := crSizeNW;
+  else        typeOfPoint := crDefault ;
   end;
 end;
-constructor TPtoCtrl.Crear(mGraf: TVirtScreen; tipDesplaz0: TPosicPCtrol;
-  ProcMove: TEvPtoCtrlMoveXY);
+constructor TControlPoint.CreateIt(argVirtScreen: TVirtScreen; argDdisplaceType: TControlPointOffs;
+  ProcMove: TEvPointCtrlMoveXY);
 begin
-  inherited Crear(mGraf, 2*ANC_PCT2, 2*ANC_PCT2);    //crea
-  tipDesplaz := tipDesplaz0;  //actualiza propiedad
-  OnPtoCtrlMoveXY := ProcMove;     //Asigna evento para cambiar dimensiones
-  visible := true;             //lo hace visible
-  fx :=0;
-  fy :=0;
+  inherited CreateIt(argVirtScreen, 2*WIDTH_CONTROLPOINT2, 2*WIDTH_CONTROLPOINT2);    //crea
+  displacementType := argDdisplaceType; 
+  OnPointCtrlMoveXY := ProcMove;//Assign event to change dimensions
+  visible := true;
+  Xvirt :=0;
+  Yvirt :=0;
 end;
-procedure TPtoCtrl.Dibujar();
-//Dibuja el Punto de control en la posición definida
+procedure TControlPoint.Draw();
+//Draw the Control Point in the defined position
 var
   d: Single;
 begin
-    if not visible then exit;    //validación
+    if not visible then exit; 
     VirtScreen.SetPen(TColor($FF8000), 1);
-    VirtScreen.FijaRelleno(TColor($FF8000));
-    d := ANC_PCT2 / VirtScreen.Zoom;  //corrige para que slaga siempre con el mismso tamaño
-    VirtScreen.rectangXYr(fx - d, fy - d, fx + d, fy + d, fz);
+    VirtScreen.FillFixed(TColor($FF8000));
+    d := WIDTH_CONTROLPOINT2 / VirtScreen.Zoom;//correct so that it always comes out the same size
+    VirtScreen.rectangXYr(Xvirt - d, Yvirt - d, Xvirt + d, Yvirt + d, Zvirt);
 end;
-procedure TPtoCtrl.StartMove(xr, yr: Integer; x0, y0: Single);
-//Procedimiento para procesar el evento StartMove del punto de control
+procedure TControlPoint.StartMove(xr, yr: Integer; x0, y0: Single);
+//Procedure to process the StartMove event of the control point
 begin
-    if not visible then exit;    //validación
+    if not visible then exit;
     inherited StartMove(xr,yr);
-    {Inicia en las coordenadas actuales del Pto de Control, }
-    xvTar := fx;
-    yvTar := fy;
+    {Start at the current coordinates of the Control Point }
+    x_vPoint := Xvirt;
+    y_vPoint := Yvirt;
 end;
-procedure TPtoCtrl.Mover(xr, yr: Integer);
-//Realiza el cambio de las variables indicadas de acuerdo al tipo de control y a
-//las variaciones indicadas (dx, dy)
+procedure TControlPoint.MoveR(xr, yr: Integer);
+{Make the change of the indicated variables according to the type of control and to
+the indicated variations (dx, dy)}
 var dx, dy: Single;
 begin
-    if not visible then exit;    //validación
-    VirtScreen.ObtenerDesplazXY(xr, yr, Xant, Yant, dx, dy);
-    if OnPtoCtrlMoveXY <>nil then OnPtoCtrlMoveXY(xvTar, yvTar, dx, dy);
-    xvTar := xvTar + dx;
-    yvTar := yvTar + dy;
-    Xant := xr; Yant := yr;   //actualiza, para el cálculo de ObtenerDesplazXY()
+    if not visible then exit;
+    VirtScreen.ObtenerDesplazXY(xr, yr, Xprev, Yprev, dx, dy);
+    if OnPointCtrlMoveXY <>nil then OnPointCtrlMoveXY(x_vPoint, y_vPoint, dx, dy);
+    x_vPoint := x_vPoint + dx;
+    y_vPoint := y_vPoint + dy;
+    Xprev := xr; Yprev := yr;//update, for the calculation of GetDesplazXY ()
 end;
-procedure TPtoCtrl.MouseUp(Button: TMouseButton; Shift: TShiftState; xp,  yp: Integer);
-//Procesa el evento MouseUp del "mouse".
+procedure TControlPoint.MouseUp(Button: TMouseButton; Shift: TShiftState; xp,  yp: Integer);
+//Process the MouseUp event of the "mouse".
 begin
 end;
-function TPtoCtrl.LoSelec(xp, yp: Integer): boolean;
-//Indica si las coordenadas lo selecciona
-var xp0, yp0 : Integer; //corodenadas virtuales
+function TControlPoint.isSelected(xp, yp: Integer): boolean;
+//Indicates whether the coordinates are selected
+var xp0, yp0 : Integer; //virtual corodinates
 begin
-    LoSelec := False;
-    if not visible then exit;    //validación
-    VirtScreen.XYpant(fx, fy, fz, xp0, yp0);   //obtiene sus coordenadas en pantalla
-    //compara en coordenadas de pantalla
-    If (xp >= xp0 - ANC_PCT2) And (xp <= xp0 + ANC_PCT2) And
-       (yp >= yp0 - ANC_PCT2) And (yp <= yp0 + ANC_PCT2) Then
-         LoSelec := True;
+    isSelected := False;
+    if not visible then exit; 
+    VirtScreen.XYpant(Xvirt, Yvirt, Zvirt, xp0, yp0);//get your coordinates on screen
+    //compare in screen coordinates
+    If (xp >= xp0 - WIDTH_CONTROLPOINT2) And (xp <= xp0 + WIDTH_CONTROLPOINT2) And
+       (yp >= yp0 - WIDTH_CONTROLPOINT2) And (yp <= yp0 + WIDTH_CONTROLPOINT2) Then
+         isSelected := True;
 End;
 
 end.

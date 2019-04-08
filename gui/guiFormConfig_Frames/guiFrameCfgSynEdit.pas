@@ -46,7 +46,7 @@ type
     ed: TSynEdit;
   public
     //configuración del editor
-    TipLet     : string;     //tipo de letra
+    TipLet     : string;     //btnType de letra
     TamLet     : integer;     //tamaño de letra
     MarLinAct : boolean;    //marcar línea actual
     VerBarDesV  : boolean;    //Show barras de desplazamiento
@@ -100,7 +100,7 @@ begin
   cbutResPal.Enabled:=chkResPalCur.Checked;
 end;
 procedure TfraCfgSynEdit.Initiate(cfgFile: TMiConfigBasic; ed0: TSynEdit; colFonDef: TColor);
-{Inicia el frame de configuración. Notar que se usar el nombre del frame, para crear
+{Inicia el frame de configuración. Notar que se usar el Name del frame, para CreateIt
 una categoría en el archivo XML.}
 begin
   //asigna referencia necesarias
@@ -139,7 +139,7 @@ var
   marc: TSynEditMarkup;
 begin
    if ed = nil then exit;  //protección
-   //tipo de texto
+   //btnType de texto
    if TipLet <> '' then ed.Font.Name:=TipLet;
    if (TamLet > 6) and (TamLet < 32) then ed.Font.Size:=Round(TamLet);
 
@@ -211,7 +211,7 @@ begin
       Label9.Caption:='Font Color:';
       chkVerBarDesV.Caption:='&Vertical Scrollbar';
       chkVerBarDesH.Caption:='&Horizontal Scrollbar';
-      chkResPalCur.Caption:='Highlight current word';
+      chkResPalCur.Caption:='canHighlight current word';
       chkMarLinAct.Caption:='Hightlight current line';
       chkVerPanVer.Caption:='Gutter';
       chkVerNumLin.Caption:='Show line number';

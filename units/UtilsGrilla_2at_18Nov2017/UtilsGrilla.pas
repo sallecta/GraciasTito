@@ -14,19 +14,19 @@ const
 type
 
   TugTipoCol = (
-    ugTipText,    //columna de tipo texto
-    ugTipChar,    //columna de tipo caracter
-    ugTipNum,     //columna de tipo numérico
-    ugTipBol,     //columna de tipo booleano
-    ugTipIco,     //columna de tipo ícono
-    ugTipDatTim   //columna de tipo fecha-hora
+    ugTipText,    //columna de btnType texto
+    ugTipChar,    //columna de btnType caracter
+    ugTipNum,     //columna de btnType numérico
+    ugTipBol,     //columna de btnType booleano
+    ugTipIco,     //columna de btnType ícono
+    ugTipDatTim   //columna de btnType fecha-hora
   );
 
   //Acción a realizar sobre una columna
   TugColAction = (
-    ucaRead,    //Leer el valor de la columna
-    ucaWrite,   //Escribir un valor en la columna
-    ucaValid,   //Validar si un valor, del tipo nativo (número, boolean, ...), es legal.
+    ucaRead,    //Leer el value de la columna
+    ucaWrite,   //Escribir un value en la columna
+    ucaValid,   //Validar si un value, del btnType nativo (número, boolean, ...), es legal.
     ucaValidStr //Validar si una cadena (que se desea asignar a la celda) es legal.
   );
   TugColRestric = (
@@ -34,9 +34,9 @@ type
     ucrUnique     //Unicidad
   );
 
-  {Procedimiento asociado a una columna, para permitir realizar una validación del valor
-  que se desea grabar en la columna. Se espera que el valor devuelto, sea el mnesaje de
-  error, en caso de que el valor deseado no sea apropiado parala columna.}
+  {Procedimiento asociado a una columna, para permitir realizar una validación del value
+  que se desea grabar en la columna. Se espera que el value devuelto, sea el mnesaje de
+  error, en caso de que el value deseado no sea apropiado parala columna.}
   TProcValidacion = function(fil: integer; nuevValor: string): string of object;
   {Procedimientos asociados a una columna, para permitir realizar acciones diversas,
   como la asignación o la validación. }
@@ -53,12 +53,12 @@ type
   { TugGrillaCol }
   {Representa a una columna de la grilla}
   TugGrillaCol = class
-    nomCampo: string;     //Nombre del campo de la grilla
+    nomCampo: string;     //Name del campo de la grilla
     ancho   : integer;    //Ancho físico de la columna de la grilla
     visible : boolean;    //Permite coultar la columna
     alineam : TAlignment; //Alineamiento del campo
     iEncab  : integer;    //índice a columna de la base de datos o texto
-    tipo    : TugTipoCol; //Tipo de columna
+    btnType    : TugTipoCol; //ObjType de columna
     idx     : integer;    //Índice dentro de su contenedor
   public  //campos adicionales
     grilla   : TStringGrid;   //Referencia a la grilla de trabajo
@@ -80,7 +80,7 @@ type
     procedure SetValDatTim(Index: integer; AValue: TDateTime);
   public //Manejo de lectura y asignación de valores
     {Los siguientes campos, deben asignarse a una función que implemente las acciones
-     TugColAction, de acuerdo al tipo del campo. Si no se implementan estos
+     TugColAction, de acuerdo al btnType del campo. Si no se implementan estos
     procedimientos, no se podrá hacer uso de las propiedades ValStr[] y ValNum[], y
     tampoco se podrá usar la rutina de validación ValidateStr[]. }
     procActionStr   : TugProcColActionStr;
@@ -108,7 +108,7 @@ type
 
   { TUtilGrillaBase }
   {Este es el objeto principal de la unidad. TUtilGrilla, permite administrar una grilla
-   de tipo TStringGrid, agregándole funcionalidades comunes, como el desplazamiento de
+   de btnType TStringGrid, agregándole funcionalidades comunes, como el desplazamiento de
    teclado o la creación sencilla de encabezados. Para trabajar con una grilla se tiene
    dos formas:
 
@@ -225,8 +225,8 @@ type
     colError : integer;  //Columna con error
     procedure DimensColumnas;
     function BuscarColumna(nombColum: string): TugGrillaCol;
-    procedure CopiarCampo;  //copia valor de la celda al portapapeles
-    procedure CopiarFila;   //copia valor de la fila al portapapeles
+    procedure CopiarCampo;  //copia value de la celda al portapapeles
+    procedure CopiarFila;   //copia value de la fila al portapapeles
     function PegarACampo: boolean;  //pega del protapapeles al campo
   public //Constructor y destructor
     constructor Create(grilla0: TStringGrid); virtual;
@@ -243,7 +243,7 @@ type
   private
     procedure FiltrarFila(f: integer);
   public
-    {Se usa una matriz estática para almacenar a los filtros, para hacer el proceso,
+    {Se usa una matriz estática para almacenar a los filtros, para hacer el Processing,
     de filtrado más rápido, ya que se iterará por cada fila de la grilla .}
     filtros: array[0..MAX_UTIL_FILTROS-1] of TUtilProcFiltro;
     numFiltros: integer;
@@ -342,11 +342,11 @@ begin
   procActionDatTim(ucaWrite, nullStr, idx, Index, AValue);
 end;
 procedure TugGrillaCol.ValidateStr(row: integer; NewStr: string);
-{Verifica si el valor indicado, como cadena, es legal para ponerlo en la celda que
-corresponde. Es aplicable incluisve a celdas que no son del tipo cadena, porque el tipo
+{Verifica si el value indicado, como cadena, es legal para ponerlo en la celda que
+corresponde. Es aplicable incluisve a celdas que no son del btnType cadena, porque el btnType
 básico de las celdas del TStringGrid, es cadema.}
 begin
-  case tipo of
+  case btnType of
   ugTipText: begin
     if procActionStr<>nil then procActionStr(ucaValidStr, NewStr, idx, row);
   end;
@@ -365,7 +365,7 @@ begin
   end;
 end;
 procedure TugGrillaCol.ValidateStr(row: integer);
-{Versión que valida el valor que ya existe en la celda.}
+{Versión que valida el value que ya existe en la celda.}
 begin
   ValidateStr(row, grilla.Cells[idx, row]);
 end;
@@ -401,7 +401,7 @@ var
   col, row, uf: integer;
   MaxYCoordCeldas: LongInt;
 begin
-  //Pasa el evento
+  //Pass the event  
   if OnMouseUp<>nil then OnMouseUp(Sender, Button, Shift, X, Y);
 //debugln('MouseCoordY=' + IntToStr(grilla.MouseCoord(X,y).y));
   //Primero analiza si se está más allá de las celdas existentes.
@@ -476,7 +476,7 @@ var
   it: TMenuItem;
   i: Integer;
 begin
-  it := TMenuItem(Sender);   //debe ser siempre de este tipo
+  it := TMenuItem(Sender);   //debe ser siempre de este btnType
   it.Checked := not it.Checked;
   //Actualiza visibilidad, de acuerdo al menú contextual
   for i:=0 to PopupHeadInt.Items.Count-1 do begin
@@ -575,10 +575,10 @@ var
   colum: TugGrillaCol;
 begin
   case actType of
-  ucaRead: begin  //Se pide leer un valor de la grilla
+  ucaRead: begin  //Se pide leer un value de la grilla
     Result := grilla.Cells[col, row];  //es cadena
   end;
-  ucaWrite: begin  //Se pide escribir un valor en la grilla
+  ucaWrite: begin  //Se pide escribir un value en la grilla
     grilla.Cells[col, row] := AValue;  //es cadena
   end;
   ucaValid, ucaValidStr: begin  //Ambas Validaciones son equivalentes.
@@ -603,13 +603,13 @@ function TUtilGrillaBase.procDefActionChr(actType: TugColAction;
   ValidStr: string; col, row: integer; AValue: char): char;
 begin
   case actType of
-  ucaRead: begin  //Se pide leer un valor de la grilla
+  ucaRead: begin  //Se pide leer un value de la grilla
     Result := grilla.Cells[col, row][1];  //es cadena
   end;
-  ucaWrite: begin  //Se pide escribir un valor en la grilla
+  ucaWrite: begin  //Se pide escribir un value en la grilla
     grilla.Cells[col, row] := AValue;  //es cadena
   end;
-  ucaValid: begin   //Se pide validación en tipo nativo
+  ucaValid: begin   //Se pide validación en btnType nativo
     //Todos los valores son válidos
     exit;
   end;
@@ -626,13 +626,13 @@ var
   n: Double;
 begin
   case actType of
-  ucaRead: begin  //Se pide leer un valor de la grilla
+  ucaRead: begin  //Se pide leer un value de la grilla
     Result := StrToFloat(grilla.Cells[col, row]);  //es cadena
   end;
-  ucaWrite: begin  //Se pide escribir un valor en la grilla
+  ucaWrite: begin  //Se pide escribir un value en la grilla
     grilla.Cells[col, row] := FloatToStr(AValue);  //Se escribe como cadena.
   end;
-  ucaValid: begin   //Se pide validación en tipo nativo
+  ucaValid: begin   //Se pide validación en btnType nativo
     //Todos los valores son válidos
     exit;
   end;
@@ -654,16 +654,16 @@ function TUtilGrillaBase.procDefActionBool(actType: TugColAction;
   ValidStr: string; col, row: integer; AValue: boolean): boolean;
 begin
   case actType of
-  ucaRead: begin  //Se pide leer un valor de la grilla
+  ucaRead: begin  //Se pide leer un value de la grilla
     Result := (grilla.Cells[col, row] = 'V');  //es cadena
   end;
-  ucaWrite: begin  //Se pide escribir un valor en la grilla
+  ucaWrite: begin  //Se pide escribir un value en la grilla
     if AValue then
       grilla.Cells[col, row] := 'V'  //Se escribe como cadena.
     else
       grilla.Cells[col, row] := 'F'; //Se escribe como cadena.
   end;
-  ucaValid: begin   //Se pide validación en tipo nativo
+  ucaValid: begin   //Se pide validación en btnType nativo
     //Todos los valores son válidos
     exit;
   end;
@@ -681,13 +681,13 @@ var
   n: TDateTime;
 begin
   case actType of
-  ucaRead: begin  //Se pide leer un valor de la grilla
+  ucaRead: begin  //Se pide leer un value de la grilla
     Result := StrToDateTime(grilla.Cells[col, row]);  //es cadena
   end;
-  ucaWrite: begin  //Se pide escribir un valor en la grilla
+  ucaWrite: begin  //Se pide escribir un value en la grilla
     grilla.Cells[col, row] := DateTimeToStr(AValue);  //Se escribe como cadena.
   end;
-  ucaValid: begin   //Se pide validación en tipo nativo
+  ucaValid: begin   //Se pide validación en btnType nativo
     //Todos los valores son válidos
     exit;
   end;
@@ -700,7 +700,7 @@ begin
   end;
 end;
 procedure TUtilGrillaBase.IniEncab;
-{Inicia el proceso de agregar encabezados a la grilla.}
+{Inicia el Processing de agregar encabezados a la grilla.}
 begin
   cols.Clear;   //Limpia información de columnas
 end;
@@ -722,7 +722,7 @@ begin
   col.visible := true;  //visible por defecto
   col.alineam := alineam;
   col.iEncab  := indColDat;
-  col.tipo    := ugTipText;  //texto por defecto
+  col.btnType    := ugTipText;  //texto por defecto
   col.idx     := cols.Count;
   col.editable:= true;   //editable por defecto
   col.grilla  := grilla;  //referencia a grilla
@@ -731,7 +731,7 @@ begin
 end;
 function TUtilGrillaBase.AgrEncabTxt(titulo: string; ancho: integer;
   indColDat: int16=-1): TugGrillaCol;
-{Crea encabezado de tipo texto. Devuelve el número de columna usada. }
+{Crea encabezado de btnType texto. Devuelve el número de columna usada. }
 begin
   Result := AgrEncab(titulo, ancho, indColDat);
   {Agrega una rutina para procesar las acciones de esta columna numérica. Así se podrá
@@ -745,15 +745,15 @@ function TUtilGrillaBase.AgrEncabChr(titulo: string; ancho: integer;
   indColDat: int16): TugGrillaCol;
 begin
   Result := AgrEncab(titulo, ancho, indColDat);
-  Result.tipo := ugTipChar;
+  Result.btnType := ugTipChar;
   Result.procActionChr:=@procDefActionChr;
 end;
 function TUtilGrillaBase.AgrEncabNum(titulo: string; ancho: integer;
   indColDat: int16=-1): TugGrillaCol;
-{Crea encabezado de tipo numérico. Devuelve el número de columna usada. }
+{Crea encabezado de btnType numérico. Devuelve el número de columna usada. }
 begin
   Result := AgrEncab(titulo, ancho, indColDat, taRightJustify);
-  Result.tipo := ugTipNum;
+  Result.btnType := ugTipNum;
   {Agrega una rutina para procesar las acciones de esta columna . Así se podrá
    hacer uso del campo ValNum[] y de la rutina ValidateStr(), de TugGrillaCol.
    Si esta rutina es insuficiente, siempre se puede procesar por uno mismo el evento,
@@ -765,14 +765,14 @@ function TUtilGrillaBase.AgrEncabBool(titulo: string; ancho: integer;
   indColDat: int16): TugGrillaCol;
 begin
   Result := AgrEncab(titulo, ancho, indColDat);
-  Result.tipo := ugTipBol;
+  Result.btnType := ugTipBol;
   Result.procActionBool:=@procDefActionBool;
 end;
 function TUtilGrillaBase.AgrEncabDatTim(titulo: string; ancho: integer;
   indColDat: int16): TugGrillaCol;
 begin
   Result := AgrEncab(titulo, ancho, indColDat);
-  Result.tipo := ugTipDatTim;
+  Result.btnType := ugTipDatTim;
   Result.procActionDatTim:=@procDefActionDatTim;
 end;
 procedure TUtilGrillaBase.FinEncab(actualizarGrilla: boolean = true);
@@ -818,7 +818,7 @@ begin
   grilla.OnMouseDown:=@grillaMouseDown;
 end;
 function TUtilGrillaBase.BuscarColumna(nombColum: string): TugGrillaCol;
-{Busca una columna por su nombre. Si no la encuentra, devuelve NIL.}
+{Busca una columna por su Name. Si no la encuentra, devuelve NIL.}
 var
   col: TugGrillaCol;
 begin
@@ -843,9 +843,9 @@ begin
   Clipboard.AsText:=tmp;
 end;
 function TUtilGrillaBase.PegarACampo: boolean;
-{Pega el valor del portapapeles en la celda. Si hubo cambio, devuelve TRUE.}
+{Pega el value del portapapeles en la celda. Si hubo cambio, devuelve TRUE.}
   function PegaEnCelda(col, row: integer; txt: string): boolean;
-  {Pega un valor en la celda indicada, si es diferente.
+  {Pega un value en la celda indicada, si es diferente.
   Si produce cambios, devuelve TRUE.}
   begin
     Result := false;   //Por defecto, no hay cambios
@@ -922,7 +922,7 @@ begin
       exit;
     end;
   end;
-  //Paso por todos los filtros
+  //step por todos los filtros
   inc(filVisibles);
   grilla.RowHeights[f] := ALT_FILA_DEF;
 end;
@@ -978,7 +978,7 @@ var
 begin
   cv := grilla.Canvas;  //referencia al Lienzo
   if ImageList = nil then exit;
-  //Es una celda de tipo ícono
+  //Es una celda de btnType ícono
   txt := grilla.Cells[ACol,ARow];
   if not TryStrToInt(txt, icoIdx) then begin //obtiene índice
     icoIdx := -1
@@ -1082,7 +1082,7 @@ begin
       cv.Brush.Color := TColor(PtrUInt(grilla.Objects[0, aRow]));
     end;
     cv.FillRect(aRect);   //fondo
-    if cols[aCol].tipo = ugTipIco then
+    if cols[aCol].btnType = ugTipIco then
       DibCeldaIcono(aCol, aRow, aRect)
     else
       DibCeldaTexto(aCol, aRow, aRect);
@@ -1108,10 +1108,10 @@ begin
 end;
 function TUtilGrillaFil.AgrEncabIco(titulo: string; ancho: integer;
   indColDat: int16): TugGrillaCol;
-{Agrega una columna de tipo ícono.}
+{Agrega una columna de btnType ícono.}
 begin
   Result := AgrEncab(titulo, ancho, indColDat);
-  Result.tipo := ugTipIco;
+  Result.btnType := ugTipIco;
 end;
 procedure TUtilGrillaFil.AsignarGrilla(grilla0: TStringGrid);
 begin

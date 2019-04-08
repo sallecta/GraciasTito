@@ -63,9 +63,9 @@ begin
   if TreeView1.Selected = nil then exit('');
   nodSel := TreeView1.Selected;
   if TreeView1.Selected.Level = 1 then begin  //Categoría seleccionada
-    exit(nodSel.Text);  //nombre de nodo actual
+    exit(nodSel.Text);  //Name de nodo actual
   end else if TreeView1.Selected.Level = 2 then begin  //Categoría seleccionada
-    exit(nodSel.Parent.Text + '-' + nodSel.Text);  //nombre de nodo padre
+    exit(nodSel.Parent.Text + '-' + nodSel.Text);  //Name de nodo padre
   end else begin
     exit('');
   end;
@@ -134,13 +134,13 @@ begin
 end;
 
 function TfraFiltArbol.Filtro(const f: integer): boolean;
-{Aplica el filtro de acuerdo al nodo seleccionado en el árbol de categorías.}
+{Aplica el filtro de acuerdo al nodo ObjSelected en el árbol de categorías.}
 var
   nodSel: TTreeNode;
 begin
-  //if TreeView1.Selected = nil then exit(true);   //no hay seleccionado
-  nodSel := TreeView1.Selected;  //nombre de nodo actual
-  if nodSel.Level = 0 then begin   //Almacén seleccionado.
+  //if TreeView1.Selected = nil then exit(true);   //no hay ObjSelected
+  nodSel := TreeView1.Selected;  //Name de nodo actual
+  if nodSel.Level = 0 then begin   //Almacén ObjSelected.
     exit(true);   //Pasan todos
   end else if nodSel.Level = 1 then begin  //Categoría seleccionada
     if grilla.Cells[2, f] = nodSel.Text then exit(true)
@@ -156,7 +156,7 @@ procedure TfraFiltArbol.Inic(gri: TUtilGrilla; col1, col2: TugGrillaCol;
 {Inicializa el árbol para poder funcionar como filtro}
 begin
   grilla := gri.grilla;
-  nombNodPrinc := nodPrinc;  //toma el nombre del nodo proncipal
+  nombNodPrinc := nodPrinc;  //toma el Name del nodo proncipal
   colCat := col1;
   colSubcat:= col2;
   TreeView1.Items.Clear;

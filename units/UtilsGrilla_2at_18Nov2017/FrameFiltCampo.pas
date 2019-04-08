@@ -13,7 +13,7 @@ ToolBar. Luego configurarlo:
 
 fraUtilsGrilla1.Inic(grilla);
 fraUtilsGrilla1.AgregarColumnaFiltro('Por Código', 1);
-fraUtilsGrilla1.AgregarColumnaFiltro('Por Nombre', 2);
+fraUtilsGrilla1.AgregarColumnaFiltro('Por Name', 2);
 
 También se debe llamar a fraUtilsGrilla1.GridKeyPress(Key), en el evento KeyPress() de la
 grilla, si se desea que la búsqueda se haga con solo pulsar una tecla en la grilla.
@@ -37,12 +37,12 @@ type
     mfilNone,    //Sin filtro (pasa todo)
     mfil1Pal,    //COincidencia con 1 palabra
     mfil2Pal,    //Coincidencia con 2 palabras
-    mfilIgualN,  //Comparación con valor
-    mfilMayorN,  //Comparación con valor
-    mfilMenorN,  //Comparación con valor
-    mfilMayorIN,  //Comparación con valor
-    mfilMenorIN,  //Comparación con valor
-    mfilDiferN   //Comparación con valor
+    mfilIgualN,  //Comparación con value
+    mfilMayorN,  //Comparación con value
+    mfilMenorN,  //Comparación con value
+    mfilMayorIN,  //Comparación con value
+    mfilMenorIN,  //Comparación con value
+    mfilDiferN   //Comparación con value
   );
   { TfraFiltCampo }
   TfraFiltCampo = class(TFrame)
@@ -72,7 +72,7 @@ type
     griFiltrar: TUtilGrilla;
     procedure ActualizarVisibilidadBotones;
     procedure fraFiltCampoCambiaFiltro;
-    procedure ModoConTexto(txt0: string);
+    procedure ModoConTexto(argTxt: string);
     procedure ModoSinTexto;
     procedure PreparaFiltro;
     function PreparaCad(const cad: string): string;
@@ -119,12 +119,12 @@ begin
   Edit1.Text := msjeBuscar;
   proteger := false;
 end;
-procedure TfraFiltCampo.ModoConTexto(txt0: string);
+procedure TfraFiltCampo.ModoConTexto(argTxt: string);
 begin
   proteger := true;
   Edit1.Font.Italic := false;
   Edit1.Font.Color := clBlack;
-  Edit1.Text:=txt0;
+  Edit1.Text:=argTxt;
   proteger := false;
 end;
 function TfraFiltCampo.SinTexto: boolean;
@@ -336,7 +336,7 @@ end;
 procedure TfraFiltCampo.Edit1KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  //Pasa el evento
+  //Pass the event  
   if OnKeyDown<>nil then OnKeyDown(Sender, Key, Shift);
 end;
 procedure TfraFiltCampo.FrameResize(Sender: TObject);

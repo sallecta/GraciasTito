@@ -12,7 +12,7 @@ MisUtils 0.5b
 * Se agregan las funciones DT2Number() and Number2DT().
 * Se agrega la función StringLike().
 * Se elimina la variable global msgError, ya que se encontró casos de duplicidad de
-nombre con la variable de error global de la aplicación. Además se está evitando usar
+Name con la variable de error global de la aplicación. Además se está evitando usar
 variables globales.
 * Se agrega la función TrimEndLine() para quitar un salto de línea al final de una
 cadena.
@@ -22,7 +22,7 @@ cadena.
  Descripción
  ============
  Librería de funciones útiles para mostrar mensajes en pantalla, para guardar datos en
- archivos, para crear aplicaciones en varios idiomas y algunas utilidades adicionales.
+ archivos, para CreateIt aplicaciones en varios idiomas y algunas utilidades adicionales.
  }
 unit MisUtils;
 
@@ -65,9 +65,9 @@ function AddItemToMenu(menu: TMenuItem; txt: string; evento: TNotifyEvent): TMen
 procedure CheckOnlyOneItem(item: TMenuItem);
 procedure CheckOnlyOneItem(Menu: TMenuItem; Caption: string);
 function LoadPNGToImageList(imagList16: TImageList; imgFile: string): Integer;
-//Genera un nombre distinto de archivo
+//Genera un Name distinto de archivo
 function GetNewFileName(nomBase: String; maxNumFile: integer = 10): String;
-//Genera un nombre distinto de carpeta
+//Genera un Name distinto de carpeta
 function GetNewFolderName(nomBase: String; maxNumFile: integer = 10): String;
 //Conversion de tipos a cadena
 function I2f(n: Integer):String;
@@ -259,10 +259,10 @@ end;
 function Exec(com, par: string; WaitOnExit: boolean = false): boolean;
 //Ejecuta un programa. Devuelve FALSE si hubo error
 var
-  p    : TProcess;   //el proceso a manejar
+  p    : TProcess;   //el Processing a manejar
 begin
   Result := true;
-  p := TProcess.Create(nil); //Crea proceso
+  p := TProcess.Create(nil); //Crea Processing
   if WaitOnExit then p.Options:= p.Options + [poWaitOnExit];
   //p.CommandLine := SysToUTF8(com);
   p.Executable:=com;
@@ -387,7 +387,7 @@ var
   item: TMenuItem;
 begin
   item := TMenuItem.Create(nil);
-  item.Caption:= txt;  //nombre
+  item.Caption:= txt;  //Name
   item.OnClick:=evento;
   menu.Add(item);
   Result := item;
@@ -439,9 +439,9 @@ begin
   pngbmp.Destroy;
 end;
 function GetNewFileName(nomBase: String; maxNumFile: integer = 10): String;
-{Genera un nombre diferente de archivo, tomando el nombre dado como raiz.}
-var i : Integer;    //Número de intentos con el nombre de archivo de salida
-    cadBase : String;   //Cadena base del nombre base
+{Genera un Name diferente de archivo, tomando el Name dado como raiz.}
+var i : Integer;    //Número de intentos con el Name de archivo de salida
+    cadBase : String;   //Cadena base del Name base
     extArc: string;    //extensión
 
   function NombArchivo(i: integer): string;
@@ -450,7 +450,7 @@ var i : Integer;    //Número de intentos con el nombre de archivo de salida
   end;
 
 begin
-   Result := nomBase;  //nombre por defecto
+   Result := nomBase;  //Name por defecto
    extArc := ExtractFileExt(nomBase);
    if ExtractFilePath(nomBase) = '' then exit;  //protección
    //quita ruta y cambia extensión
@@ -458,16 +458,16 @@ begin
    //busca archivo libre
    for i := 0 to maxNumFile-1 do begin
       If not FileExists(NombArchivo(i)) then begin
-        //Se encontró nombre libre
-        Exit(NombArchivo(i));  //Sale con nombre
+        //Se encontró Name libre
+        Exit(NombArchivo(i));  //Sale con Name
       end;
    end;
-   //todos los nombres estaban ocupados. Sale con el mismo nombre
+   //todos los nombres estaban ocupados. Sale con el mismo Name
 End;
 function GetNewFolderName(nomBase: String; maxNumFile: integer = 10): String;
-{Genera un nombre diferente de archivo, tomando el nombre dado como raiz.}
-var i : Integer;    //Número de intentos con el nombre de archivo de salida
-    cadBase : String;   //Cadena base del nombre base
+{Genera un Name diferente de archivo, tomando el Name dado como raiz.}
+var i : Integer;    //Número de intentos con el Name de archivo de salida
+    cadBase : String;   //Cadena base del Name base
 
   function NombFolder(i: integer): string;
   begin
@@ -475,18 +475,18 @@ var i : Integer;    //Número de intentos con el nombre de archivo de salida
   end;
 
 begin
-   Result := nomBase;  //nombre por defecto
+   Result := nomBase;  //Name por defecto
 //   cadBase := ExtractFilePath(nomBase);
    cadBase := nomBase;
    if cadBase = '' then exit;  //protección
    //busca archivo libre
    for i := 0 to maxNumFile-1 do begin
       If not DirectoryExists(NombFolder(i)) then begin
-        //Se encontró nombre libre
-        Exit(NombFolder(i));  //Sale con nombre
+        //Se encontró Name libre
+        Exit(NombFolder(i));  //Sale con Name
       end;
    end;
-   //todos los nombres estaban ocupados. Sale con el mismo nombre
+   //todos los nombres estaban ocupados. Sale con el mismo Name
 End;
 
 //############## Funciones de conversión de datos para acceso a disco ############

@@ -11,7 +11,7 @@ uses
 type
   TEvClickRightProj = procedure(Proj: TProject) of object;
   TEvClickRightPage = procedure(Page: TDocPage) of object;
-  TEvClickRightObj = procedure(obj: TCadObjetcs_list) of object;
+  TEvClickRightObj = procedure(obj: TDrawObjetcs_list) of object;
   TEvClickRightView = procedure(View: TFrPaintBox) of object;
 
   { TFrProjectExplorer }
@@ -205,7 +205,7 @@ begin
     begin
       Page := curProject^.PageByName(NodeGetSelected.Parent.Text);
       if OnClickRightObject <> nil then
-        OnClickRightObject(Page.GraphicObj);
+        OnClickRightObject(Page.docPageObjList);
     end;
   end;
 end;
@@ -231,7 +231,7 @@ begin
   //show your title
   Label2.Caption := self.Caption;
 
-  //  ns := NodeSelectedGetName;  //guarda elemento seleccionado
+  //  ns := NodeSelectedGetName;  //guarda elemento ObjSelected
   treeNav.Items.Clear;  //clean items
   if curProject^ = nil then
   begin

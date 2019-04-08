@@ -58,7 +58,7 @@ begin
   end;
   'es': begin
     Button1.Caption := 'Enviar';
-    Label1.Caption := 'Nombre:';
+    Label1.Caption := 'Name:';
     //Update messages
     dicSet('Hello','Hola');
 //    dicSet('Hello %s','Hola %s');  //alternative way

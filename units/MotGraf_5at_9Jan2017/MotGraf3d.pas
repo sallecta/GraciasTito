@@ -22,7 +22,7 @@ uses
   Classes, SysUtils, FPCanvas, Graphics, ExtCtrls, Controls;
 type
   //Represents a three-dimensional point
-  TMotPoint = record
+  TPoint3D = record
     x,y,z : single;
     xp,yp : Int16;
   end;
@@ -60,23 +60,23 @@ type
     function XPant(xv, yv, zv: Single): Integer; inline;
     function YPant(xv, yv, zv: Single): Integer; inline;
     procedure XYpant(xv, yv, zv: Single; var xp, yp: Integer);
-    procedure XYpant(var P: TMotPoint);
+    procedure XYpant(var P: TPoint3D);
     function Xvirt(xp, yp: Integer): Single; inline;
     function Yvirt(xp, yp: Integer): Single; inline;
     procedure XYvirt(xp, yp: Integer; zv: Single; var xv, yv: Single);
-    procedure Desplazar(dx, dy: Integer);
-    procedure ObtenerDesplazXY(xp, yp: Integer; Xant, Yant: Integer; var dx,dy: Single);
+    procedure Displace(dx, dy: Integer);
+    procedure ObtenerDesplazXY(xp, yp: Integer; Xprev, Yprev: Integer; var dx,dy: Single);
   public  //Configuración
     property PenColor: TColor read GetPenColor write SetPenColor;
     procedure SetPen(color: Tcolor; ancho: Integer; estilo: TFPPenStyle = psSolid);
 //    procedure FijaLapiz(ancho: Integer; color: Tcolor; estilo: TFPPenStyle);
-    procedure FijaRelleno(ColorR:TColor);
-    procedure FijaColor(colLin,colRel:TColor; ancho: Integer = 1); //Fija colorde línea y relleno
+    procedure FillFixed(ColorR:TColor);
+    procedure FijaColor(colLin,colRel:TColor; ancho: Integer = 1); //Fija colorde línea y ColorFill
   public //Funciones de dibujo
     backColor: TColor;
     procedure Clear;
     procedure Line(const x1, y1, z1, x2, y2, z2: Double);
-    procedure Line(var P1, P2: TMotPoint);
+    procedure Line(var P1, P2: TPoint3D);
     procedure rectangXY(x1, y1: Single; x2, y2: Single; z: Single);
     procedure rectangXYr(x1, y1: Single; x2, y2: Single; z: Single);
     procedure poligono3(x1, y1, z1: Single; x2, y2, z2: Single; x3, y3,
@@ -101,7 +101,7 @@ type
     procedure TextRect(x1, y1, x2, y2: Single; x0, y0: Single;
       const Text: string; const Style: TTextStyle);
     function TextWidth(const txt: string): single;
-    procedure FijarVentana(ScaleWidth, ScaleHeight: Real; xMin, xMax, yMin,
+    procedure SetWindow(ScaleWidth, ScaleHeight: Real; xMin, xMax, yMin,
       yMax: Real);
   public  //Inicialización
     constructor Create(gContrl0: TGraphicControl);
@@ -177,8 +177,8 @@ begin
   xp := XPant(xv, yv, zv);
   yp := YPant(xv, yv, zv);
 end;
-procedure TVirtScreen.XYpant(var P: TMotPoint);
-{Actualiza las coordenadas xp, yp  de un registro TMotPoint}
+procedure TVirtScreen.XYpant(var P: TPoint3D);
+{Actualiza las coordenadas xp, yp  de un registro TPoint3D}
 begin
   P.xp := XPant(P.x, P.y, P.z);
   P.yp := YPant(P.x, P.y, P.z);
@@ -207,7 +207,7 @@ begin
 end;
 procedure TVirtScreen.XYvirt(xp, yp: Integer; zv: Single; var xv, yv: Single);
 //Devuelve las coordenadas virtuales xv,yv a partir de unas coordenadas de pantalla
-//(o del ratón). Debe indicarse el valor de Z. Equivale a intersecar un plano
+//(o del ratón). Debe indicarse el value de Z. Equivale a intersecar un plano
 //paralelo al plano XY con la línea de mira del ratón en pantalla.
 var
   x2c, y2c : Single;
@@ -226,7 +226,7 @@ begin
   //xv = x2c + x_cam
   //yv = y2c + y_cam
 end;
-procedure TVirtScreen.Desplazar(dx, dy: Integer);
+procedure TVirtScreen.Displace(dx, dy: Integer);
 //Desplaza el escenario (el punto de rotación siempre está en el centro de la pantalla)
 begin
    //desplazamineto en y
@@ -236,7 +236,7 @@ begin
    x_cam := x_cam - dx * cosa;
    y_cam := y_cam + dx * sena;
 end;
-procedure TVirtScreen.ObtenerDesplazXY(xp, yp: Integer; Xant, Yant: Integer;
+procedure TVirtScreen.ObtenerDesplazXY(xp, yp: Integer; Xprev, Yprev: Integer;
   var dx, dy: Single);
 {Obtiene los desplazamientos dx, dy virtuales, para los objects gráficos en base a
 los movimientos del ratón.
@@ -246,8 +246,8 @@ var
   dx0, dy0: Single;
 begin
    //Desplazamiento en plano XY  (z=0)
-   dx0 := (xp - xAnt) / fZoom;   //notar que no se toman en cuenta las constantes
-   dy0 := -(yp - yAnt) / fZoom;
+   dx0 := (xp - Xprev) / fZoom;   //notar que no se toman en cuenta las constantes
+   dy0 := -(yp - Yprev) / fZoom;
    dx := (dx0 * cosa * cosi + sena * dy0) / cosi;
    dy := (cosa * dy0 - dx0 * sena * cosi) / cosi;
 end;
@@ -275,15 +275,15 @@ end;
 //   cv.pen.Width := ancho;
 //   cv.pen.Color := color;
 //end;
-procedure TVirtScreen.FijaRelleno(ColorR: TColor);
-//Establece el relleno actual
+procedure TVirtScreen.FillFixed(ColorR: TColor);
+//Establece el ColorFill actual
 begin
    cv.Brush.Style := bsSolid;  //estilo sólido
    cv.Brush.Color:=ColorR;
 end;
 procedure TVirtScreen.FijaColor(colLin, colRel: TColor; ancho: Integer);
-//Fija un color de línea y un color de relleno. La línea se fija a estilo sólido
-//y el relleno también
+//Fija un color de línea y un color de ColorFill. La línea se fija a estilo sólido
+//y el ColorFill también
 begin
     cv.Pen.Style := psSolid;
     cv.pen.Width := ancho;
@@ -298,7 +298,7 @@ begin
   cv.Line(XPant(x1, y1, z1), YPant(x1, y1, z1),
           XPant(x2, y2, z2), YPant(x2, y2, z2));
 end;
-procedure TVirtScreen.Line(var P1, P2: TMotPoint);
+procedure TVirtScreen.Line(var P1, P2: TPoint3D);
 begin
  XYpant(P1);   //actualiza coordenadas de pantalla
  XYpant(P2);   //actualiza coordenadas de pantalla
@@ -311,7 +311,7 @@ begin
  polilinea3(x1, y1, z, x2, y1, z, x2, y2, z, x1, y2, z, x1, y1, z);
 End;
 procedure TVirtScreen.rectangXYr(x1, y1: Single; x2, y2: Single; z: Single);
-//Dibuja un rectángulo relleno, paralelo al plano XY
+//Dibuja un rectángulo ColorFill, paralelo al plano XY
 begin
  poligono3(x1, y1, z, x2, y1, z, x2, y2, z, x1, y2, z);
 End;
@@ -321,10 +321,10 @@ procedure TVirtScreen.poligono3(x1,y1,z1: Single;
                   x4: Single = -10000; y4: Single = -10000; z4: Single = -10000;
                   x5: Single = -10000; y5: Single = -10000; z5: Single = -10000;
                   x6: Single = -10000; y6: Single = -10000; z6: Single = -10000);
-//Dibuja un polígono relleno en 3D..
+//Dibuja un polígono ColorFill en 3D..
 var
-  Ptos3: array[1..7] of TMotPoint;     //puntos 3d
-  ptos: array[1..7] of TPoint;    //arreglo de puntos a dibujar
+  Ptos3: array[1..7] of TPoint3D;     //puntos 3d
+  Points: array[1..7] of TPoint;    //arreglo de puntos a Draw
   nptos : integer;
   x1c, y1c : integer;
   i : integer;
@@ -340,10 +340,10 @@ begin
  For i := 1 To nptos  do begin
      x1c := XPant(Ptos3[i].x, Ptos3[i].y, Ptos3[i].z);
      y1c := YPant(Ptos3[i].x, Ptos3[i].y, Ptos3[i].z);
-     ptos[i].x := x1c;
-     ptos[i].y := y1c;
+     Points[i].x := x1c;
+     Points[i].y := y1c;
  end;
- cv.Polygon(@ptos[1], nptos);   //dibuja borde
+ cv.Polygon(@Points[1], nptos);   //dibuja borde
 end;
 
 procedure TVirtScreen.polilinea3(x1, y1, z1: Single; x2, y2, z2: Single; x3, y3,
@@ -351,8 +351,8 @@ procedure TVirtScreen.polilinea3(x1, y1, z1: Single; x2, y2, z2: Single; x3, y3,
   z5: Single; x6: Single; y6: Single; z6: Single);
 //Dibuja un polígono sin rellenar en 3D..
 var
-  Ptos3: array[1..7] of TMotPoint;     //puntos 3d
-  ptos: array[1..7] of TPoint;    //arreglo de puntos a dibujar
+  Ptos3: array[1..7] of TPoint3D;     //puntos 3d
+  Points: array[1..7] of TPoint;    //arreglo de puntos a Draw
   nptos : integer;
   x1c, y1c : integer;
   i : integer;
@@ -368,10 +368,10 @@ begin
  For i := 1 To nptos  do begin
      x1c := XPant(Ptos3[i].x, Ptos3[i].y, Ptos3[i].z);
      y1c := YPant(Ptos3[i].x, Ptos3[i].y, Ptos3[i].z);
-     ptos[i].x := x1c;
-     ptos[i].y := y1c;
+     Points[i].x := x1c;
+     Points[i].y := y1c;
  end;
- cv.Polyline(@ptos[1], nptos);   //dibuja borde
+ cv.Polyline(@Points[1], nptos);   //dibuja borde
 end;
 procedure TVirtScreen.rectang0(x1, y1, x2, y2: Integer);
 //Dibuja un rectángulo sin "transformación"
@@ -387,7 +387,7 @@ begin
 end;
 //funciones para texto
 procedure TVirtScreen.SetFont(Letra: string);
-//Permite definir el tipo de letra actual
+//Permite definir el btnType de letra actual
 begin
   if Letra = '' then cv.Font.Name:= 'MS Sans Serif';
   //'Times New Roman'
@@ -457,7 +457,7 @@ begin
    cv.Font.Size := round(11 * fZoom);
    r.Left := XPant(x1,y1,0);
    r.Top := YPant(x1,y1,0);
-   r.Right := XPant(x1+ancho,y1,0);     { TODO : Show como dibujar texto no limitado }
+   r.Right := XPant(x1+ancho,y1,0);     { TODO : Show como Draw texto no limitado }
    r.Bottom:= YPant(x1,y1+alto,0);
 //   s.Alignment:=taRightJustify;  //alineado a la derecha
 // cv.TextRect(r,r.Left,r.Top,txt,s);//No permite cambia el tamaño de letra!!!!
@@ -468,7 +468,7 @@ function TVirtScreen.TextWidth(const txt: string): single;
 begin
   Result := cv.TextWidth(txt) * fZoom;
 end;
-procedure TVirtScreen.FijarVentana(ScaleWidth, ScaleHeight: Real;
+procedure TVirtScreen.SetWindow(ScaleWidth, ScaleHeight: Real;
                xMin, xMax, yMin, yMax: Real);
 //Fija las coordenadas de pantalla de manera que se ajusten a las nuevas que se dan
 //Recibe coordenadas virtuales

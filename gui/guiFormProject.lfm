@@ -54,7 +54,7 @@ object frmProject: TfrmProject
         Height = 15
         Top = 16
         Width = 47
-        Caption = 'Nombre:'
+        Caption = 'Name:'
         ParentColor = False
       end
     end

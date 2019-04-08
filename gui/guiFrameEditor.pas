@@ -112,7 +112,7 @@ var
 begin
   tmp := OnObjectsRemove;  //save event
   OnObjectsRemove := nil; //to avoid calling many times
-  For gobj In Editor.seleccion  do  //explore all
+  For gobj In Editor.selection  do  //explore all
     GraphicObjectDelete(gobj);
   OnObjectsRemove := tmp;  //restore
   if OnObjectsRemove<>nil then OnObjectsRemove;
@@ -199,51 +199,51 @@ begin
   If Shift = [] Then begin  //********************* Teclas normales ***********************
       //If tec = 13 Then PropiedSeleccion ;  //Debe procesarlo el diagrama
       If Key = VK_DELETE Then DeleteSelected;  //DELETE
-      If Key = 9 Then SeleccionarSiguiente;  //TAB
+      If Key = 9 Then SelectNext;  //TAB
       If Key = 27 Then begin  //ESCAPE
           SelectNone;
           Refresh;
       end;
-      If seleccion.Count = 0 Then     ;  //si no hay objects seleccionados
-          If Key = 37 Then Call moverDerecha(DESPLAZ_MENOR)        ;  //derecha
-          If Key = 39 Then Call moverIzquierda(DESPLAZ_MENOR)      ;  //izquierda
-          If Key = 40 Then Call moverArriba(DESPLAZ_MENOR)         ;  //arriba
-          If Key = 38 Then Call moverAbajo(DESPLAZ_MENOR)          ;  //abajo
+      If selection.Count = 0 Then     ;  //si no hay objects seleccionados
+          If Key = 37 Then Call moveRight(OFFSET_EDITOR)        ;  //derecha
+          If Key = 39 Then Call moveLeft(OFFSET_EDITOR)      ;  //izquierda
+          If Key = 40 Then Call moveUp(OFFSET_EDITOR)         ;  //arriba
+          If Key = 38 Then Call moveDown(OFFSET_EDITOR)          ;  //abajo
       Else        ;  //hay seleccionados
           If Key = 37 Then ;  //derecha
-              For Each v In seleccion
-                  If Not v.Bloqueado Then v.X = v.X - DESPLAZ_MENOR
+              For Each v In selection
+                  If Not v.Bloqueado Then v.X = v.X - OFFSET_EDITOR
               Next
               Call Refresh
           End If
           If Key = 39 Then ;  //izquierda
-              For Each v In seleccion
-                  If Not v.Bloqueado Then v.X = v.X + DESPLAZ_MENOR
+              For Each v In selection
+                  If Not v.Bloqueado Then v.X = v.X + OFFSET_EDITOR
               Next
               Call Refresh
           End If
           If Key = 40 Then ;  //arriba
-              For Each v In seleccion
-                  If Not v.Bloqueado Then v.Y = v.Y + DESPLAZ_MENOR
+              For Each v In selection
+                  If Not v.Bloqueado Then v.Y = v.Y + OFFSET_EDITOR
               Next
               Call Refresh
           End If
           If Key = 38 Then ;  //abajo
-              For Each v In seleccion
-                  If Not v.Bloqueado Then v.Y = v.Y - DESPLAZ_MENOR
+              For Each v In selection
+                  If Not v.Bloqueado Then v.Y = v.Y - OFFSET_EDITOR
               Next
               Call Refresh
           End If
       end If
   end else If Shift = [ssShift] Then begin //**********************Shift + ************************
-      If Key = 9 Then Call SeleccionarAnterior              ;  //TAB
+      If Key = 9 Then Call SelectPrevious              ;  //TAB
   end else If Shift = [ssCtrl] Then begin  //**********************Ctrl + ************************
-      If Key = 107 Then Call AmpliarClick      ;  //+
-      If Key = 109 Then Call ReducirClick      ;  //-
-      If Key = 37 Then Call moverDerecha(DESPLAZ_MAYOR)   ;  //derecha
-      If Key = 39 Then Call moverIzquierda(DESPLAZ_MAYOR) ;  //izquierda
-      If Key = 40 Then Call moverArriba(DESPLAZ_MAYOR)    ;  //arriba
-      If Key = 38 Then Call moverAbajo(DESPLAZ_MAYOR)     ;  //abajo
+      If Key = 107 Then Call ZoomToClick      ;  //+
+      If Key = 109 Then Call ZoomReduceClick      ;  //-
+      If Key = 37 Then Call moveRight(DESPLAZ_MAYOR)   ;  //derecha
+      If Key = 39 Then Call moveLeft(DESPLAZ_MAYOR) ;  //izquierda
+      If Key = 40 Then Call moveUp(DESPLAZ_MAYOR)    ;  //arriba
+      If Key = 38 Then Call moveDown(DESPLAZ_MAYOR)     ;  //abajo
   end else If Shift = [ssShift, ssCtrl] Then  begin  //******************Shift + Ctrl*************************
     picSal.MousePointer := vbSizeAll;  //indica modo Zoom + desplazamiento
   end;
