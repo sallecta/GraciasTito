@@ -16,8 +16,7 @@ type
     txtPrompt: TEdit;
   public
     Prompt : string;
-    procedure Initiate(cfgFile: TMiConfigBasic); //Inicia el frame
-    procedure SetLanguage(lang: string);
+    procedure Initiate(cfgFile: TMiConfigBasic);
   end;
 
 implementation
@@ -29,11 +28,6 @@ implementation
 procedure TfraCfgPanCom.Initiate(cfgFile: TMiConfigBasic);
 begin
   cfgFile.Asoc_Str(self.Name + '/Prompt', @Prompt, txtPrompt,  '>>');
-end;
-
-procedure TfraCfgPanCom.SetLanguage(lang: string);
-begin
-
 end;
 
 end.

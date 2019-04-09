@@ -34,7 +34,6 @@ type
     procedure spnAlfaClick(Sender: TObject);
     procedure spnAlfaMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure Timer1Timer(Sender: TObject);
   private
     fraEditor: TFrPaintBox;
   public
@@ -90,11 +89,6 @@ procedure TFormPerspective.spnAlfaMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   btnSetPerspectiveClick(self);
-end;
-
-procedure TFormPerspective.Timer1Timer(Sender: TObject);
-begin
-//  btnReadPerspectiveClick(self);  
 end;
 
 procedure TFormPerspective.Exec(argFraEditor: TFrPaintBox);

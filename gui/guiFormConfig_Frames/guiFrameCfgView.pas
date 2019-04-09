@@ -25,8 +25,7 @@ type
     LongEjeCoor: Double;
     VerCoorPunt: boolean;
     incrWheel  : Double;
-    procedure Initiate(cfgFile: TMiConfigBasic); //Inicia el frame
-    procedure SetLanguage(lang: string);
+    procedure Initiate(cfgFile: TMiConfigBasic);
   end;
 
 implementation
@@ -45,11 +44,6 @@ begin
   cfgFile.Asoc_Bol(self.Name + '/VerCoorPunt', @VerCoorPunt,  chkVerCoorPunt, true);
   cfgFile.Asoc_Dbl(self.Name + '/incrWheel',   @incrWheel  , spnIncrWheel, 100);
   chkVerEjesChange(self);
-end;
-
-procedure TfraCfgView.SetLanguage(lang: string);
-begin
-
 end;
 
 end.

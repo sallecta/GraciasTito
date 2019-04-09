@@ -17,8 +17,7 @@ type
     StateToolbar: TStyleToolbar;
     StatusBar: boolean;
     VerInspVar: boolean;
-    procedure Initiate(cfgFile: TMiConfigBasic); //Inicia el frame
-    procedure SetLanguage(lang: string);
+    procedure Initiate(cfgFile: TMiConfigBasic);
   end;
 
 implementation
@@ -32,10 +31,6 @@ begin
   cfgFile.Asoc_Bol(self.Name + '/StatusBar', @StatusBar  ,  chkVerBarEst, true);
 end;
 
-procedure TfraCfgGeneral.SetLanguage(lang: string);
-begin
-
-end;
 
 end.
 

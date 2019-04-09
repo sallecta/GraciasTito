@@ -8,8 +8,9 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, guiForm1, sketchEvalExpres, guiFormConfig, guiFrameCfgSynEdit,
-  guiFrameCfgGeneral, guiFrameCfgPanCom, guiFormPerspective, guiFrameCfgView, guiFormProject,
-  guiFrameProjExplorer, guiFormViewProp, sketchDxf, sketchCore, sketchEditor
+  guiFrameCfgGeneral, guiFrameCfgPanCom, guiFormPerspective, guiFrameCfgView,
+  guiFormProject, guiFrameProjExplorer, guiFormViewProp, sketchDxf, sketchCore,
+  sketchEditor
   { you can add units after this };
 
 {$R *.res}

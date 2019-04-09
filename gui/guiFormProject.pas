@@ -32,8 +32,7 @@ type
     aProject: TProject;
     procRefresh: TEvRefresh;
   public
-    function Exec(argProj: TProject; argProcRefresh: TEvRefresh;
-      soloRead: boolean = False): boolean;
+    function Exec(argProj: TProject; soloRead: boolean = False): boolean;
     function ExecNew(argProj: TProject): boolean;
   end;
 
@@ -78,11 +77,9 @@ begin
   Accepted := False;
 end;
 
-function TfrmProject.Exec(argProj: TProject; argProcRefresh: TEvRefresh;
-  soloRead: boolean): boolean;
+function TfrmProject.Exec(argProj: TProject; soloRead: boolean = False): boolean;
 begin
   aProject := argProj;
-  procRefresh := argProcRefresh;
 
   TeditName.Text := aProject.Name;
   TeditCreatedBy.Text := aProject.createdBy;
@@ -101,7 +98,7 @@ var
 begin
   projNameIndex := '1';
   argProj.Name := 'Proyecto' + projNameIndex;
-  Result := Exec(argProj, nil);
+  Result := Exec(argProj);
 end;
 
 end.

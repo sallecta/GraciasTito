@@ -57,7 +57,6 @@ implementation
 
 {$R *.lfm}
 const
-  //  MSJE_SIN_ELEM = '<Sin elementos>';
   IMIND_PROJ = 0;
   IMIND_PAGE = 1;
   IMIND_VIEW = 2;

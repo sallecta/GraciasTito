@@ -72,20 +72,18 @@ var
   x: single;
   y: single;
 begin
-  Modified := True;        //Marca el editor como modificado
-  //Posiciona tratando de que siempre aparezca en pantalla
-  if AutoPos Then begin  //Se calcula posición
+  Modified := True;
+  if AutoPos Then begin
     x := Editor.VirtScreen.Xvirt(100, 100) + 30 * objects.Count Mod 400;
     y := Editor.VirtScreen.Yvirt(100, 100) + 30 * objects.Count Mod 400;
     argGraphicObject.PlaceAt(x,y);
   end;
-  //configura eventos para ser controlado por este editor
   argGraphicObject.OnSelect   := @Editor.GraphicObject_Select;//reference to selection procedure
   argGraphicObject.OnDeselect := @Editor.GraphicObject_Unselect;
   argGraphicObject.OnCamPoint := @Editor.GraphicObject_SetPointer;
   objects.Add(argGraphicObject);
 end;
-procedure TfraEditor.GraphicObjectDelete(argObj: TGraphicObj);  //elimina un objeto grafico
+procedure TfraEditor.GraphicObjectDelete(argObj: TGraphicObj);
 begin
   Modified := True;
   argObj.Deselect;
@@ -190,69 +188,11 @@ procedure TfraEditor.Set_Fi(AValue: Single);
 begin
   Editor.VirtScreen.Fi := AValue;
 end;
-{procedure TEditor.KeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-//Procesa el evento KeyDown()
-//var
-//  v: TGraphicObj;
-begin
-  If Shift = [] Then begin  //********************* Teclas normales ***********************
-      //If tec = 13 Then PropiedSeleccion ;  //Debe procesarlo el diagrama
-      If Key = VK_DELETE Then DeleteSelected;  //DELETE
-      If Key = 9 Then SelectNext;  //TAB
-      If Key = 27 Then begin  //ESCAPE
-          SelectNone;
-          Refresh;
-      end;
-      If selection.Count = 0 Then     ;  //si no hay objects seleccionados
-          If Key = 37 Then Call moveRight(OFFSET_EDITOR)        ;  //derecha
-          If Key = 39 Then Call moveLeft(OFFSET_EDITOR)      ;  //izquierda
-          If Key = 40 Then Call moveUp(OFFSET_EDITOR)         ;  //arriba
-          If Key = 38 Then Call moveDown(OFFSET_EDITOR)          ;  //abajo
-      Else        ;  //hay seleccionados
-          If Key = 37 Then ;  //derecha
-              For Each v In selection
-                  If Not v.Bloqueado Then v.X = v.X - OFFSET_EDITOR
-              Next
-              Call Refresh
-          End If
-          If Key = 39 Then ;  //izquierda
-              For Each v In selection
-                  If Not v.Bloqueado Then v.X = v.X + OFFSET_EDITOR
-              Next
-              Call Refresh
-          End If
-          If Key = 40 Then ;  //arriba
-              For Each v In selection
-                  If Not v.Bloqueado Then v.Y = v.Y + OFFSET_EDITOR
-              Next
-              Call Refresh
-          End If
-          If Key = 38 Then ;  //abajo
-              For Each v In selection
-                  If Not v.Bloqueado Then v.Y = v.Y - OFFSET_EDITOR
-              Next
-              Call Refresh
-          End If
-      end If
-  end else If Shift = [ssShift] Then begin //**********************Shift + ************************
-      If Key = 9 Then Call SelectPrevious              ;  //TAB
-  end else If Shift = [ssCtrl] Then begin  //**********************Ctrl + ************************
-      If Key = 107 Then Call ZoomToClick      ;  //+
-      If Key = 109 Then Call ZoomReduceClick      ;  //-
-      If Key = 37 Then Call moveRight(DESPLAZ_MAYOR)   ;  //derecha
-      If Key = 39 Then Call moveLeft(DESPLAZ_MAYOR) ;  //izquierda
-      If Key = 40 Then Call moveUp(DESPLAZ_MAYOR)    ;  //arriba
-      If Key = 38 Then Call moveDown(DESPLAZ_MAYOR)     ;  //abajo
-  end else If Shift = [ssShift, ssCtrl] Then  begin  //******************Shift + Ctrl*************************
-    picSal.MousePointer := vbSizeAll;  //indica modo Zoom + desplazamiento
-  end;
-end;}
 
 constructor TfraEditor.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  objects:= TEditorObjList.Create(true);  //lista de objects
+  objects:= TEditorObjList.Create(true);
   Editor := TEditor.Create(PaintBox1, objects);
   Editor.VirtScreen.Alfa:=0.7;
   Editor.VirtScreen.Fi:=0.7;

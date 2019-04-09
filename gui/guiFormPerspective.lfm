@@ -174,7 +174,6 @@ object FormPerspective: TFormPerspective
     TabOrder = 9
   end
   object Timer1: TTimer
-    OnTimer = Timer1Timer
     left = 16
     top = 8
   end

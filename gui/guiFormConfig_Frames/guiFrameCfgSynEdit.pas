@@ -1,9 +1,10 @@
-{Unidad con frame para almacenar y configurar las propiedades de un editor
- SynEdit. Las propiedades que se manejan son con respecto al coloreado.
- El frame definido, está pensado para usarse en una ventana de configuración
- con la librería MiConfig.
- También incluye una lista para almacenamiento de los archivos recientes
-                               Por Tito Hinostroza  20/12/2016
+{
+Unit with frame to store and configure the properties of an editor
+  SynEdit. The properties that are handled are with respect to coloring.
+  The defined frame is designed to be used in a configuration window
+  with the MiConfig library.
+  It also includes a list for storage of recent files
+                                By Tito Hinostroza 12/20/2016
 }
 unit guiFrameCfgSynEdit;
 {$mode objfpc}{$H+}
@@ -46,7 +47,7 @@ type
     ed: TSynEdit;
   public
     //configuración del editor
-    TipLet     : string;     //btnType de letra
+    letterType     : string;     //btnType de letra
     TamLet     : integer;     //tamaño de letra
     MarLinAct : boolean;    //marcar línea actual
     VerBarDesV  : boolean;    //Show barras de desplazamiento
@@ -100,10 +101,9 @@ begin
   cbutResPal.Enabled:=chkResPalCur.Checked;
 end;
 procedure TfraCfgSynEdit.Initiate(cfgFile: TMiConfigBasic; ed0: TSynEdit; colFonDef: TColor);
-{Inicia el frame de configuración. Notar que se usar el Name del frame, para CreateIt
-una categoría en el archivo XML.}
+{Start the configuration frame. Note that the Name of the frame is used, for CreateIt
+a category in the XML file.}
 begin
-  //asigna referencia necesarias
   ed := ed0;
   cfgFile.Asoc_TCol(self.Name + '/cTxtNor', @cTxtNor, cbutTexto, clBlack);
   cfgFile.Asoc_TCol(self.Name + '/cFonEdi', @cFonEdi, cbutFondo , colFonDef);
@@ -129,7 +129,7 @@ begin
   cmbTipoLetra.Items.Add('Lucida Console');
   cmbTipoLetra.Items.Add('Consolas');
   cmbTipoLetra.Items.Add('Cambria');
-  cfgFile.Asoc_Str(self.Name+ '/TipLet', @TipLet, cmbTipoLetra, 'Courier New');
+  cfgFile.Asoc_Str(self.Name+ '/letterType', @letterType, cmbTipoLetra, 'Courier New');
 
   cfgFile.Asoc_StrList(self.Name+ '/recient', @ArcRecientes );
 end;
@@ -140,7 +140,7 @@ var
 begin
    if ed = nil then exit;  //protección
    //btnType de texto
-   if TipLet <> '' then ed.Font.Name:=TipLet;
+   if letterType <> '' then ed.Font.Name:=letterType;
    if (TamLet > 6) and (TamLet < 32) then ed.Font.Size:=Round(TamLet);
 
    ed.Font.Color:=cTxtNor;      //color de texto normal

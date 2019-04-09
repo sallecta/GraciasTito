@@ -106,12 +106,8 @@ type
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
     procedure acProjFileCloseExecute(Sender: TObject);
-    procedure acProjFileSaveExecute(Sender: TObject);
     procedure acProjFileNewExecute(Sender: TObject);
     procedure acProjFileLeaveExecute(Sender: TObject);
-    procedure acToolbarDespExecute(Sender: TObject);
-    procedure acToolbarPointExecute(Sender: TObject);
-    procedure acToolbarRotExecute(Sender: TObject);
     procedure acPageAddLineExecute(Sender: TObject);
     procedure acPageRemoveExecute(Sender: TObject);
     procedure acProjAddPageExecute(Sender: TObject);
@@ -127,7 +123,6 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure acToolbarConfigExecute(Sender: TObject);
-    procedure ToolBar1Click(Sender: TObject);
   private
     curProject: TProject;
     ExploreProjPage: TDocPage;     //page selected in the project explorer
@@ -144,9 +139,8 @@ type
     procedure fraExploreProj_ClickRightView(View: TFrPaintBox);
     procedure curProject_ChangeView(View: TFrPaintBox);
     function MessageSaveChanges: integer;
-    procedure RefreshEnvironment;
+    procedure form1SetCaption;
     procedure Refresh;
-    procedure RefreshPanelView;
   public
     frExploreProj: TFrProjectExplorer;  //Project Explorer
   end;
@@ -200,13 +194,11 @@ end;
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
-  Config.SetLanguage('en');
   Config.Initiate(nil);  //Start the configuration
   Config.OnPropertiesChanged := @ConfigPropertiesChanged;
   ConfigPropertiesChanged;
   Refresh;
   acProjFileNewExecute(self);
-  //acVerConViewExecute(self);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -273,123 +265,20 @@ begin
   Result := 0;   //Default value
 end;
 
-procedure TForm1.RefreshEnvironment;
-{Refreshes the main screen to reflect the current state.}
-  procedure AccionsModified(state: boolean);
-  begin
-    //disable modification options
-    //    acPreAgrTab.Enabled   :=state;
-    //    acPreActPresup.Enabled:=state;
-    //    acPreImpTabler.Enabled:=state;
-    //    acPreRplMarca.Enabled :=state;
-    //    acTabAgrMater.Enabled :=state;
-    //    acTabEliTab.Enabled   :=state;
-    //    acMatDefNMat.Enabled  :=state;
-    //    acMatSubir.Enabled    :=state;
-    //    acMatBajar.Enabled    :=state;
-    //    acMatElimin.Enabled   :=state;
-  end;
-
-  procedure AccionsReports(state: boolean);
-  begin
-    //    acRepPresXLS.Enabled:=state;
-    //    acRepPresPDF.Enabled:=state;
-    //    acRepDiaCAD.Enabled:=state;
-    //    acRepMaterAgrup.Enabled:=state;
-    //    acRepListTab.Enabled:=state;
-    //    acRepMaterTab.Enabled:=state;
-    //    acRepMaterResum.Enabled:=state;
-  end;
-
-  procedure MenuStateUpdate;
-  {Update the state menus}
-  begin
-    //    if curProject = nil then begin
-    //      acPreMarCrea.Enabled:=false;
-    //      acPreMarTerm.Enabled:=false;
-    //      acPreMarRev.Enabled:=false;
-    //      acPreMarCerr.Enabled:=false;
-    //    end else begin
-    //      //Las opciones disponibles, dependen del state actual
-    //      case curProject.state of
-    //      epCreado  : begin
-    //        acPreMarCrea.Enabled:=false;
-    //        acPreMarTerm.Enabled:=true;
-    //        acPreMarRev.Enabled:=false;
-    //        acPreMarCerr.Enabled:=false;
-    //        AccionsModified(true); //opciones de modificación
-    //        end;
-    //      epTerminado: begin
-    //        acPreMarCrea.Enabled:=true;
-    //        acPreMarTerm.Enabled:=false;
-    //        acPreMarRev.Enabled:=true;
-    //        acPreMarCerr.Enabled:=false;
-    //        AccionsModified(true); //opciones de modificación
-    //        end;
-    //      epRevisado: begin
-    //        acPreMarCrea.Enabled:=true;
-    //        acPreMarTerm.Enabled:=false;
-    //        acPreMarRev.Enabled:=false;
-    //        acPreMarCerr.Enabled:=true;
-    //        AccionsModified(true); //opciones de modificación
-    //        end;
-    //      epCerrado: begin
-    //        acPreMarCrea.Enabled:=false;
-    //        acPreMarTerm.Enabled:=false;
-    //        acPreMarRev.Enabled:=false;
-    //        acPreMarCerr.Enabled:=false;
-    //        AccionsModified(false); //opciones de modificación
-    //        end;
-    //      end;
-    //    end;
-  end;
-
+procedure TForm1.form1SetCaption;
 begin
   if curProject = nil then
-    Caption := APP_NAME + ' ' + APP_VERSION//    //No hay presupuesto abierto
-    //    mnPresup.Enabled:=false;  //desactiva todo el menú
-    //    mnTablero.Enabled:=false;
-    //    mnReportes.Enabled:=false;
-    //    acProjFileSave.Enabled:=false;
-    //    acArcGuarCom.Enabled:=false;
-    //    acProjFileClose.Enabled:=false;
-    //    acPreAgrTab.Enabled:=false;
-    //    acPrePropied.Enabled:=false;
-    //    acPreValidar.Enabled:=false;
-    //    acMatBajar.Enabled:=false;
-    //    acMatSubir.Enabled:=false;
-    //    AccionsReports(false);
+    Caption := APP_NAME + ' ' + APP_VERSION
   else
     Caption := APP_NAME + ' ' + APP_VERSION + ' - ' +
-      curProject.Name//There is an open project
-    //    mnPresup.Enabled:=true;  //activa todo el menú
-    //    mnTablero.Enabled:=true;
-    //    mnReportes.Enabled:=true;
-    //    acProjFileSave.Enabled := curProject.Modified;
-    //    acArcGuarCom.Enabled:=true;
-    //    acProjFileClose.Enabled:=true;
-    //    acPreAgrTab.Enabled:=true;
-    //    acPrePropied.Enabled:=true;
-    //    acPreValidar.Enabled:=true;
-    //    acMatBajar.Enabled:=true;
-    //    acMatSubir.Enabled:=true;
-    //    AccionsReports(true);
-  ;
-  //  menuRec.ActualMenusReciente(Self);
-  MenuStateUpdate;  //update the menus state
-end;
-
-procedure TForm1.RefreshPanelView;
-begin
-  //  fraMotEdicion.Editor.Refresh;
+      curProject.Name;
 end;
 
 procedure TForm1.Refresh;
 {Rerfresca the entire interface}
 begin
-  RefreshEnvironment;
+  form1SetCaption;
   frExploreProj.Refresh;   //Refresh project explorer
-  RefreshPanelView;
 end;
 
 procedure TForm1.curProject_Modified;
@@ -512,15 +401,8 @@ begin
   curProject.ActivePage.View.OnSendMessage := @curProjectActivePageViewSendMessage;
   curProject_ChangeActivePage;  //for Refresh in your viewer
   curProject.ActivePage.View.InitView;  //start the axes
-  //curProject.Modified:=true;
   curProject.SaveFile;
-  //  menuRec.AgregArcReciente(curProject.GenerarNombreArch);  //Add recent file
   Refresh;
-end;
-
-procedure TForm1.acProjFileSaveExecute(Sender: TObject);
-begin
-
 end;
 
 procedure TForm1.acProjFileCloseExecute(Sender: TObject);
@@ -538,21 +420,6 @@ end;
 procedure TForm1.acProjFileLeaveExecute(Sender: TObject);
 begin
   Self.Close;
-end;
-
-procedure TForm1.acToolbarDespExecute(Sender: TObject);
-begin
-
-end;
-
-procedure TForm1.acToolbarPointExecute(Sender: TObject);
-begin
-
-end;
-
-procedure TForm1.acToolbarRotExecute(Sender: TObject);
-begin
-
 end;
 
 procedure TForm1.acVerConViewExecute(Sender: TObject);
@@ -588,11 +455,10 @@ procedure TForm1.acProjPropExecute(Sender: TObject);
 begin
   if curProject = nil then
     exit;
-  if frmProject.Exec(curProject, @RefreshPanelView) then
+  if frmProject.Exec(curProject) then
   begin
     curProject.Modified := True;
     frExploreProj.Refresh;
-    RefreshPanelView;
   end;
 end;
 
@@ -641,11 +507,6 @@ end;
 procedure TForm1.acToolbarConfigExecute(Sender: TObject);
 begin
   Config.doConfig();
-end;
-
-procedure TForm1.ToolBar1Click(Sender: TObject);
-begin
-
 end;
 
 end.

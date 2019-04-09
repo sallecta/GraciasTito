@@ -48,8 +48,6 @@ uses
   Classes, Controls, ExtCtrls, Graphics, LCLProc, LCLType, fgl,
   MotGraf3d, sketchCore, sketchDxf;
 const
-  CUR_DEFAULT = crDefault; //default cursor
-
   ZOOM_MAX_EDITOR = 5  ;//Defines the maximal zoom allowed in a diagram
   ZOOM_MIN_EDITOR = 0.1;//Defines the minimal zoom allowed in a diagram
 
@@ -289,14 +287,8 @@ begin
         step := 100;
       end;
       nGrid := distCovered div step;
-
-//      xGrid1 := 0;
-//      xGrid2 := 1000;
       xGrid1 := int((VirtScreen.x_cam - distCovered/2)/step)*step;
       xGrid2 := xGrid1 + distCovered;
-
-//      yGrid1 := 0;
-//      yGrid2 := 1000;
       yGrid1 := int((VirtScreen.y_cam - distCovered/2)/step)*step;
       yGrid2 := yGrid1 + distCovered;
 
@@ -331,14 +323,6 @@ begin
       VirtScreen.Line(x-30,y,0,  x+30,y,0);
       VirtScreen.Line(x, y-30,0, x, y+30,0);
     end;
-    //Dibuja puntero del mouse  (No es apropiado porque necesita refescar siempre.)
-//    VirtScreen.SetPen(clWhite, 1);
-//    VirtScreen.Line(xvPt-30, yvPt, zvPt,
-//             xvPt+30, yvPt, zvPt);
-//    VirtScreen.Line(xvPt, yvPt-30, zvPt,
-//             xvPt, yvPt+30, zvPt);
-//    VirtScreen.Line(xvPt, yvPt, zvPt-30,
-//             xvPt, yvPt, zvPt+30);
 end;
 procedure TEditor.PBox_MouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
@@ -448,11 +432,6 @@ begin
 
     s := SelectObjectAt(X, Y);
     Result := s;
-//    If Not s = NIL Then
-//        If s.Id = ID_CONECTOR Then  ;  //Or s.ObjSelected
-//            Set s = Nothing  ;  //no válido para conectores
-//        End If
-//    End If
     //Se refresca la pantalla optimizando
     If s = NIL Then begin
       If MarkedObject <> NIL Then begin
@@ -460,7 +439,7 @@ begin
             MarkedObject := NIL;
             Refresh;
         End;
-      PBox.Cursor := CUR_DEFAULT;
+      PBox.Cursor := crDefault;
     end
     Else begin
       If MarkedObject = NIL Then begin
@@ -614,9 +593,8 @@ End;
 procedure TEditor.SelectNone();
 var s: TGraphicObj;
 begin
-  For s In objects do //"selection" is not scanned because it is modified with "s.Deselect"
+  For s In objects do
     if s.Selected then s.Deselect;
-//  selection.Clear; //No se puede limpiar simplemente la lista. Se debe llamar a s.Deselect
 End;
 function  TEditor.ObjSelected: TGraphicObj;
 //Returns the ObjSelected object. If there is no ObjSelected, it returns NIL.
@@ -714,7 +692,6 @@ begin
   argGraphicObject.OnSelect   := @GraphicObject_Select;
   argGraphicObject.OnDeselect := @GraphicObject_Unselec;
   argGraphicObject.OnCamPoint := @GraphicObject_SetPointer;
-//  Refresh(s)   ;             //Refresca objeto
   objects.Add(argGraphicObject);
 end;
 procedure TEditor.GraphicObjectDelete(obj: TGraphicObj);
@@ -945,7 +922,6 @@ begin
              startRectangleSeleccion(x_mouse, y_mouse);
          end else begin //Select one, there may be others selected
              if o_sel.Selected Then  begin
-//                   if Shift = [] Then SelectNone;
                  o_sel.MouseDown(Self, Button, Shift, xp, yp);//Pass the event
                  exit;
              end;
@@ -1331,7 +1307,7 @@ begin
   Moving := false;
   MovingObject := nil;
   MarkedObject := nil;
-  PBox.Cursor := CUR_DEFAULT;
+  PBox.Cursor := crDefault;
   if msg<>'' then OnSendMessage(msg);
 end;
 constructor TEditor.Create(PB0: TPaintBox; objectList: TEditorObjList);

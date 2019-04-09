@@ -1,6 +1,6 @@
-{Unidad con formulario de configuración para manejar las propiedades de
- una aplicación. Está pensado para usarse con frames de la clase Tframe,
- definida en la unidad "PropertyFrame".
+{Unit with configuration form to manage the properties of
+  an app. It is intended to be used with frames of the Tframe class,
+  defined in the "PropertyFrame" unit.
  }
 unit guiFormConfig;
 {$mode objfpc}{$H+}
@@ -50,7 +50,6 @@ type
     procedure IniFileWrite;
     procedure doConfig(Id: string='');
     function ContiainsPrompt(const strAct: string): integer;
-    procedure SetLanguage(lang: string);
   end;
 
 var
@@ -197,38 +196,6 @@ procedure TConfig.IniFileWrite;
 //Write the configuration file
 begin
   cfgFile.PropertiesToFile;
-end;
-
-procedure TConfig.SetLanguage(lang: string);
-//Translation routine
-begin
-  fcGeneral.SetLanguage(lang);
-  fcView.SetLanguage(lang);
-  fcPanCom.SetLanguage(lang);
-  fcPanComEd.SetLanguage(lang);
-
-  case lowerCase(lang) of
-  'es': begin
-//      TTreeNodeFromId('1',TreeView1).Text:='Conexión';
-//      TTreeNodeFromId('1.1',TreeView1).Text:='General';
-//      TTreeNodeFromId('1.2',TreeView1).Text:='Detec.de Prompt';
-//      TTreeNodeFromId('1.3',TreeView1).Text:='Rutas/Archivos';
-//      TTreeNodeFromId('2',TreeView1).Text:='Terminal';
-//      TTreeNodeFromId('2.1',TreeView1).Text:='Pantalla';
-//      TTreeNodeFromId('2.2',TreeView1).Text:='Editor';
-//      TTreeNodeFromId('2.3',TreeView1).Text:='Comando Recurrente';
-    end;
-  'en': begin
-//      TTreeNodeFromId('1',TreeView1).Text:='Connection';
-//      TTreeNodeFromId('1.1',TreeView1).Text:='General';
-//      TTreeNodeFromId('1.2',TreeView1).Text:='Prompt detection';
-//      TTreeNodeFromId('1.3',TreeView1).Text:='Paths/Files';
-//      TTreeNodeFromId('2',TreeView1).Text:='Terminal';
-//      TTreeNodeFromId('2.1',TreeView1).Text:='Screen';
-//      TTreeNodeFromId('2.2',TreeView1).Text:='Editor';
-//      TTreeNodeFromId('2.3',TreeView1).Text:='Recurring command';
-    end;
-  end;
 end;
 
 end.

@@ -123,7 +123,6 @@ Event that generates a control point when it is being moved by the Moues.
     state     : Boolean;//Allows Show the state of the button or check
     drawBackground   : boolean;//indicates whether Draw the background
     constructor Create(argVirtScreen: TVirtScreen; argType: TBtnType; argEvenBTclk: TEvenBTclk);
-    procedure Draw;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
   private
     btnType : TBtnType;
@@ -253,55 +252,7 @@ begin
    state := FALSE;//start at 0 (check not Marked, or button to be contracted)
    drawBackground := true;
 end;
-procedure TogButton.Draw;
-//Draw the button according to your btnType and state
-begin
-{  case btnType of
-  BTN_CLOSE: begin
-       if drawBackground then VirtScreen.DibBorBoton(Xvirt,Yvirt,width,height);
-       VirtScreen.DibVnormal(Xvirt+2,Yvirt+2,10,5);
-       VirtScreen.DibVnormal(Xvirt+2,Yvirt+12,10,-5);
-     end;
-  BTN_EXPAND:
-      if state then begin
-        if drawBackground then VirtScreen.DibBorBoton(Xvirt,Yvirt,width,height);
-//         VirtScreen.DibVnormal(Xvirt+2,Yvirt+7,10,-5);
-//         VirtScreen.DibVnormal(Xvirt+2,Yvirt+11,10,-5);
-         VirtScreen.FijaColor(COL_GRIS, COL_GRIS, 1);
-         VirtScreen.DrawTrianUp(Xvirt+2,Yvirt+4,width-4,height-10);
-      end else begin
-         if drawBackground then VirtScreen.DibBorBoton(Xvirt,Yvirt,width,height);
-//         VirtScreen.DibVnormal(Xvirt+2,Yvirt+2,10,5);
-//         VirtScreen.DibVnormal(Xvirt+2,Yvirt+6,10,5);
-        VirtScreen.FijaColor(COL_GRIS, COL_GRIS, 1);
-        VirtScreen.DrawTrianDown(Xvirt+2,Yvirt+5,width-4,height-10);
-      end;
-  BTN_CHECK: begin  //botón check
-     if state then begin   //dibuja solo borde
-        VirtScreen.DibBorBoton(Xvirt,Yvirt,15,15);
-     end else begin         //dibuja con check
-        VirtScreen.DibBorBoton(Xvirt,Yvirt,15,15);
-        VirtScreen.DibCheck(Xvirt+2,Yvirt+2,10,8);
-     end;
-    end;
-  BTN_PLAY: begin  //botón reproducir
-     if state then begin   //dibuja solo borde
-       VirtScreen.FijaColor(clBlack, TColor($E5E5E5), 1);
-       VirtScreen.RectRedonR(Xvirt,Yvirt,Xvirt+width, Yvirt+height);
-       VirtScreen.FijaColor(clBlack, clBlack, 1);
-       VirtScreen.RectangR(Xvirt+6,Yvirt+6,Xvirt+width-6, Yvirt+height-6);
-     end else begin         //dibuja con check
-       VirtScreen.FijaColor(clBlack, TColor($E5E5E5), 1);
-       VirtScreen.RectRedonR(Xvirt,Yvirt,Xvirt+width, Yvirt+height);
-       VirtScreen.FijaColor(clBlack, clBlack, 1);
-       VirtScreen.poligono(Xvirt+6, Yvirt+3,
-                    Xvirt+18, Yvirt + height/2,
-                    Xvirt+6, Yvirt + height - 4);
-     end;
-    end;
-  end;
-}
-end;
+
 procedure TogButton.MouseUp(Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
 begin
    if isSelected(xp,yp) then begin    //he let go on the button
@@ -393,8 +344,6 @@ var
   pdc  : TControlPoint;
   button  : TogButton;
 begin
-  //draw Buttons
-  for button in Buttons do button.Draw; 
   //---------------draw highlighted --------------
   If Marked and canHighlight Then begin
     VirtScreen.SetPen(clBlue, 2, psSolid);   //RGB(128, 128, 255)

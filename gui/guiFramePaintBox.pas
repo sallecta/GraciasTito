@@ -216,7 +216,6 @@ constructor TFrPaintBox.Create(AOwner: TComponent; ListObjGraf: TEditorObjList);
 begin
   inherited Create(AOwner);
   objects := ListObjGraf;
-  //objects:= TEditorObjList.Create(true);
   Editor := TEditor.Create(PaintBox1, objects);
   Editor.OnModify := @Editor_Modified;
   Editor.OnChangeView := @Editor_ViewChange;
@@ -228,7 +227,6 @@ end;
 destructor TFrPaintBox.Destroy;
 begin
   Editor.Destroy;
-  //objects.Destroy;
   inherited;
 end;
 

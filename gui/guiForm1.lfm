@@ -46,7 +46,6 @@ object Form1: TForm1
     Caption = 'ToolBar1'
     Images = ImgActions16
     TabOrder = 1
-    OnClick = ToolBar1Click
     object ToolButton1: TToolButton
       Left = 78
       Top = 2
@@ -245,19 +244,16 @@ object Form1: TForm1
       Category = 'TollBox'
       Caption = '&Puntero'
       ImageIndex = 14
-      OnExecute = acToolbarPointExecute
     end
     object acToolbarDesp: TAction
       Category = 'TollBox'
       Caption = '&Displace'
       ImageIndex = 13
-      OnExecute = acToolbarDespExecute
     end
     object acToolbarRot: TAction
       Category = 'TollBox'
       Caption = '&Rotar'
       ImageIndex = 15
-      OnExecute = acToolbarRotExecute
     end
     object acToolbarConfig: TAction
       Category = 'TollBox'
@@ -292,7 +288,6 @@ object Form1: TForm1
       Category = 'File'
       Caption = 'G&uardar'
       ImageIndex = 4
-      OnExecute = acProjFileSaveExecute
     end
     object acProjFileClose: TAction
       Category = 'File'

@@ -43,22 +43,14 @@ type
     color: string;
     style: string;
     isComplex: boolean;
-    polyFlag: integer; {Flag for polylines. Bitmap, zero by default:
-    1 = This is a closed polyline (or a polygon mesh closed in the M direction).
-    2 = Curve-fit vertices have been added.
-    4 = Spline-fit vertices have been added.
-    8 = This is a 3D polyline.
-    16 = This is a 3D polygon mesh.
-    32 = The polygon mesh is closed in the N direction.
-    64 = The polyline is a polyface mesh.
-    128 = The linetype pattern is generated continuously around the vertices of this polyline.}
+    polyFlag: integer; {Flag for polylines. Bitmap, zero by default}
     P0: TPoint3D;
     P1: TPoint3D;
     radius: double;
     vertexs: TDxf_list;   {Vertex list. Only instance for objects
-                                complex. EYE!!! It is very heavy to keep a list of
+                                complex. It is very heavy to keep a list of
                                 TDxf. It should be optimized}
-    blkName: string;    //used when it is from btnType dxfBlock.
+    blkName: string;    //used when it is from Type dxfBlock.
   public
     procedure SetP0(const xv, yv, zv: single);
     procedure SetP1(const xv, yv, zv: single);
@@ -94,7 +86,6 @@ end;
 procedure TMyObject.Draw();
 begin
   //Draw label
-  //  VirtScreen.SetPen(clGray, 1);
   VirtScreen.SetText(clWhite, 11, '', False);
   VirtScreen.Texto(x + 2, Y + Height + 20, 0, Name);
   //shows a rectangle
@@ -172,21 +163,6 @@ begin
     VirtScreen.SetPen(clWhite, 1);
   case DxfPrimitive of
     dxfLine: VirtScreen.Line(P0, P1);
-    //  dxfCircle: begin
-    //      VirtScreen.Circulo(xv + ent.x0, y + ent.y0,
-    //                  ent.radius);
-    //    end;
-{  dxfPolyline: begin
-      //Por eficiencia, se dibuja la polilínea directamente del canvas
-      SetLength(Points, vertexs.Count);   //dimensiona
-      //transforma puntos
-      for i:= 0 to vertexs.Count-1 do begin
-        Points[i].x := VirtScreen.XPant(vertexs[i].x0);
-        Points[i].y := VirtScreen.YPant(vertexs[i].y0);
-      end;
-      //VirtScreen.Canvas.Polygon(Points);   //dibuja
-      VirtScreen.cv.Polyline(Points);
-    end;}
   end;
   //---------------draw selection mark--------------
   if Selected then
@@ -204,12 +180,6 @@ var
   dx, dy: Int16;
   //tolerance in pixels
 begin
-  {It should not be necessary to update the screen coordinates of P0 and P1, since
-   if this line was shown on the screen, it is because its coordinates were updated
-   screen:
-   VirtScreen.XYpant (P0);
-   VirtScreen.XYpant (P1);
-  }
   if P0.xp = P1.xp then
   begin  //Vertical straight case
     if abs(P0.xp - xp) > DSEL then
@@ -228,14 +198,9 @@ begin
   else if P0.xp < P1.xp then
   begin  //P0 on the left
     if xp < P0.xp - DSEL then
-      exit(False);  //escapes from limit
+      exit(False);
     if xp > P1.xp + DSEL then
-      exit(False);  //escapes from limit
-    //Simplify the comparison, seeing only a vertical distance
-    //     a := (P1.yp - P0.yp)/(P1.xp - P0.xp);  //pendiente
-    //     b := P0.yp - a*P0.xp;  //Define ecuación de la recta y=ax+b
-    //     Result := abs(a*xp + b - yp) < DSEL;
-    //Alternative form, without divisions
+      exit(False);
     dx := P1.xp - P0.xp;   //Always positive
     dy := P1.yp - P0.yp;   //positive or negative
     if abs(dy) < dx then
@@ -248,21 +213,16 @@ begin
   else
   begin                        //P1 on the left
     if xp < P1.xp - DSEL then
-      exit(False);  //escapes from limit
+      exit(False);
     if xp > P0.xp + DSEL then
-      exit(False);  //escapes from limit
-    //Define equation of the line y = ax + b
-    //     a := (P0.yp - P1.yp)/(P0.xp - P1.xp);  //pendiente
-    //     b := P1.yp - a*P1.xp;
-    //     Result := abs(a*xp + b - yp) < DSEL;
+      exit(False);
     dx := P0.xp - P1.xp;   //Always positive
     dy := P0.yp - P1.yp;   //positive or negative
     if abs(dy) < dx then
       Result := abs((xp - P1.xp) * dy - (yp - P1.yp) * dx) < DSEL * dx
     else
       Result := abs((xp - P1.xp) * dy - (yp - P1.yp) * dx) < DSEL *
-        abs(dy)//abs (dy), is greater than dx
-    ;
+        abs(dy){abs (dy), is greater than dx } ;
   end;
 end;
 
