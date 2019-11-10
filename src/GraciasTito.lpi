@@ -3,6 +3,9 @@
   <ProjectOptions>
     <Version Value="11"/>
     <General>
+      <Flags>
+        <SaveOnlyProjectUnits Value="True"/>
+      </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
@@ -118,12 +121,12 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="application/$NameOnly($(ProjFile)).$(SrcOS).$(TargetCPU)"/>
+      <Filename Value="../ignore/application/$NameOnly($(ProjFile)).$(SrcOS).$(TargetCPU)"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
       <OtherUnitFiles Value="units/MotGraf_5at_9Jan2017;gui;sketch;units/toLang"/>
-      <UnitOutputDirectory Value="ignore/lib/$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="../ignore/lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
