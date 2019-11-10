@@ -1,34 +1,35 @@
 object FormPerspective: TFormPerspective
-  Left = 621
-  Height = 210
-  Top = 429
-  Width = 283
-  Caption = 'frmControlVista'
-  ClientHeight = 210
-  ClientWidth = 283
-  LCLVersion = '2.0.0.4'
+  Left = 959
+  Height = 313
+  Top = 122
+  Width = 377
+  Caption = 'viewProperties'
+  ClientHeight = 313
+  ClientWidth = 377
+  OnCreate = FormCreate
+  LCLVersion = '2.0.6.0'
   object btnClearPerspective: TButton
-    Left = 16
+    Left = 24
     Height = 32
-    Top = 80
+    Top = 120
     Width = 122
-    Caption = 'Lim&piar Perspectiva'
+    Caption = 'clearPerspective'
     OnClick = btnClearPerspectiveClick
     TabOrder = 0
   end
   object Label2: TLabel
-    Left = 152
-    Height = 17
-    Top = 128
-    Width = 53
-    Caption = 'Áng. Alfa:'
+    Left = 176
+    Height = 19
+    Top = 200
+    Width = 69
+    Caption = 'alphaAngle'
     ParentColor = False
   end
   object spnAlfa: TFloatSpinEdit
-    Left = 208
-    Height = 29
-    Top = 120
-    Width = 60
+    Left = 272
+    Height = 27
+    Top = 200
+    Width = 64
     Alignment = taRightJustify
     Increment = 0.1
     MinValue = 0
@@ -38,18 +39,18 @@ object FormPerspective: TFormPerspective
     Value = 0
   end
   object Label3: TLabel
-    Left = 152
-    Height = 17
-    Top = 152
-    Width = 40
-    Caption = 'Áng. Fi:'
+    Left = 176
+    Height = 19
+    Top = 232
+    Width = 44
+    Caption = 'fiAngle'
     ParentColor = False
   end
   object spnFi: TFloatSpinEdit
-    Left = 208
-    Height = 29
-    Top = 144
-    Width = 60
+    Left = 272
+    Height = 27
+    Top = 232
+    Width = 64
     Alignment = taRightJustify
     Increment = 0.1
     MinValue = 0
@@ -57,10 +58,10 @@ object FormPerspective: TFormPerspective
     Value = 0
   end
   object spnZoom: TFloatSpinEdit
-    Left = 208
-    Height = 29
-    Top = 168
-    Width = 60
+    Left = 272
+    Height = 27
+    Top = 264
+    Width = 64
     Alignment = taRightJustify
     Increment = 0.1
     MinValue = 0
@@ -68,60 +69,60 @@ object FormPerspective: TFormPerspective
     Value = 1
   end
   object Label4: TLabel
-    Left = 152
-    Height = 17
-    Top = 176
-    Width = 35
-    Caption = 'Zoom:'
+    Left = 176
+    Height = 19
+    Top = 264
+    Width = 34
+    Caption = 'zoom'
     ParentColor = False
   end
   object btnSetPerspective: TButton
-    Left = 16
+    Left = 24
     Height = 32
-    Top = 152
+    Top = 224
     Width = 122
-    Caption = '&Fijar Perspectiva'
+    Caption = 'setPerspective'
     OnClick = btnSetPerspectiveClick
     TabOrder = 4
   end
   object btnReadPerspective: TButton
-    Left = 16
+    Left = 24
     Height = 32
-    Top = 24
+    Top = 32
     Width = 122
-    Caption = '&Leer Perspectiva.'
+    Caption = 'readPerspective'
     OnClick = btnReadPerspectiveClick
     TabOrder = 5
   end
   object Label5: TLabel
-    Left = 152
-    Height = 17
-    Top = 16
-    Width = 41
-    Caption = 'x_desp:'
+    Left = 176
+    Height = 19
+    Top = 24
+    Width = 29
+    Caption = 'xpos'
     ParentColor = False
   end
   object Label6: TLabel
-    Left = 152
-    Height = 17
-    Top = 40
-    Width = 41
-    Caption = 'y_desp:'
+    Left = 176
+    Height = 19
+    Top = 57
+    Width = 29
+    Caption = 'ypos'
     ParentColor = False
   end
   object Label7: TLabel
-    Left = 152
-    Height = 17
-    Top = 96
-    Width = 35
-    Caption = 'Y_Cam:'
+    Left = 176
+    Height = 19
+    Top = 144
+    Width = 31
+    Caption = 'yoffs'
     ParentColor = False
   end
   object spnYoffest: TFloatSpinEdit
-    Left = 208
-    Height = 29
-    Top = 88
-    Width = 60
+    Left = 272
+    Height = 27
+    Top = 144
+    Width = 64
     Alignment = taRightJustify
     Increment = 0.1
     MaxValue = 1000
@@ -132,18 +133,18 @@ object FormPerspective: TFormPerspective
     Value = 0
   end
   object Label8: TLabel
-    Left = 152
-    Height = 17
-    Top = 72
-    Width = 35
-    Caption = 'X_Cam:'
+    Left = 176
+    Height = 19
+    Top = 112
+    Width = 31
+    Caption = 'xoffs'
     ParentColor = False
   end
   object spnXoffest: TFloatSpinEdit
-    Left = 208
-    Height = 29
-    Top = 64
-    Width = 60
+    Left = 272
+    Height = 27
+    Top = 112
+    Width = 64
     Alignment = taRightJustify
     Increment = 0.1
     MaxValue = 1000
@@ -154,27 +155,27 @@ object FormPerspective: TFormPerspective
     Value = 0
   end
   object spnXpos: TSpinEdit
-    Left = 208
-    Height = 29
-    Top = 8
-    Width = 56
+    Left = 272
+    Height = 27
+    Top = 24
+    Width = 64
     Alignment = taRightJustify
     MaxValue = 1000
     MinValue = -1000
     TabOrder = 8
   end
   object spnYpos: TSpinEdit
-    Left = 208
-    Height = 29
-    Top = 33
-    Width = 58
+    Left = 272
+    Height = 27
+    Top = 57
+    Width = 64
     Alignment = taRightJustify
     MaxValue = 1000
     MinValue = -1000
     TabOrder = 9
   end
   object Timer1: TTimer
-    left = 16
-    top = 8
+    left = 32
+    top = 176
   end
 end

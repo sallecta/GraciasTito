@@ -1,4 +1,0 @@
-MotGraf 0.2
-===========
-Se crea el registro TCadPoint, para manejar las 3 coordenadas virtuales y las 2 coordenadas
-de pantalla.

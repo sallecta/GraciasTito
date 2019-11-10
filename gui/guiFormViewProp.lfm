@@ -1,16 +1,17 @@
 object FormPropView: TFormPropView
-  Left = 283
-  Height = 240
-  Top = 141
+  Left = 890
+  Height = 297
+  Top = 111
   Width = 320
-  Caption = 'frmVistaProp'
-  ClientHeight = 240
+  Caption = 'viewProperties'
+  ClientHeight = 297
   ClientWidth = 320
-  LCLVersion = '2.0.0.4'
+  OnCreate = FormCreate
+  LCLVersion = '2.0.6.0'
   object Panel1: TPanel
     Left = 0
     Height = 50
-    Top = 190
+    Top = 247
     Width = 320
     Align = alBottom
     ClientHeight = 50
@@ -21,8 +22,8 @@ object FormPropView: TFormPropView
       Height = 30
       Top = 8
       Width = 75
+      Caption = 'ok'
       Default = True
-      DefaultCaption = True
       Kind = bkOK
       ModalResult = 1
       OnClick = btnAcceptClick
@@ -34,7 +35,7 @@ object FormPropView: TFormPropView
       Top = 8
       Width = 75
       Cancel = True
-      DefaultCaption = True
+      Caption = 'cancel'
       Kind = bkCancel
       ModalResult = 2
       TabOrder = 1
@@ -44,7 +45,7 @@ object FormPropView: TFormPropView
       Height = 30
       Top = 8
       Width = 75
-      Caption = 'A&plicar'
+      Caption = 'apply'
       OnClick = btnApplyClick
       TabOrder = 2
     end
@@ -52,31 +53,33 @@ object FormPropView: TFormPropView
   object chbShowAxes: TCheckBox
     Left = 32
     Height = 23
-    Top = 24
-    Width = 163
-    Caption = 'Show &Ejes Coordenados.'
+    Top = 16
+    Width = 85
+    Alignment = taLeftJustify
+    Caption = 'showAxes'
+    ParentBidiMode = False
     TabOrder = 1
   end
   object Label1: TLabel
     Left = 32
-    Height = 17
-    Top = 60
-    Width = 94
-    Caption = 'Longitud de ejes:'
+    Height = 19
+    Top = 72
+    Width = 72
+    Caption = 'axesLength'
     ParentColor = False
   end
   object chbShowRotPoint: TCheckBox
     Left = 32
     Height = 23
-    Top = 96
-    Width = 135
-    Caption = 'Show Punto de &Giro'
+    Top = 128
+    Width = 139
+    Caption = 'showRotationPoint'
     TabOrder = 2
   end
   object spnAxeDist: TSpinEdit
-    Left = 128
-    Height = 29
-    Top = 60
+    Left = 152
+    Height = 27
+    Top = 64
     Width = 50
     Alignment = taRightJustify
     TabOrder = 3
@@ -84,9 +87,9 @@ object FormPropView: TFormPropView
   object chbShowGrid: TCheckBox
     Left = 32
     Height = 23
-    Top = 136
-    Width = 119
-    Caption = 'Show &Cuadrícula'
+    Top = 176
+    Width = 82
+    Caption = 'showGrid'
     TabOrder = 4
   end
 end

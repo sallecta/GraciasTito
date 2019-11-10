@@ -45,7 +45,7 @@ type
     OnObjectsRemove: TOnObjectsRemove;   //when one or more objects are elminated
     procedure GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean=true);
     procedure GraphicObjectDelete(argObj: TGraphicObj);
-    procedure GraphicObjectsDeleteAll;
+    procedure documentObjectsDeleteAll;
     procedure DeleteSelected;
     function ObjectAdd: TMyObject;
   public
@@ -91,7 +91,7 @@ begin
   argObj := nil;
   if OnObjectsRemove<>nil then OnObjectsRemove;
 End;
-procedure TfraEditor.GraphicObjectsDeleteAll;
+procedure TfraEditor.documentObjectsDeleteAll;
 //Remove all existing graphic objects
 begin
   if objects.Count=0 then exit;

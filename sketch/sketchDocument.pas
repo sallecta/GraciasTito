@@ -4,8 +4,10 @@ unit sketchDocument;
 interface
 
 uses
-  Classes, SysUtils, fgl, MisUtils, Graphics,
-  guiFramePaintBox, sketchCore, sketchDxf, sketchEditor;
+  Classes, SysUtils, fgl, Graphics,
+  guiFramePaintBox, sketchCore, sketchDxf, sketchEditor, Dialogs,
+  glob
+  ;
 
 type
   TMeasureUnits = (
@@ -267,7 +269,7 @@ var
   Page: TDocPage;
 begin
   Page := TDocPage.Create;
-  Page.Name := 'Página' + IntToStr(pages.Count + 1);
+  Page.Name := msg.get('page') + IntToStr(pages.Count + 1);
   Page.parent := self;
   Page.OnChangePersp := @page_ChangePerspec;
   Page.OnMouseMoveVirt := @page_MouseMoveVirt;
@@ -282,7 +284,7 @@ procedure TProject.RemovePage(pageName: TDocPage);
 begin
   if pages.Count = 1 then
   begin
-    MsgExc('No se pueden eliminar todas las páginas.');
+    ShowMessage(msg.Get('CantDeleteLastPage'));
     exit;
   end;
   if ActivePage = pageName then
@@ -308,7 +310,7 @@ begin
       exit;
     end;
   //Did not find
-  MsgExc('No existe la página: "%s"', [Name]);
+  ShowMessage(msg.Get('PageDoesNotExist')+ Name);
 end;
 
 procedure TProject.HideAllPages;

@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 605
+  Left = 395
   Height = 575
-  Top = 131
+  Top = 35
   Width = 841
-  Caption = 'TitoCad'
-  ClientHeight = 550
+  Caption = 'GTCad'
+  ClientHeight = 546
   ClientWidth = 841
   KeyPreview = True
   Menu = MainMenu1
@@ -14,11 +14,11 @@ object Form1: TForm1
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '2.0.6.0'
   object StatusBar1: TStatusBar
     Left = 0
-    Height = 19
-    Top = 531
+    Height = 23
+    Top = 523
     Width = 841
     Panels = <    
       item
@@ -127,34 +127,35 @@ object Form1: TForm1
     TabIndex = 0
     TabOrder = 2
     object TabSheet1: TTabSheet
-      Caption = 'Diseño'
+      Caption = 'editor'
     end
     object TabSheet2: TTabSheet
-      Caption = 'TabSheet2'
+      Caption = 'tabSheet2'
     end
   end
   object Splitter2: TSplitter
     Left = 148
     Height = 506
-    Top = 63
+    Top = 64
     Width = 5
     Align = alNone
     ResizeAnchor = akRight
   end
   object panCommand: TPanel
-    Left = 24
-    Height = 70
-    Top = 432
-    Width = 450
-    Caption = 'panCommand'
-    ClientHeight = 70
-    ClientWidth = 450
+    Left = 152
+    Height = 68
+    Top = 366
+    Width = 608
+    Anchors = []
+    Caption = 'cmdPanel'
+    ClientHeight = 68
+    ClientWidth = 608
     TabOrder = 4
     object Memo1: TMemo
       Left = 1
-      Height = 44
+      Height = 42
       Top = 1
-      Width = 448
+      Width = 606
       Align = alClient
       Lines.Strings = (
         ''
@@ -164,18 +165,18 @@ object Form1: TForm1
     object Panel1: TPanel
       Left = 1
       Height = 24
-      Top = 45
-      Width = 448
+      Top = 43
+      Width = 606
       Align = alBottom
       Caption = 'Panel1'
       ClientHeight = 24
-      ClientWidth = 448
+      ClientWidth = 606
       TabOrder = 1
       object Edit1: TEdit
-        Left = 78
+        Left = 86
         Height = 22
         Top = 1
-        Width = 346
+        Width = 493
         Align = alClient
         OnKeyDown = Edit1KeyDown
         TabOrder = 0
@@ -184,18 +185,20 @@ object Form1: TForm1
         Left = 1
         Height = 22
         Top = 1
-        Width = 77
+        Width = 85
         Align = alLeft
         Caption = '>> Comando: '
         Layout = tlCenter
         ParentColor = False
       end
       object BitBtn1: TBitBtn
-        Left = 424
+        Left = 579
         Height = 22
         Top = 1
-        Width = 23
+        Width = 26
         Align = alRight
+        BorderSpacing.CellAlignHorizontal = ccaCenter
+        BorderSpacing.CellAlignVertical = ccaCenter
         Glyph.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000000000000000
@@ -232,6 +235,8 @@ object Form1: TForm1
           00000000000000000000D1B27532D3B17598D4B277D9D3B276F9D2B376F9D4B2
           77D9D4B37797D4B4743000000000000000000000000000000000
         }
+        GlyphShowMode = gsmAlways
+        Spacing = 0
         TabOrder = 1
       end
     end
@@ -365,18 +370,22 @@ object Form1: TForm1
     left = 400
     top = 119
     object MenuItem1: TMenuItem
-      Caption = '&Archivo'
+      Caption = 'file'
       object MenuItem11: TMenuItem
         Action = acProjFileNew
+        Caption = 'newProject'
       end
       object MenuItem10: TMenuItem
         Action = acProjFileOpen
+        Caption = 'open'
       end
       object MenuItem9: TMenuItem
         Action = acProjFileSave
+        Caption = 'save'
       end
       object MenuItem8: TMenuItem
         Action = acProjFileClose
+        Caption = 'close_'
       end
       object MenuItem2: TMenuItem
         Action = acProjFileOpen
@@ -384,48 +393,57 @@ object Form1: TForm1
       end
       object MenuItem12: TMenuItem
         Action = acProjFileLeave
+        Caption = 'exit'
       end
     end
     object MenuItem3: TMenuItem
-      Caption = '&Show'
+      Caption = 'view'
       object MenuItem4: TMenuItem
-        Caption = 'New Item8'
+        Caption = 'newitem8'
       end
       object MenuItem5: TMenuItem
         Action = acVerConView
       end
     end
     object MenuItem13: TMenuItem
-      Caption = '&Projecto'
+      Caption = 'project'
       object MenuItem22: TMenuItem
         Action = acProjAddPage
+        Caption = 'addPage'
       end
       object MenuItem20: TMenuItem
         Action = acProjInsRect
+        Caption = 'insertRectangle'
       end
       object MenuItem14: TMenuItem
         Action = acProjInsPolyline
+        Caption = 'insertPolyline'
       end
       object MenuItem19: TMenuItem
         Action = acProjProp
+        Caption = 'poroperties'
       end
     end
     object MenuItem23: TMenuItem
-      Caption = 'Pa&gina'
+      Caption = 'page'
       object MenuItem24: TMenuItem
         Action = acPageCamNom
+        Caption = 'rename'
       end
       object MenuItem25: TMenuItem
         Action = acPageRemove
+        Caption = 'remove'
       end
       object MenuItem26: TMenuItem
         Action = acPageProp
+        Caption = 'poroperties'
       end
     end
     object MenuItem6: TMenuItem
-      Caption = '&Herramientas'
+      Caption = 'tools'
       object MenuItem7: TMenuItem
         Action = acToolbarConfig
+        Caption = 'config'
       end
     end
   end
@@ -6211,15 +6229,18 @@ object Form1: TForm1
     top = 220
     object MenuItem21: TMenuItem
       Action = acProjAddPage
+      Caption = 'addPage'
     end
     object MenuItem15: TMenuItem
-      Caption = '&Insertar'
+      Caption = 'insert'
       object MenuItem16: TMenuItem
         Action = acProjInsPolyline
+        Caption = 'insertPolyline'
       end
     end
     object MenuItem18: TMenuItem
       Action = acProjProp
+      Caption = 'poroperties'
     end
   end
   object PopupObjects: TPopupMenu
@@ -6227,7 +6248,8 @@ object Form1: TForm1
     left = 216
     top = 296
     object MenuItem17: TMenuItem
-      Action = acProjInsPolyline
+      Action = acProjInsRect
+      Caption = 'insertPolyline'
     end
   end
   object PopupPage: TPopupMenu
@@ -6236,15 +6258,19 @@ object Form1: TForm1
     top = 220
     object MenuItem31: TMenuItem
       Action = acPageAddLine
+      Caption = 'addLine'
     end
     object MenuItem27: TMenuItem
       Action = acPageCamNom
+      Caption = 'rename'
     end
     object MenuItem28: TMenuItem
       Action = acPageRemove
+      Caption = 'remove'
     end
     object MenuItem29: TMenuItem
       Action = acPageProp
+      Caption = 'poroperties'
     end
   end
   object PopupView: TPopupMenu
@@ -6253,6 +6279,7 @@ object Form1: TForm1
     top = 296
     object MenuItem30: TMenuItem
       Action = acViewProp
+      Caption = 'poroperties'
     end
   end
 end

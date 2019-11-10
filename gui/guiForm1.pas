@@ -5,10 +5,11 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, ActnList, Menus,
-  StdCtrls, ComCtrls, LCLProc, LCLType, Buttons, MisUtils, guiFormConfig,
-  guiFrameCfgGeneral, sketchDocument, guiFramePaintBox, guiFormProject,
+  StdCtrls, ComCtrls, LCLProc, LCLType, Buttons,
+  sketchDocument, guiFramePaintBox, guiFormProject,
   glob, guiFrameProjExplorer, guiFormPerspective, guiFormViewProp,
-  sketchEditor;
+  sketchEditor,
+  Dialogs;
 
 const
   NUM_CUAD = 20;
@@ -81,8 +82,8 @@ type
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
     PageControl1: TPageControl;
-    Panel1: TPanel;
     panCommand: TPanel;
+    Panel1: TPanel;
     PopupView: TPopupMenu;
     PopupPage: TPopupMenu;
     PopupProject: TPopupMenu;
@@ -177,7 +178,7 @@ begin
   frExploreProj := TFrProjectExplorer.Create(self);
   frExploreProj.Parent := self;
   frExploreProj.Name := 'fraExpProy';
-  frExploreProj.Caption := 'Explorador de Proyectos1';
+  frExploreProj.Caption := msg.Get('ProjectExplorer');
   frExploreProj.OnClickRightProject := @fraExploreProj_ClickRightProj;
   frExploreProj.OnClickRightPage := @fraExploreProj_ClickRightPage;
   frExploreProj.OnClickRightView := @fraExploreProj_ClickRightView;
@@ -190,12 +191,86 @@ begin
   frExploreProj.Visible := True;
   panCommand.Align := alBottom;
   PageControl1.Align := alClient;
+
+  //translating
+  MenuItem1.Caption :=msg.get('file');
+  MenuItem11.Caption :=msg.get('newProject');
+  MenuItem10.Caption :=msg.get('open');
+  MenuItem9.Caption :=msg.get('save');
+  MenuItem8.Caption :=msg.get('close');
+  MenuItem2.Caption :='-';
+  MenuItem12.Caption :=msg.get('exit');
+  //
+  MenuItem3.Caption :=msg.get('view');
+  MenuItem4.Caption :=msg.get('newitem8');
+  MenuItem5.Caption :=msg.get('properties');
+  //
+  MenuItem13.Caption :=msg.get('project');
+  MenuItem22.Caption :=msg.get('addPage');
+  MenuItem20.Caption :=msg.get('insertRectangle');
+  MenuItem14.Caption :=msg.get('insertPolyline');
+  MenuItem19.Caption :=msg.get('properties');
+  //
+  MenuItem23.Caption :=msg.get('page');
+  MenuItem24.Caption :=msg.get('rename');
+  MenuItem25.Caption :=msg.get('remove');
+  MenuItem26.Caption :=msg.get('properties');
+  //
+  MenuItem6.Caption :=msg.get('tools');
+  MenuItem7.Caption :=msg.get('config');
+  //
+  MenuItem21.Caption :=msg.get('addPage');
+  MenuItem15.Caption :=msg.get('insert');
+  MenuItem16.Caption :=msg.get('insertPolyline');
+  MenuItem18.Caption :=msg.get('properties');
+  //
+  MenuItem17.Caption :=msg.get('insertPolyline');
+  //
+  MenuItem31.Caption :=msg.get('addLine');
+  MenuItem27.Caption :=msg.get('rename');
+  MenuItem28.Caption :=msg.get('remove');
+  MenuItem29.Caption :=msg.get('properties');
+  //
+  MenuItem30.Caption :=msg.get('properties');
+  // Toolbar1.
+  ToolButton1.Caption :=msg.get('rotate'); 
+  ToolButton2.Caption :=msg.get('rotate');
+  ToolButton3.Caption :=msg.get('rotate');
+  ToolButton4.Caption :=msg.get('ToolButton4');
+  ToolButton6.Caption :=msg.get('newProject');
+  ToolButton7.Caption :=msg.get('save');
+  ToolButton8.Caption :=msg.get('ToolButton8');
+  ToolButton9.Caption :=msg.get('config');
+  ToolButton10.Caption :=msg.get('open');
+  ToolButton5.Caption :=msg.get('viewSuperior');
+  ToolButton11.Caption :=msg.get('acProjInsRectan');
+  ToolButton12.Caption :=msg.get('insertPolyline');
+  ToolButton13.Caption :=msg.get('addLine');
+  //
+  TabSheet1.Caption :=msg.get('editor');
+  TabSheet2.Caption :=msg.get('TabSheet2');
+  //
+  Label1.Caption :=msg.get('commandPrompt');
+  //BitBtn1.Caption :=msg.get('');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
+  ToolButton13.Caption :=msg.get('addLine');
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
-  Config.Initiate(nil);  //Start the configuration
-  Config.OnPropertiesChanged := @ConfigPropertiesChanged;
   ConfigPropertiesChanged;
   Refresh;
   acProjFileNewExecute(self);
@@ -203,7 +278,7 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  Config.IniFileWrite();
+
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -228,38 +303,27 @@ end;
 procedure TForm1.ConfigPropertiesChanged;
 //Configuration properties are changed
 begin
-  StatusBar1.Visible := Config.fcGeneral.StatusBar;
-  ToolBar1.Visible := Config.fcGeneral.ToolBar;
-  case Config.fcGeneral.StateToolbar of
-    stb_SmallIcon:
-    begin
-      ToolBar1.ButtonHeight := 22;
-      ToolBar1.ButtonWidth := 22;
-      ToolBar1.Height := 26;
-      ToolBar1.Images := ImgActions16;
-    end;
-    stb_BigIcon:
-    begin
-      ToolBar1.ButtonHeight := 38;
-      ToolBar1.ButtonWidth := 38;
-      ToolBar1.Height := 42;
-      ToolBar1.Images := ImgActions32;
-    end;
-  end;
+  StatusBar1.Visible := true;
+  ToolBar1.Visible := true;
+  ToolBar1.ButtonHeight := 38;
+  ToolBar1.ButtonWidth := 38;
+  ToolBar1.Height := 42;
+  ToolBar1.Images := ImgActions32;
 end;
 
 function TForm1.MessageSaveChanges: integer;
 {Displays a window to confirm whether changes are saved or not. If selected
 cancel, the BUT_CANCEL value is returned.}
 var
-  answer: byte;
+  answer: Integer;
 begin
   if (curProject <> nil) and curProject.Modified then
   begin
-    answer := MsgYesNoCancel('El presupuesto ha sido modificado, ¿Guardar cambios?');
-    if answer = 3 then
+    answer := Application.MessageBox(PChar(msg.Get('ProjectModifiedSaveChanges')), 'Question',
+           (MB_ICONQUESTION + MB_YESNO));
+    if answer = IDNO then
       exit(BUT_CANCEL);
-    if answer = 1 then
+    if answer = IDYES then
       curProject.SaveFile;
   end;
   Result := 0;   //Default value
@@ -494,11 +558,13 @@ begin
   Refresh;
 end;
 
+
+
 procedure TForm1.acPageRemoveExecute(Sender: TObject);
 begin
   if curProject = nil then
     exit;
-  if MsgYesNo('¿Eliminar página "%s"?', [curProject.ActivePage.Name]) <> 1 then
+  if Application.MessageBox(PChar(msg.Get('AskPageDelete')+curProject.ActivePage.Name), '', (MB_ICONQUESTION + MB_YESNO)) <> IDYES then
     exit;
   curProject.RemovePage(curProject.ActivePage);
   Refresh;
@@ -506,7 +572,11 @@ end;
 
 procedure TForm1.acToolbarConfigExecute(Sender: TObject);
 begin
-  Config.doConfig();
+
 end;
+
+begin
+
+
 
 end.

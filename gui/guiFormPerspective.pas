@@ -4,7 +4,9 @@ unit guiFormPerspective;
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Spin, ExtCtrls, guiFramePaintBox;
+  Spin, ExtCtrls, guiFramePaintBox,
+  glob
+  ;
 type
 
   { TFormPerspective }
@@ -31,6 +33,7 @@ type
     procedure btnSetPerspectiveClick(Sender: TObject);
     procedure btnReadPerspectiveClick(Sender: TObject);
     procedure btnClearPerspectiveClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure spnAlfaClick(Sender: TObject);
     procedure spnAlfaMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -67,6 +70,23 @@ begin
   btnSetPerspectiveClick(self);
   fraEditor.PaintBox1.Invalidate;
 end;
+
+procedure TFormPerspective.FormCreate(Sender: TObject);
+begin
+  // setting captions
+  caption:=msg.get('view')+': '+msg.get('properties');
+  btnReadPerspective.caption:=msg.get('readPerspective');
+  Label5.caption:=msg.get('xpos');
+  Label6.caption:=msg.get('xpos');
+  btnClearPerspective.caption:=msg.get('clearPerspective');
+  Label8.caption:=msg.get('xoffs');
+  Label7.caption:=msg.get('yoffs');
+  btnSetPerspective.caption:=msg.get('setPerspective');
+  Label2.caption:=msg.get('alphaAngle');
+  Label3.caption:=msg.get('fiAngle');
+  Label4.caption:=msg.get('zoom');
+end;
+
 procedure TFormPerspective.btnSetPerspectiveClick(Sender: TObject);
 begin
   fraEditor.X_Offs := spnXpos.Value;

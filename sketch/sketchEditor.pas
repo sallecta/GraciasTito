@@ -46,7 +46,9 @@ unit sketchEditor;
 INTERFACE
 uses
   Classes, Controls, ExtCtrls, Graphics, LCLProc, LCLType, fgl,
-  MotGraf3d, sketchCore, sketchDxf;
+  MotGraf3d, sketchCore, sketchDxf,
+  glob
+  ;
 const
   ZOOM_MAX_EDITOR = 5  ;//Defines the maximal zoom allowed in a diagram
   ZOOM_MIN_EDITOR = 0.1;//Defines the minimal zoom allowed in a diagram
@@ -217,8 +219,7 @@ type
   end;
 
 implementation
-uses
-  guiFormConfig;
+
 
 procedure TEditor.SetState(AValue: TViewState);
 begin
@@ -797,23 +798,22 @@ Procedure that changes the mouse pointer. It is used to provide the "TGraphicObj
 begin
   PBox.Cursor := argPoint;        //define cursor
 end;
-//Rutinas de procesamiento de estados
 function TEditor.StateAsStr: string;
 {It must state as a descriptive string. It is necessary to update the desciprción
 for each new state that is being added.}
 begin
   case State of
-  VS_NORMAL      : Result := 'Normal';
-  VS_SELECTINGMULT   : Result := 'Selecc. Múltiple';
-  VS_OBJS_MOVING    : Result := 'Moviendo objects';
-  VS_SCREEN_SCROLLING   : Result := 'Desplaz. Pantalla';
-  VS_SCREEN_ANG    : Result := 'Rotando Pantalla';
-  VS_DIMEN_OBJ   : Result := 'Dimension.objects';
-  VS_ZOOMING    : Result := 'Zoom con ratón';
-  VS_CMD_ADDING_LINE   : Result := 'Modo línea';
-  VS_CMD_ADDING_RECTAN : Result := 'Modo Rectángulo';
+  VS_NORMAL      : Result := msg.get('stateNormal');
+  VS_SELECTINGMULT   : Result := msg.get('stateSelMultiple');
+  VS_OBJS_MOVING    : Result := msg.get('stateObjectsMoving');
+  VS_SCREEN_SCROLLING   : Result := msg.get('stateScreenScrolling');
+  VS_SCREEN_ANG    : Result := msg.get('stateScreenRotating');
+  VS_DIMEN_OBJ   : Result := msg.get('stateDimensioningObjects');
+  VS_ZOOMING    : Result := msg.get('stateMouseZooming');
+  VS_CMD_ADDING_LINE   : Result := msg.get('stateLineCreating');
+  VS_CMD_ADDING_RECTAN : Result := msg.get('stateRectangleCreating');
   else
-    Result := '<< Desconocido >>';
+    Result := msg.get('stateUnknown');
   end;
 end;
 procedure TEditor.RegisterState(argState: TViewState;
@@ -990,7 +990,7 @@ begin
         //Cancels all active commands
         RestoreState;
       end else begin
-        if OnSendMessage<>nil then OnSendMessage('Comando desconocido: "' + txt + '"');
+        if OnSendMessage<>nil then OnSendMessage(msg.get('CommandUnknown') + txt);
       end;
   end;
 end;
@@ -1123,19 +1123,19 @@ var
   xLine, yLine: Single;
 begin
   if step = 0 then begin
-    OnSendMessage('>> Ingrese punto inicial:');
+    OnSendMessage(msg.get('enterStartingPoint'));
     step := 1;
   end else if step = 1 then begin
     case EventType of
     vmeCmdStart: begin
       //We expect initial coordinates
       if txt = 'CANCEL' then begin
-        RestoreState('>> Comando:');
+        RestoreState(msg.get('commandPrompt'));
         step := 0;   //restart
         exit;
       end;
       if not GetCoords(txt, xLine, yLine) then begin
-        OnSendMessage('>> ERROR: Ingrese punto inicial:');
+        OnSendMessage(msg.get('errEnterStartPoint'));
         exit;
       end;
       //Add straight, with coord. given
@@ -1155,7 +1155,7 @@ begin
     end;
     GraphicObjectAdd(line);
     Refresh;
-    OnSendMessage('>> Ingrese siguiente punto ([C]errar):');
+    OnSendMessage(msg.get('enterFollowingPoint'));
     step := 2;
   end else if step = 2 then begin
     case EventType of
@@ -1164,7 +1164,7 @@ begin
         //The last straight line must be eliminated
         GraphicObjectDelete(line);   //It would be better, if done with an UNDO
         Refresh;
-        RestoreState('>> Comando:');  // Ends
+        RestoreState(msg.get('commandPrompt'));  // Ends
         step := 0;   //restart
         exit;
       end;
@@ -1176,7 +1176,7 @@ begin
         exit;
       end;
       if not GetCoords(txt, xLine, yLine) then begin
-        OnSendMessage('>> Ingrese siguiente punto ([C]errar):');
+        OnSendMessage(msg.get('enterNextPoint'));
         exit;
       end;
       line.SetP1(xLine, yLine, 0);
@@ -1188,7 +1188,7 @@ begin
       line.SetP1(xvPt, yvPt, 0);
       GraphicObjectAdd(line);
       Refresh;
-      OnSendMessage('>> Ingrese siguiente punto ([C]errar):');
+      OnSendMessage(msg.get('enterFollowingPoint'));
     end;
     vmeMouseMove: begin
       line.SetP1(xvPt, yvPt, 0);
@@ -1203,7 +1203,7 @@ begin
       line.SetP1(xvPt, yvPt, 0);
       GraphicObjectAdd(line);
       Refresh;
-      OnSendMessage('>> Ingrese siguiente punto:');
+      OnSendMessage(msg.get('enterNextPoint'));
     end;
     end;
   end;
@@ -1222,11 +1222,11 @@ begin
   case EventType of
   vmeCmdStart: begin
       if step = 0 then begin
-        OnSendMessage('>> Ingrese punto inicial:');
+        OnSendMessage(msg.get('enterStartingPoint'));
         step := 1;
       end else if step = 1 then begin
         if txt = 'CANCEL' then begin
-          RestoreState('>> Comando:');
+          RestoreState(msg.get('commandPrompt'));
           step := 0;
           exit;
         end;
@@ -1240,25 +1240,25 @@ begin
         line.SetP1(xvPt, yvPt, 0);
         GraphicObjectAdd(line);
         Refresh;
-        OnSendMessage('>> Ingrese siguiente punto:');
+        OnSendMessage(msg.get('enterNextPoint'));
         step := 2;
       end else if step = 2 then begin
         if txt = 'CANCEL' then begin
           //The last straight line must be eliminated
           GraphicObjectDelete(line);
           Refresh;
-          RestoreState('>> Comando:');
+          RestoreState(msg.get('commandPrompt'));
           step := 0;
           exit;
         end;
         if not GetCoords(txt, xline, yline) then begin
-          OnSendMessage('>> ERROR: Ingrese punto inicial:');
+          OnSendMessage(msg.get('errEnterStartPoint'));
           exit;
         end;
         line.SetP1(xline, yline, 0);
         Refresh;
 
-        RestoreState('>> Comando:');
+        RestoreState(msg.get('commandPrompt'));
         step := 0;
         line := nil;
       end;
@@ -1281,7 +1281,7 @@ begin
         line.SetP1(xvPt, yvPt, 0);
         GraphicObjectAdd(line);
         Refresh;
-        OnSendMessage('>> Ingrese siguiente punto:');
+        OnSendMessage(msg.get('enterNextPoint'));
         step := 2;
       end else if step = 2 then begin
         line.SetP1(xvPt, yvPt, 0);
@@ -1293,7 +1293,7 @@ begin
         line.SetP1(xvPt, yvPt, 0);
         GraphicObjectAdd(line);
         Refresh;
-        OnSendMessage('>> Ingrese siguiente punto:');
+        OnSendMessage(msg.get('enterNextPoint'));
       end;
     end;
   end;

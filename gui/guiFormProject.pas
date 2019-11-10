@@ -5,8 +5,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  EditBtn, StdCtrls, ButtonPanel, Buttons, ComCtrls, Spin, Menus, MisUtils,
-  BasicGrilla, sketchDocument, glob;
+  EditBtn, StdCtrls, ButtonPanel, Buttons, ComCtrls, Spin, Menus, sketchDocument, glob;
 
 type
   { TfrmProject }
@@ -46,6 +45,15 @@ implementation
 procedure TfrmProject.FormCreate(Sender: TObject);
 begin
   Accepted := False;
+
+  // captions
+  Caption:=msg.get('project');
+  TabSheet1.caption:=msg.get('general'); 
+  Label1.caption:=msg.get('name');
+  //
+  TabSheet3.caption:=msg.get('notes');
+  Label5.caption:=msg.get('author');
+  Label8.caption:=msg.get('notes');
 end;
 
 procedure TfrmProject.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -58,7 +66,7 @@ begin
   //Validate
   if trim(TeditName.Text) = '' then
   begin
-    MsgExc('Error en Cliente: ' + TeditName.Text);
+    ShowMessage('Error en Cliente: ' + TeditName.Text);
     TeditName.Visible := True;
     PageControl1.ActivePage := TTabSheet(TeditName.Parent);
     TeditName.SetFocus;
@@ -97,7 +105,7 @@ var
   projNameIndex: string;
 begin
   projNameIndex := '1';
-  argProj.Name := 'Proyecto' + projNameIndex;
+  argProj.Name := msg.Get('ProjectDefaultName') + projNameIndex;
   Result := Exec(argProj);
 end;
 

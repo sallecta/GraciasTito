@@ -6,7 +6,9 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, ComCtrls, StdCtrls, LCLType, ActnList,
-  sketchDocument, guiFramePaintBox, sketchCore;
+  sketchDocument, guiFramePaintBox, sketchCore,
+  glob
+  ;
 
 type
   TEvClickRightProj = procedure(Proj: TProject) of object;
@@ -235,7 +237,7 @@ begin
   if curProject^ = nil then
   begin
     //There is no current project
-    nodeProj := treeNav.items.AddChild(nil, '<<Sin Proyectos>>');
+    nodeProj := treeNav.items.AddChild(nil, '<<No Projects>>');
     exit;
   end;
   //There is an open project
@@ -251,12 +253,12 @@ begin
     nodePage.ImageIndex := IMIND_PAGE;
     nodePage.SelectedIndex := IMIND_PAGE;
     //Add graphic objects fields
-    nodeGeom := treeNav.items.AddChild(nodePage, 'objects Gráficos');
+    nodeGeom := treeNav.items.AddChild(nodePage, msg.get('documentObjects'));
     nodeGeom.ImageIndex := IMIND_GRAOBJ;
     nodeGeom.SelectedIndex := IMIND_GRAOBJ;
 
     for argGraphicObject in Page.View.objects do
-      nodeGraphicObj := treeNav.items.AddChild(nodeGeom, 'Objeto');
+      nodeGraphicObj := treeNav.items.AddChild(nodeGeom, msg.get('defaultObjName'));
     //Add field View
     nodeView := treeNav.items.AddChild(nodePage, 'View');
     nodeView.ImageIndex := IMIND_VIEW;

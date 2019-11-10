@@ -4,7 +4,9 @@ unit guiFormViewProp;
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  Buttons, StdCtrls, Spin, sketchDocument, guiFramePaintBox;
+  Buttons, StdCtrls, Spin, sketchDocument, guiFramePaintBox,
+  glob
+  ;
 type
 
   { TFormPropView }
@@ -21,6 +23,7 @@ type
     spnAxeDist: TSpinEdit;
     procedure btnAcceptClick(Sender: TObject);
     procedure btnApplyClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     View: TFrPaintBox;
   public
@@ -47,6 +50,20 @@ begin
   View.Editor.ShowRotPoint := chbShowRotPoint.Checked;
   View.Editor.ShowGrid   := chbShowGrid.Checked;
   View.Editor.Refresh;
+end;
+
+procedure TFormPropView.FormCreate(Sender: TObject);
+begin
+  // captions
+  Caption:=msg.get('view')+': '+msg.get('properties');
+  chbShowAxes.caption:=msg.get('showAxes');
+  Label1.caption:=msg.get('axesLength');
+  chbShowRotPoint.caption:=msg.get('showRotationPoint');
+  chbShowAxes.caption:=msg.get('showAxes');
+  chbShowGrid.caption:=msg.get('showGrid');
+  btnAccept.caption:=msg.get('ok');
+  btnCancel.caption:=msg.get('cancel');
+  btnApply.caption:=msg.get('apply');
 end;
 
 procedure TFormPropView.Exec(argView: TFrPaintBox);

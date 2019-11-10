@@ -10,7 +10,9 @@ interface
 
 uses
   Classes, Graphics, LCLProc, fgl,
-  MotGraf3d, sketchCore;
+  MotGraf3d, sketchCore,
+  glob
+  ;
 
 type
   //ObjType of graphic entity
@@ -70,7 +72,7 @@ begin
   inherited;
   ReconstructGeom;
   //It must be called after creating the control points to be able to locate them
-  Name := 'miObjeto';
+  Name := msg.get('objectExample');
 end;
 
 procedure TMyObject.RelocateElements;
@@ -140,7 +142,7 @@ begin
   pc1 := AddControlPoint(CPO_TOP_LEFT, @ControlPoint_1_Move);
   pcM := AddControlPoint(CPO_TOP_LEFT, @ControlPoint_M_Move);
   ReconstructGeom;//Control points must be called after CreateIt to be able to locate them
-  Name := 'Objeto';
+  Name := msg.get('defaultObjName');
 end;
 
 procedure TDxf.RelocateElements;

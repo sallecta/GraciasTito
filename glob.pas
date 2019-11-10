@@ -4,7 +4,8 @@ unit glob;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils,
+  toLang;
 
 const
   APP_NAME = 'GraciasTito';
@@ -12,6 +13,10 @@ const
 
 type
   TEvRefresh = procedure of object;
+  tlang = TtoLang; //get toLang object avialable in this module
+
+var
+  msg: tlang;
 
 procedure VerifyClose(Accepted, hasError: boolean; var CanClose: boolean);
 

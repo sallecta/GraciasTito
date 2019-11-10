@@ -10,7 +10,8 @@ unit sketchEvalExpres;
 {$mode objfpc}{$H+}
 interface
 
-uses  Classes, SysUtils, Math, Forms, LCLType;
+uses  Classes, SysUtils, Math, Forms, LCLType, glob
+  ;
 
 const
   CONTEXT_END = #0;    //Fin de contexto  End of context
@@ -137,7 +138,7 @@ begin
   begin //if it is text, a transformation is made
     //it may not be able to transform
     if not TryStrToFloat(ftxt, Result) then
-      chainError := 'Número inválido.';
+      chainError := msg.Get('InvalidNumber');
   end
   else if operand = OP_NUM then //If it is already numeric, the reading is direct
     Result := fNum
@@ -283,7 +284,7 @@ begin
   end
   else
   begin
-    GenError('Error en expresión. Se esperaba "' + argChar + '"');
+    GenError(msg.Get('ExpressionErrorDetails') + argChar );
     exit(False);
   end;
 end;
@@ -309,7 +310,7 @@ begin
   end;
   //it reached the end of the number
   if not TryStrToFloat(temp, n) then
-    GenError('Error en número: ' + temp, Context.col);
+    GenError(msg.Get('FailedStringToFloat') + temp, Context.col);
   Result := True;  //indicates that there was a number
 end;
 
@@ -324,7 +325,7 @@ begin
     exit(False);        //it is not constant string
   Context.GetCharAnMoveCursor;     //take the character
   s := '';         //start to accumulate
-  //search until find end of chain
+  //search until find end of string
   while not Context.atEndContext do
   begin
     aChar := Context.GetCharAnMoveCursor;
@@ -334,7 +335,7 @@ begin
       s += aChar;
   end;
   //it came to the end of the file
-  GenError('No se encontro fin de cadena');
+  GenError(msg.Get('EndOfStringNotFound'));
   Result := True;    //indicates that string was found
 end;
 
@@ -396,28 +397,28 @@ begin
     '-': Evaluate.valNum := Op1.valNum - Op2.valNum;
     '*': Evaluate.valNum := Op1.valNum * Op2.valNum;
     '/': if Op2.valNum = 0 then
-        GenError('No se puede dividir por cero.')
+        GenError(msg.Get('CantDevideByZero'))
       else
         Evaluate.valNum := Op1.valNum / Op2.valNum//error
       ;
     '\': if Op2.valNum = 0 then
-        GenError('No se puede dividir por cero.')
+        GenError(msg.Get('CantDevideByZero'))
       else
         Evaluate.valNum := round(Op1.valNum) div round(Op2.valNum)//error
       ;
     '%': if Op2.valNum = 0 then
-        GenError('No se puede dividir por cero.')
+        GenError(msg.Get('CantDevideByZero'))
       else
         Evaluate.valNum := round(Op1.valNum) mod round(Op2.valNum)//error
       ;
     '^': if (Op2.valNum = 0) and (Op2.valNum = 0) then
-        GenError('No se puede Evaluate 0^0')
+        GenError(msg.Get('CantEvaluate0of0'))
       else
         Evaluate.valNum := power(Op1.valNum, Op2.valNum)//error
       ;
     else
     begin
-      GenError('No se reconoce operador: ' + opr, Context.col);
+      GenError(msg.Get('NoOperatorRecognized') + opr, Context.col);
       Exit;
     end;
   end;
@@ -459,7 +460,7 @@ begin
         exit;
       end;
     //It is not variable or function.
-    GenError('Función o variable desconocida: ' + aChain, Context.col);
+    GenError(msg.Get('UnknownFuncOrVar') + aChain, Context.col);
     Result.txt := '';
   end
   else if ContextIsString(aChain) then
@@ -586,7 +587,7 @@ begin
     exit;
   //Check if you finished processing the entire line
   if not Context.atEndContext then
-    GenError('Error de sintaxis.');
+    GenError(msg.Get('SyntaxError'));
 end;
 
 procedure TEvalExpres.GenError(argMsg: string; col: integer = -1);

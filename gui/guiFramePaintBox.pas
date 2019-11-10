@@ -54,7 +54,7 @@ type
     OnMouseMoveVirt: TEvMousePaintBox;
     OnChangeState: TEvChangeState;
     OnSendMessage: TEvSendMessage;
-    procedure GraphicObjectsDeleteAll;
+    procedure documentObjectsDeleteAll;
   public
     property X_Offs: integer read Get_X_Offs write Set_X_Offs;
     property Y_Offs: integer read Get_Y_Offs write Set_Y_Offs;
@@ -75,7 +75,7 @@ implementation
 
 {$R *.lfm}
 
-procedure TFrPaintBox.GraphicObjectsDeleteAll;
+procedure TFrPaintBox.documentObjectsDeleteAll;
 begin
   if objects.Count = 0 then
     exit;
