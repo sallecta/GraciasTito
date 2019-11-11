@@ -118,7 +118,7 @@ object Form1: TForm1
     Color = clMenuBar
     ParentColor = False
     TabOrder = 1
-    inline frameProjectExplorer1: TframeProjectExplorer
+    inline frameProjectExplorer: TframeProjectExplorer
       AnchorSideLeft.Control = WrapperMiddle
       AnchorSideTop.Control = WrapperMiddle
       AnchorSideRight.Control = splitterVert1
@@ -147,7 +147,7 @@ object Form1: TForm1
       end
     end
     object splitterVert1: TSplitter
-      AnchorSideLeft.Control = frameProjectExplorer1
+      AnchorSideLeft.Control = frameProjectExplorer
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = WrapperMiddle
       AnchorSideBottom.Control = WrapperMiddle
@@ -417,7 +417,7 @@ object Form1: TForm1
       Category = 'File'
       Caption = 'Nuevo &Proyecto...'
       ImageIndex = 2
-      OnExecute = acProjFileNewExecute
+      OnExecute = acProjNew_onExecute
       ShortCut = 16462
     end
     object acProjFileOpen: TAction

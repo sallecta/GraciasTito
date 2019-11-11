@@ -51,7 +51,7 @@
         <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="uFormPerspective.pas"/>
+        <Filename Value="forms/uFormPerspective.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="formPerspective"/>
         <HasResources Value="True"/>
@@ -62,7 +62,7 @@
         <IsPartOfProject Value="True"/>
       </Unit4>
       <Unit5>
-        <Filename Value="uFormProject.pas"/>
+        <Filename Value="forms/uFormProject.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="formProject"/>
         <HasResources Value="True"/>
@@ -95,7 +95,7 @@
         <ResourceBaseClass Value="Form"/>
       </Unit10>
       <Unit11>
-        <Filename Value="gui/uFramePaintBox.pas"/>
+        <Filename Value="frames/uFramePaintBox.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="framePaintBox"/>
         <HasResources Value="True"/>

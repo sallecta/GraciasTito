@@ -237,8 +237,7 @@ begin
     if OnMouseDown<>nil then OnMouseDown(Sender, Button, Shift, Xp, Yp);
     x_mouse := xp;
     y_mouse := yp;
-    //Prepares start of scrolling the screen. It must be done because it could
-     // start the Processing of displacement.
+    //Prepares start of scrolling the screen.
     x_cam_prev := VirtScreen.x_cam;
     y_cam_prev := VirtScreen.y_cam;
 
