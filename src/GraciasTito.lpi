@@ -40,7 +40,7 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="gui/guiForm1.pas"/>
+        <Filename Value="forms/uFormForm1.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
@@ -51,9 +51,9 @@
         <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="gui/guiFormPerspective.pas"/>
+        <Filename Value="uFormPerspective.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormPerspective"/>
+        <ComponentName Value="formPerspective"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit3>
@@ -62,9 +62,9 @@
         <IsPartOfProject Value="True"/>
       </Unit4>
       <Unit5>
-        <Filename Value="gui/guiFormProject.pas"/>
+        <Filename Value="uFormProject.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="frmProject"/>
+        <ComponentName Value="formProject"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit5>
@@ -73,9 +73,9 @@
         <IsPartOfProject Value="True"/>
       </Unit6>
       <Unit7>
-        <Filename Value="gui/guiFrameProjExplorer.pas"/>
+        <Filename Value="frames/uFramePojectExplorer.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FrProjectExplorer"/>
+        <ComponentName Value="frameProjectExplorer"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit7>
@@ -88,16 +88,16 @@
         <IsPartOfProject Value="True"/>
       </Unit9>
       <Unit10>
-        <Filename Value="gui/guiFormViewProp.pas"/>
+        <Filename Value="forms/uFormViewProp.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormPropView"/>
+        <ComponentName Value="formViewProp"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit10>
       <Unit11>
-        <Filename Value="gui/guiFramePaintBox.pas"/>
+        <Filename Value="gui/uFramePaintBox.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FrPaintBox"/>
+        <ComponentName Value="framePaintBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit11>
@@ -106,9 +106,9 @@
         <IsPartOfProject Value="True"/>
       </Unit12>
       <Unit13>
-        <Filename Value="gui/guiFrameEditor.pas"/>
+        <Filename Value="frames/uFrameEditor.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="fraEditor"/>
+        <ComponentName Value="frameEditor"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit13>
@@ -125,7 +125,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="units/MotGraf_5at_9Jan2017;gui;sketch;units/toLang"/>
+      <OtherUnitFiles Value="forms;frames;sketch;units/toLang;units/MotGraf_5at_9Jan2017"/>
       <UnitOutputDirectory Value="../ignore/lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

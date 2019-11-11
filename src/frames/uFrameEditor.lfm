@@ -1,4 +1,4 @@
-object FrPaintBox: TFrPaintBox
+object frameEditor: TFrameEditor
   Left = 0
   Height = 298
   Top = 0
@@ -6,8 +6,8 @@ object FrPaintBox: TFrPaintBox
   ClientHeight = 298
   ClientWidth = 368
   TabOrder = 0
-  DesignLeft = 388
-  DesignTop = 331
+  DesignLeft = 253
+  DesignTop = 260
   object PaintBox1: TPaintBox
     Left = 0
     Height = 298

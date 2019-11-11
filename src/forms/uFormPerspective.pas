@@ -1,10 +1,10 @@
 {}
-unit guiFormPerspective;
+unit uFormPerspective;
 {$mode objfpc}{$H+}
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Spin, ExtCtrls, guiFramePaintBox,
+  Spin, ExtCtrls, uFramePaintBox,
   glob
   ;
 type
@@ -38,28 +38,28 @@ type
     procedure spnAlfaMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-    fraEditor: TFrPaintBox;
+    frameEditor: TFramePaintBox;
   public
-    procedure Exec(argFraEditor: TFrPaintBox);
+    procedure Exec(argFraEditor: TFramePaintBox);
   end;
 
 var
-  FormPerspective: TFormPerspective;
+  formPerspective: TFormPerspective;
 
 implementation
 {$R *.lfm}
 
 procedure TFormPerspective.btnReadPerspectiveClick(Sender: TObject);
 begin
-  spnXpos.Value:= fraEditor.X_Offs;
-  spnYpos.Value:= fraEditor.Y_Offs;
+  spnXpos.Value:= frameEditor.X_Offs;
+  spnYpos.Value:= frameEditor.Y_Offs;
 
-  spnXoffest.Value := fraEditor.X_Cam;
-  spnYoffest.Value := fraEditor.Y_Cam;
+  spnXoffest.Value := frameEditor.X_Cam;
+  spnYoffest.Value := frameEditor.Y_Cam;
 
-  spnAlfa.Value := fraEditor.Alfa;
-  spnFi.Value   := fraEditor.Fi;
-  spnZoom.Value := fraEditor.Zoom;
+  spnAlfa.Value := frameEditor.Alfa;
+  spnFi.Value   := frameEditor.Fi;
+  spnZoom.Value := frameEditor.Zoom;
 
 end;
 procedure TFormPerspective.btnClearPerspectiveClick(Sender: TObject);
@@ -68,7 +68,7 @@ begin
   spnFi.Value := 0;
   spnZoom.Value := 1;
   btnSetPerspectiveClick(self);
-  fraEditor.PaintBox1.Invalidate;
+  frameEditor.PaintBox1.Invalidate;
 end;
 
 procedure TFormPerspective.FormCreate(Sender: TObject);
@@ -89,16 +89,16 @@ end;
 
 procedure TFormPerspective.btnSetPerspectiveClick(Sender: TObject);
 begin
-  fraEditor.X_Offs := spnXpos.Value;
-  fraEditor.Y_Offs := spnYpos.Value;
+  frameEditor.X_Offs := spnXpos.Value;
+  frameEditor.Y_Offs := spnYpos.Value;
 
-  fraEditor.X_Cam  := spnXoffest.Value;
-  fraEditor.Y_Cam  := spnYoffest.Value;
+  frameEditor.X_Cam  := spnXoffest.Value;
+  frameEditor.Y_Cam  := spnYoffest.Value;
 
-  fraEditor.Alfa:=spnAlfa.Value;
-  fraEditor.Fi:=spnFi.Value;
-  fraEditor.Zoom:=spnZoom.Value;
-  fraEditor.PaintBox1.Invalidate;
+  frameEditor.Alfa:=spnAlfa.Value;
+  frameEditor.Fi:=spnFi.Value;
+  frameEditor.Zoom:=spnZoom.Value;
+  frameEditor.PaintBox1.Invalidate;
 end;
 
 procedure TFormPerspective.spnAlfaClick(Sender: TObject);
@@ -111,9 +111,9 @@ begin
   btnSetPerspectiveClick(self);
 end;
 
-procedure TFormPerspective.Exec(argFraEditor: TFrPaintBox);
+procedure TFormPerspective.Exec(argFraEditor: TFramePaintBox);
 begin
-  fraEditor:= argFraEditor;
+  frameEditor:= argFraEditor;
   self.Show;
 end;
 

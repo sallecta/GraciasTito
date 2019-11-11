@@ -1,10 +1,11 @@
-object FrProjectExplorer: TFrProjectExplorer
+object frameProjectExplorer: TframeProjectExplorer
   Left = 0
   Height = 480
   Top = 0
   Width = 170
   ClientHeight = 480
   ClientWidth = 170
+  LCLVersion = '2.0.6.0'
   TabOrder = 0
   DesignLeft = 319
   DesignTop = 215

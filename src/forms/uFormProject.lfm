@@ -1,4 +1,4 @@
-object frmProject: TfrmProject
+object formProject: TFormProject
   Left = 813
   Height = 395
   Top = 72

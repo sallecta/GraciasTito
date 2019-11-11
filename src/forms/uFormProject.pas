@@ -1,4 +1,4 @@
-unit guiFormProject;
+unit uFormProject;
 
 {$mode objfpc}{$H+}
 interface
@@ -8,8 +8,8 @@ uses
   EditBtn, StdCtrls, ButtonPanel, Buttons, ComCtrls, Spin, Menus, sketchDocument, glob;
 
 type
-  { TfrmProject }
-  TfrmProject = class(TForm)
+  { TFormProject }
+  TFormProject = class(TForm)
     ButtonPanel1: TButtonPanel;
     Label1: TLabel;
     MainMenu1: TMainMenu;
@@ -36,13 +36,13 @@ type
   end;
 
 var
-  frmProject: TfrmProject;
+  formProject: TFormProject;
 
 implementation
 
 {$R *.lfm}
-{ TfrmProject }
-procedure TfrmProject.FormCreate(Sender: TObject);
+{ TFormProject }
+procedure TFormProject.FormCreate(Sender: TObject);
 begin
   Accepted := False;
 
@@ -56,12 +56,12 @@ begin
   Label8.caption:=msg.get('notes');
 end;
 
-procedure TfrmProject.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+procedure TFormProject.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   VerifyClose(Accepted, ErrorData, CanClose);
 end;
 
-procedure TfrmProject.OKButtonClick(Sender: TObject);
+procedure TFormProject.OKButtonClick(Sender: TObject);
 begin
   //Validate
   if trim(TeditName.Text) = '' then
@@ -80,12 +80,12 @@ begin
   Accepted := True;
 end;
 
-procedure TfrmProject.CancelButtonClick(Sender: TObject);
+procedure TFormProject.CancelButtonClick(Sender: TObject);
 begin
   Accepted := False;
 end;
 
-function TfrmProject.Exec(argProj: TProject; soloRead: boolean = False): boolean;
+function TFormProject.Exec(argProj: TProject; soloRead: boolean = False): boolean;
 begin
   aProject := argProj;
 
@@ -99,7 +99,7 @@ begin
   Result := Accepted;
 end;
 
-function TfrmProject.ExecNew(argProj: TProject): boolean;
+function TFormProject.ExecNew(argProj: TProject): boolean;
 
 var
   projNameIndex: string;

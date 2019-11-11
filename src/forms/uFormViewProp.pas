@@ -1,17 +1,17 @@
 
-unit guiFormViewProp;
+unit uFormViewProp;
 {$mode objfpc}{$H+}
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  Buttons, StdCtrls, Spin, sketchDocument, guiFramePaintBox,
+  Buttons, StdCtrls, Spin, sketchDocument, uFramePaintBox,
   glob
   ;
 type
 
-  { TFormPropView }
+  { TFormViewProp }
 
-  TFormPropView = class(TForm)
+  TFormViewProp = class(TForm)
     btnApply: TBitBtn;
     btnCancel: TBitBtn;
     btnAccept: TBitBtn;
@@ -25,25 +25,25 @@ type
     procedure btnApplyClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    View: TFrPaintBox;
+    View: TFramePaintBox;
   public
-    procedure Exec(argView: TFrPaintBox);
+    procedure Exec(argView: TFramePaintBox);
   end;
 
 var
-  FormPropView: TFormPropView;
+  formViewProp: TFormViewProp;
 
 implementation
 {$R *.lfm}
 
-{ TFormPropView }
+{ TFormViewProp }
 
-procedure TFormPropView.btnAcceptClick(Sender: TObject);
+procedure TFormViewProp.btnAcceptClick(Sender: TObject);
 begin
   btnApplyClick(self);
 end;
 
-procedure TFormPropView.btnApplyClick(Sender: TObject);
+procedure TFormViewProp.btnApplyClick(Sender: TObject);
 begin
   View.Editor.ShowAxes  := chbShowAxes.Checked;
   View.Editor.AxesDistance  := spnAxeDist.Value;
@@ -52,7 +52,7 @@ begin
   View.Editor.Refresh;
 end;
 
-procedure TFormPropView.FormCreate(Sender: TObject);
+procedure TFormViewProp.FormCreate(Sender: TObject);
 begin
   // captions
   Caption:=msg.get('view')+': '+msg.get('properties');
@@ -66,7 +66,7 @@ begin
   btnApply.caption:=msg.get('apply');
 end;
 
-procedure TFormPropView.Exec(argView: TFrPaintBox);
+procedure TFormViewProp.Exec(argView: TFramePaintBox);
 begin
   View := argView;
   chbShowAxes.Checked    := View.Editor.ShowAxes;

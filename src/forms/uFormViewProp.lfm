@@ -1,4 +1,4 @@
-object FormPropView: TFormPropView
+object formViewProp: TFormViewProp
   Left = 890
   Height = 297
   Top = 111

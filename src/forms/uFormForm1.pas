@@ -1,4 +1,4 @@
-unit guiForm1;
+unit uFormForm1;
 
 {$mode objfpc}{$H+}
 interface
@@ -6,8 +6,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, ActnList, Menus,
   StdCtrls, ComCtrls, LCLProc, LCLType, Buttons,
-  sketchDocument, guiFramePaintBox, guiFormProject,
-  glob, guiFrameProjExplorer, guiFormPerspective, guiFormViewProp,
+  sketchDocument, uFramePaintBox, uFormProject,
+  glob, uFramePojectExplorer, uFormPerspective, uFormViewProp,
   sketchEditor,
   Dialogs;
 
@@ -40,10 +40,12 @@ type
     acViewProp: TAction;
     acVerViewSup: TAction;
     acVerConView: TAction;
-    BitBtn1: TBitBtn;
-    Edit1: TEdit;
-    Label1: TLabel;
-    Memo1: TMemo;
+    cmdInput: TEdit;
+    cmdInputLabel: TLabel;
+    cmdInputWrapper: TPanel;
+    cmdMessages: TMemo;
+    cmdRunBtn: TSpeedButton;
+    frameProjectExplorer1: TframeProjectExplorer;
     MenuItem10: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
@@ -82,16 +84,17 @@ type
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
     PageControl1: TPageControl;
-    panCommand: TPanel;
-    Panel1: TPanel;
+    Splitter1: TSplitter;
+    splitterVert1: TSplitter;
+    StatusBar: TStatusBar;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    WrapperBottom: TPanel;
+    WrapperMiddle: TPanel;
     PopupView: TPopupMenu;
     PopupPage: TPopupMenu;
     PopupProject: TPopupMenu;
     PopupObjects: TPopupMenu;
-    Splitter2: TSplitter;
-    StatusBar1: TStatusBar;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     ToolButton10: TToolButton;
@@ -117,17 +120,24 @@ type
     procedure acVerConViewExecute(Sender: TObject);
     procedure acVerViewSupExecute(Sender: TObject);
     procedure acViewPropExecute(Sender: TObject);
-    procedure Edit1KeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
+    procedure cmdMessagesChange(Sender: TObject);
+    procedure cmdRunBtnClick(Sender: TObject);
+    procedure cmdInputKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure acToolbarConfigExecute(Sender: TObject);
+    procedure SplitterHorCanOffset(Sender: TObject; var NewOffset: Integer;
+      var Accept: Boolean);
+    procedure WrapperBottomClick(Sender: TObject);
+    procedure Label2Click(Sender: TObject);
+    procedure PageControl1Change(Sender: TObject);
   private
     curProject: TProject;
     ExploreProjPage: TDocPage;     //page selected in the project explorer
-    ExploreProjView: TFrPaintBox;  //View selected in the project explorer
+    ExploreProjView: TFramePaintBox;  //View selected in the project explorer
     procedure ConfigPropertiesChanged;
     procedure curProjectActivePageViewSendMessage(msg: string);
     procedure curProject_Modified;
@@ -137,13 +147,13 @@ type
     procedure curProject_ChangeActivePage;
     procedure fraExploreProj_ClickRightPage(Page: TDocPage);
     procedure fraExploreProj_ClickRightProj(Proj: TProject);
-    procedure fraExploreProj_ClickRightView(View: TFrPaintBox);
-    procedure curProject_ChangeView(View: TFrPaintBox);
+    procedure fraExploreProj_ClickRightView(View: TFramePaintBox);
+    procedure curProject_ChangeView(View: TFramePaintBox);
     function MessageSaveChanges: integer;
     procedure form1SetCaption;
     procedure Refresh;
   public
-    frExploreProj: TFrProjectExplorer;  //Project Explorer
+    //frameProjectExplorer1: TframeProjectExplorer;  //Project Explorer
   end;
 
 var
@@ -166,7 +176,7 @@ begin
   PopupPage.PopUp;
 end;
 
-procedure TForm1.fraExploreProj_ClickRightView(View: TFrPaintBox);
+procedure TForm1.fraExploreProj_ClickRightView(View: TFramePaintBox);
 begin
   ExploreProjView := View;
   PopupView.PopUp;
@@ -175,22 +185,21 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   //Configure Project Explorer
-  frExploreProj := TFrProjectExplorer.Create(self);
-  frExploreProj.Parent := self;
-  frExploreProj.Name := 'fraExpProy';
-  frExploreProj.Caption := msg.Get('ProjectExplorer');
-  frExploreProj.OnClickRightProject := @fraExploreProj_ClickRightProj;
-  frExploreProj.OnClickRightPage := @fraExploreProj_ClickRightPage;
-  frExploreProj.OnClickRightView := @fraExploreProj_ClickRightView;
-  frExploreProj.OnDeletePage := @acPageRemoveExecute;
-  frExploreProj.Initiate(@curProject);
+  //frameProjectExplorer1 := TframeProjectExplorer.Create(self);
+  //frameProjectExplorer1.Parent := self;
+  frameProjectExplorer1.Name := 'frameProjectExplorer1';
+  frameProjectExplorer1.OnClickRightProject := @fraExploreProj_ClickRightProj;
+  frameProjectExplorer1.OnClickRightPage := @fraExploreProj_ClickRightPage;
+  frameProjectExplorer1.OnClickRightView := @fraExploreProj_ClickRightView;
+  frameProjectExplorer1.OnDeletePage := @acPageRemoveExecute;
+  frameProjectExplorer1.Initiate(@curProject);
 
   //Set the alignment
-  frExploreProj.Align := alLeft;
-  Splitter2.Align := alLeft;
-  frExploreProj.Visible := True;
-  panCommand.Align := alBottom;
-  PageControl1.Align := alClient;
+  //frameProjectExplorer1.Align := alLeft;
+  //SplitterVert.Align := alLeft;
+  //frameProjectExplorer1.Visible := True;
+  //WrapperBottom.Align := alBottom;
+  //PageControl1.Align := alClient;
 
   //translating
   MenuItem1.Caption :=msg.get('file');
@@ -250,8 +259,8 @@ begin
   TabSheet1.Caption :=msg.get('editor');
   TabSheet2.Caption :=msg.get('TabSheet2');
   //
-  Label1.Caption :=msg.get('commandPrompt');
-  //BitBtn1.Caption :=msg.get('');
+  cmdInputLabel.Caption :=msg.get('commandPrompt');
+  //btnRubtnRunCmd_oldion :=msg.get('');
   ToolButton13.Caption :=msg.get('addLine');
   ToolButton13.Caption :=msg.get('addLine');
   ToolButton13.Caption :=msg.get('addLine');
@@ -267,6 +276,8 @@ begin
   ToolButton13.Caption :=msg.get('addLine');
   ToolButton13.Caption :=msg.get('addLine');
   ToolButton13.Caption :=msg.get('addLine');
+  //
+  frameProjectExplorer1.Caption := msg.Get('ProjectExplorer');
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
@@ -294,16 +305,16 @@ begin
     exit;
   //Send all commands to the command box
   if TabSheet1.Focused then
-    edit1.SetFocus//pass the focus
+    cmdInput.SetFocus//pass the focus
   else if PageControl1.Focused then
-    edit1.SetFocus//pass the focus
+    cmdInput.SetFocus//pass the focus
   ;
 end;
 
 procedure TForm1.ConfigPropertiesChanged;
 //Configuration properties are changed
 begin
-  StatusBar1.Visible := true;
+  StatusBar.Visible := true;
   ToolBar1.Visible := true;
   ToolBar1.ButtonHeight := 38;
   ToolBar1.ButtonWidth := 38;
@@ -342,7 +353,7 @@ procedure TForm1.Refresh;
 {Rerfresca the entire interface}
 begin
   form1SetCaption;
-  frExploreProj.Refresh;   //Refresh project explorer
+  frameProjectExplorer1.Refresh;   //Refresh project explorer
 end;
 
 procedure TForm1.curProject_Modified;
@@ -353,24 +364,24 @@ end;
 
 procedure TForm1.curProject_ChangeState(ViewState: TViewState);
 begin
-  StatusBar1.Panels[0].Text := curProject.ActivePage.View.StateAsStr;
+  StatusBar.Panels[0].Text := curProject.ActivePage.View.StateAsStr;
 end;
 
 procedure TForm1.curProject_MouseMoveVirt(Shift: TShiftState;
   xp, yp: integer; xv, yv, zv: single);
 begin
-  StatusBar1.Panels[3].Text :=
+  StatusBar.Panels[3].Text :=
     'x=' + formatfloat('0.00', xv) + ' ' + 'y=' + formatfloat('0.00', yv) +
     ' ' + 'z=' + formatfloat('0.00', zv);
 end;
 
-procedure TForm1.curProject_ChangeView(View: TFrPaintBox);
+procedure TForm1.curProject_ChangeView(View: TFramePaintBox);
 begin
-  StatusBar1.Panels[1].Text :=
+  StatusBar.Panels[1].Text :=
     'Alfa=' + formatfloat('0.00', View.Alfa) + ' ' + 'Fi=' +
     formatfloat('0.00', View.Fi);
   //FloatToStr(fraMotEdicion.Alfa);
-  StatusBar1.Panels[2].Text :=
+  StatusBar.Panels[2].Text :=
     'Zoom=' + formatfloat('0.00', View.Zoom);
 end;
 
@@ -411,7 +422,7 @@ begin
   ;
 end;
 
-procedure TForm1.Edit1KeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
+procedure TForm1.cmdInputKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
 var
   strCmd: string;
 begin
@@ -419,7 +430,7 @@ begin
     exit;
   if key = VK_RETURN then
   begin
-    strCmd := trim(edit1.Text);
+    strCmd := trim(cmdInput.Text);
     if strCmd = '' then
       exit;
     strCmd := UpCase(strCmd);  //Convert upper case
@@ -434,9 +445,9 @@ end;
 procedure TForm1.curProjectActivePageViewSendMessage(msg: string);
 {A message has arrived from the project}
 begin
-  Memo1.Lines.Add(Edit1.Text);
-  Label1.Caption := msg;
-  Edit1.Text := '';
+  cmdMessages.Lines.Add(cmdInput.Text);
+  cmdInputLabel.Caption := msg;
+  cmdInput.Text := '';
 end;
 ///////////////////////////// Actions ///////////////////////////////
 procedure TForm1.acProjFileNewExecute(Sender: TObject);
@@ -448,7 +459,7 @@ begin
     exit;
   //Create temporary project
   tmpProj := TProject.Create;
-  if not frmProject.ExecNew(tmpProj) then
+  if not formProject.ExecNew(tmpProj) then
   begin
     //it was canceled
     tmpProj.Destroy;  //It will not work
@@ -490,7 +501,7 @@ procedure TForm1.acVerConViewExecute(Sender: TObject);
 begin
   if curProject = nil then
     exit;
-  FormPerspective.Exec(curProject.ActivePage.View);
+  formPerspective.Exec(curProject.ActivePage.View);
 end;
 
 procedure TForm1.acVerViewSupExecute(Sender: TObject);
@@ -504,7 +515,17 @@ end;
 
 procedure TForm1.acViewPropExecute(Sender: TObject);
 begin
-  FormPropView.Exec(ExploreProjView);
+  formViewProp.Exec(ExploreProjView);
+end;
+
+procedure TForm1.cmdMessagesChange(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.cmdRunBtnClick(Sender: TObject);
+begin
+
 end;
 
 procedure TForm1.acProjAddPageExecute(Sender: TObject);
@@ -519,10 +540,10 @@ procedure TForm1.acProjPropExecute(Sender: TObject);
 begin
   if curProject = nil then
     exit;
-  if frmProject.Exec(curProject) then
+  if formProject.Exec(curProject) then
   begin
     curProject.Modified := True;
-    frExploreProj.Refresh;
+    frameProjectExplorer1.Refresh;
   end;
 end;
 
@@ -571,6 +592,27 @@ begin
 end;
 
 procedure TForm1.acToolbarConfigExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.SplitterHorCanOffset(Sender: TObject; var NewOffset: Integer;
+  var Accept: Boolean);
+begin
+
+end;
+
+procedure TForm1.WrapperBottomClick(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.Label2Click(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.PageControl1Change(Sender: TObject);
 begin
 
 end;

@@ -7,8 +7,8 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, guiForm1, sketchEvalExpres, guiFormPerspective,
-  guiFormProject, guiFrameProjExplorer, guiFormViewProp, sketchDxf, sketchCore,
+  Forms, uFormForm1, sketchEvalExpres, uFormPerspective,
+  uFormProject, uFramePojectExplorer, uFormViewProp, sketchDxf, sketchCore,
   sketchEditor, toLang, glob
   { you can add units after this };
 
@@ -20,9 +20,9 @@ begin
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
-  Application.CreateForm(TFormPerspective, FormPerspective);
-  Application.CreateForm(TfrmProject, frmProject);
-  Application.CreateForm(TFormPropView, FormPropView);
+  Application.CreateForm(TFormPerspective, formPerspective);
+  Application.CreateForm(TFormProject, formProject);
+  Application.CreateForm(TFormViewProp, formViewProp);
   Application.Run;
 end.
 

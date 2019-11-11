@@ -7,7 +7,7 @@ graphic objects with which our application will work.
 
                                                By Tito Hinostroza 05/11/2014
 }
-unit guiFrameEditor;
+unit uFrameEditor;
 {$mode objfpc}{$H+}
 interface
 
@@ -17,9 +17,9 @@ uses
 type
   TOnObjectsRemove = procedure of object;
 
-  { TfraEditor }
+  { TFrameEditor }
 
-  TfraEditor = class(TFrame)
+  TFrameEditor = class(TFrame)
   published
     PaintBox1: TPaintBox;
   private
@@ -64,7 +64,7 @@ type
 implementation
 {$R *.lfm}
 
-procedure TfraEditor.GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean = true);
+procedure TFrameEditor.GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean = true);
 {Add a graphic object to the editor. The graphic object must have been created previously,
 and be of type TGraphicObj or a descendant. "AutoPos", allows automatic positioning
 to the object on the screen, so that you avoid putting it always in the same position.}
@@ -83,7 +83,7 @@ begin
   argGraphicObject.OnCamPoint := @Editor.GraphicObject_SetPointer;
   objects.Add(argGraphicObject);
 end;
-procedure TfraEditor.GraphicObjectDelete(argObj: TGraphicObj);
+procedure TFrameEditor.GraphicObjectDelete(argObj: TGraphicObj);
 begin
   Modified := True;
   argObj.Deselect;
@@ -91,7 +91,7 @@ begin
   argObj := nil;
   if OnObjectsRemove<>nil then OnObjectsRemove;
 End;
-procedure TfraEditor.documentObjectsDeleteAll;
+procedure TFrameEditor.documentObjectsDeleteAll;
 //Remove all existing graphic objects
 begin
   if objects.Count=0 then exit;
@@ -102,7 +102,7 @@ begin
   Modified := true;
   if OnObjectsRemove<>nil then OnObjectsRemove;
 End;
-procedure TfraEditor.DeleteSelected;
+procedure TFrameEditor.DeleteSelected;
 // Remove the selection.
 var
   gobj: TGraphicObj;
@@ -117,7 +117,7 @@ begin
   Editor.Refresh;
 end;
 
-function TfraEditor.ObjectAdd: TMyObject;
+function TFrameEditor.ObjectAdd: TMyObject;
 //Add an object of type TMiObject to the editor.
 var obj: TMyObject;
 begin
@@ -126,70 +126,70 @@ begin
   Result := obj;
 end;
 
-function TfraEditor.Get_X_Offs: integer;
+function TFrameEditor.Get_X_Offs: integer;
 begin
   Result := Editor.VirtScreen.x_offs;
 end;
-procedure TfraEditor.Set_X_offs(AValue: integer);
+procedure TFrameEditor.Set_X_offs(AValue: integer);
 begin
   Editor.VirtScreen.x_offs:=AValue;
 end;
-function TfraEditor.Get_Y_Offs: integer;
+function TFrameEditor.Get_Y_Offs: integer;
 begin
   Result := Editor.VirtScreen.y_offs;
 end;
-procedure TfraEditor.Set_Y_Offs(AValue: integer);
+procedure TFrameEditor.Set_Y_Offs(AValue: integer);
 begin
   Editor.VirtScreen.y_offs:=AValue;
 end;
-function TfraEditor.Get_X_Cam: Single;
+function TFrameEditor.Get_X_Cam: Single;
 begin
   Result := Editor.VirtScreen.x_cam;
 end;
-procedure TfraEditor.Set_X_Cam(AValue: Single);
+procedure TFrameEditor.Set_X_Cam(AValue: Single);
 begin
   Editor.VirtScreen.x_cam:=AValue;
 end;
-function TfraEditor.Get_Y_Cam: Single;
+function TFrameEditor.Get_Y_Cam: Single;
 begin
   Result := Editor.VirtScreen.y_cam;
 end;
-procedure TfraEditor.Set_Y_Cam(AValue: Single);
+procedure TFrameEditor.Set_Y_Cam(AValue: Single);
 begin
   Editor.VirtScreen.y_cam:=AValue;
 end;
-function TfraEditor.GetZoom: Single;
+function TFrameEditor.GetZoom: Single;
 begin
   Result := Editor.VirtScreen.Zoom;
 end;
-procedure TfraEditor.SetEditorModified;
+procedure TFrameEditor.SetEditorModified;
 {It is executed when the viewer reports changes (dimensioning, positioning, etc)
 in any of the graphic objects.}
 begin
   Modified := true;
 end;
-procedure TfraEditor.SetZoom(AValue: Single);
+procedure TFrameEditor.SetZoom(AValue: Single);
 begin
   Editor.VirtScreen.Zoom:=AValue;
 end;
-function TfraEditor.Get_Alfa: Single;
+function TFrameEditor.Get_Alfa: Single;
 begin
   Result := Editor.VirtScreen.Alfa;
 end;
-procedure TfraEditor.Set_Alfa(AValue: Single);
+procedure TFrameEditor.Set_Alfa(AValue: Single);
 begin
   Editor.VirtScreen.Alfa := AValue;
 end;
-function TfraEditor.Get_Fi: Single;
+function TFrameEditor.Get_Fi: Single;
 begin
   REsult := Editor.VirtScreen.Fi;
 end;
-procedure TfraEditor.Set_Fi(AValue: Single);
+procedure TFrameEditor.Set_Fi(AValue: Single);
 begin
   Editor.VirtScreen.Fi := AValue;
 end;
 
-constructor TfraEditor.Create(AOwner: TComponent);
+constructor TFrameEditor.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   objects:= TEditorObjList.Create(true);
@@ -199,7 +199,7 @@ begin
   Editor.OnModify:=@SetEditorModified;
 end;
 
-destructor TfraEditor.Destroy;
+destructor TFrameEditor.Destroy;
 begin
   Editor.Destroy;
   objects.Destroy;

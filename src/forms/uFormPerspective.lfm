@@ -1,4 +1,4 @@
-object FormPerspective: TFormPerspective
+object formPerspective: TFormPerspective
   Left = 959
   Height = 313
   Top = 122

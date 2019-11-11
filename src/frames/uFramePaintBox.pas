@@ -3,7 +3,7 @@ This Frame will be used to place our graphic editor. Includes a PaintBox,
 as graphic output.
 Being a frame, it can be included in any form.
 }
-unit guiFramePaintBox;
+unit uFramePaintBox;
 
 {$mode objfpc}{$H+}
 interface
@@ -19,9 +19,9 @@ type
   TEvMousePaintBox = procedure(Shift: TShiftState; xp, yp: integer;
     xv, yv, zv: single) of object;
 
-  { TFrPaintBox }
+  { TFramePaintBox }
 
-  TFrPaintBox = class(TFrame)
+  TFramePaintBox = class(TFrame)
   published
     PaintBox1: TPaintBox;
   private
@@ -75,7 +75,7 @@ implementation
 
 {$R *.lfm}
 
-procedure TFrPaintBox.documentObjectsDeleteAll;
+procedure TFramePaintBox.documentObjectsDeleteAll;
 begin
   if objects.Count = 0 then
     exit;
@@ -87,84 +87,84 @@ begin
     OnObjectsRemove;
 end;
 
-function TFrPaintBox.Get_X_Offs: integer;
+function TFramePaintBox.Get_X_Offs: integer;
 begin
   Result := Editor.VirtScreen.x_offs;
 end;
 
-procedure TFrPaintBox.Set_X_Offs(AValue: integer);
+procedure TFramePaintBox.Set_X_Offs(AValue: integer);
 begin
   Editor.VirtScreen.x_offs := AValue;
 end;
 
-function TFrPaintBox.Get_Y_Offs: integer;
+function TFramePaintBox.Get_Y_Offs: integer;
 begin
   Result := Editor.VirtScreen.y_offs;
 end;
 
-procedure TFrPaintBox.Set_Y_Offs(AValue: integer);
+procedure TFramePaintBox.Set_Y_Offs(AValue: integer);
 begin
   Editor.VirtScreen.y_offs := AValue;
 end;
 
-function TFrPaintBox.Get_X_Cam: single;
+function TFramePaintBox.Get_X_Cam: single;
 begin
   Result := Editor.VirtScreen.x_cam;
 end;
 
-procedure TFrPaintBox.Set_X_Cam(AValue: single);
+procedure TFramePaintBox.Set_X_Cam(AValue: single);
 begin
   Editor.VirtScreen.x_cam := AValue;
 end;
 
-function TFrPaintBox.Get_Y_Cam: single;
+function TFramePaintBox.Get_Y_Cam: single;
 begin
   Result := Editor.VirtScreen.y_cam;
 end;
 
-procedure TFrPaintBox.Set_Y_Cam(AValue: single);
+procedure TFramePaintBox.Set_Y_Cam(AValue: single);
 begin
   Editor.VirtScreen.y_cam := AValue;
 end;
 
-function TFrPaintBox.GetZoom: single;
+function TFramePaintBox.GetZoom: single;
 begin
   Result := Editor.VirtScreen.Zoom;
 end;
 
-procedure TFrPaintBox.ExecuteCommand(command: string);
+procedure TFramePaintBox.ExecuteCommand(command: string);
 begin
   Editor.ExecuteCommand(command);
 end;
 
-function TFrPaintBox.StateAsStr: string;
+function TFramePaintBox.StateAsStr: string;
 begin
   Result := Editor.StateAsStr;
 end;
 
-procedure TFrPaintBox.Editor_ViewChange;
+procedure TFramePaintBox.Editor_ViewChange;
 begin
   if OnChangePersp <> nil then
     OnChangePersp();
 end;
 
-procedure TFrPaintBox.Editor_Modified;
+procedure TFramePaintBox.Editor_Modified;
 begin
   Modified := True;
 end;
 
-procedure TFrPaintBox.SetZoom(AValue: single);
+procedure TFramePaintBox.SetZoom(AValue: single);
 begin
   Editor.VirtScreen.Zoom := AValue;
 end;
 
-procedure TFrPaintBox.Editor_ChangeState(ViewState: TViewState);
+procedure TFramePaintBox.Editor_ChangeState(ViewState: TViewState);
 begin
   if OnChangeState <> nil then
     OnChangeState(ViewState);
 end;
 
-procedure TFrPaintBox.Editor_MouseMove(Sender: TObject; Shift: TShiftState;
+procedure TFramePaintBox.Editor_MouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: integer);
 var
   xv, yv: single;
@@ -174,33 +174,33 @@ begin
     OnMouseMoveVirt(Shift, X, Y, xv, yv, 0);
 end;
 
-procedure TFrPaintBox.Editor_SendMessage(msg: string);
+procedure TFramePaintBox.Editor_SendMessage(msg: string);
 begin
   if OnSendMessage <> nil then
     OnSendMessage(msg);
 end;
 
-function TFrPaintBox.Get_Alfa: single;
+function TFramePaintBox.Get_Alfa: single;
 begin
   Result := Editor.VirtScreen.Alfa;
 end;
 
-procedure TFrPaintBox.Set_Alfa(AValue: single);
+procedure TFramePaintBox.Set_Alfa(AValue: single);
 begin
   Editor.VirtScreen.Alfa := AValue;
 end;
 
-function TFrPaintBox.Get_Fi: single;
+function TFramePaintBox.Get_Fi: single;
 begin
   Result := Editor.VirtScreen.Fi;
 end;
 
-procedure TFrPaintBox.Set_Fi(AValue: single);
+procedure TFramePaintBox.Set_Fi(AValue: single);
 begin
   Editor.VirtScreen.Fi := AValue;
 end;
 
-procedure TFrPaintBox.InitView;
+procedure TFramePaintBox.InitView;
 {Locate the perspective and the axes, so that the origin (0,0) appears in the
 lower left corner. Call when the frame has its final size}
 begin
@@ -212,7 +212,7 @@ begin
   Editor.VirtScreen.y_cam := ((PaintBox1.Height div 2) - 10) / Editor.VirtScreen.Zoom;
 end;
 
-constructor TFrPaintBox.Create(AOwner: TComponent; ListObjGraf: TEditorObjList);
+constructor TFramePaintBox.Create(AOwner: TComponent; ListObjGraf: TEditorObjList);
 begin
   inherited Create(AOwner);
   objects := ListObjGraf;
@@ -224,7 +224,7 @@ begin
   Editor.OnSendMessage := @Editor_SendMessage;
 end;
 
-destructor TFrPaintBox.Destroy;
+destructor TFramePaintBox.Destroy;
 begin
   Editor.Destroy;
   inherited;
