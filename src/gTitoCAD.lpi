@@ -34,7 +34,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="14">
+    <Units Count="12">
       <Unit0>
         <Filename Value="gTitoCAD.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -47,71 +47,57 @@
         <ResourceBaseClass Value="Form"/>
       </Unit1>
       <Unit2>
-        <Filename Value="forms/uFormPerspective.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="formPerspective"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit2>
-      <Unit3>
         <Filename Value="sketch/sketchDocument.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit3>
-      <Unit4>
+      </Unit2>
+      <Unit3>
         <Filename Value="forms/uFormDocument.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="formDocument"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit4>
-      <Unit5>
+      </Unit3>
+      <Unit4>
         <Filename Value="glob.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit5>
-      <Unit6>
+      </Unit4>
+      <Unit5>
         <Filename Value="frames/uFrameDocumetExplorer.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="frameDocumentExplorer"/>
+        <ComponentName Value="FrameDocumentExplorer"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="sketch/sketchDxf.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit6>
       <Unit7>
-        <Filename Value="sketch/sketchDxf.pas"/>
+        <Filename Value="sketch/sketchCore.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit7>
       <Unit8>
-        <Filename Value="sketch/sketchCore.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit8>
-      <Unit9>
         <Filename Value="forms/uFormViewProp.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="formViewProp"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit9>
-      <Unit10>
+      </Unit8>
+      <Unit9>
         <Filename Value="frames/uFrameEditor.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="framePaintBox"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit10>
-      <Unit11>
+      </Unit9>
+      <Unit10>
         <Filename Value="sketch/sketchEditor.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="frames/uFrameEditor.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="frameEditor"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Frame"/>
-      </Unit12>
-      <Unit13>
+      </Unit10>
+      <Unit11>
         <Filename Value="units/toLang/toLang.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit13>
+      </Unit11>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -7,7 +7,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, ActnList, Menus,
   StdCtrls, ComCtrls, LCLProc, LCLType, Buttons,
   sketchDocument, uFrameEditor, uFormDocument,
-  glob, uFrameDocumetExplorer, uFormPerspective, uFormViewProp,
+  glob, uFrameDocumetExplorer, uFormViewProp,
   sketchEditor,
   Dialogs;
 
@@ -20,7 +20,6 @@ type
   { TForm1 }
   TForm1 = class(TForm)
   published
-    acToolbarDesp: TAction;
     acToolbarPoint: TAction;
     acToolbarRot: TAction;
     acDocFileNew: TAction;
@@ -30,59 +29,55 @@ type
     acDocInsPolyline: TAction;
     acDocProp: TAction;
     acDocInsRect: TAction;
-    acProInsCube: TAction;
     acDocInsRectan: TAction;
     acDocAddPage: TAction;
     acPageProp: TAction;
-    acPageCamNom: TAction;
     acPageRemove: TAction;
     acPageAddLine: TAction;
     acViewProp: TAction;
     acVerViewSup: TAction;
-    acVerConView: TAction;
     cmdInput: TEdit;
     cmdInputLabel: TLabel;
     cmdInputWrapper: TPanel;
     cmdMessages: TMemo;
     cmdRunBtn: TSpeedButton;
     frameDocumentExplorer: TFrameDocumentExplorer;
-    MenuItem10: TMenuItem;
-    MenuItem11: TMenuItem;
-    MenuItem12: TMenuItem;
-    MenuItem13: TMenuItem;
-    MenuItem14: TMenuItem;
-    MenuItem15: TMenuItem;
-    MenuItem16: TMenuItem;
-    MenuItem17: TMenuItem;
-    MenuItem18: TMenuItem;
-    MenuItem19: TMenuItem;
-    MenuItem20: TMenuItem;
-    MenuItem21: TMenuItem;
-    MenuItem22: TMenuItem;
-    MenuItem23: TMenuItem;
-    MenuItem24: TMenuItem;
-    MenuItem25: TMenuItem;
-    MenuItem26: TMenuItem;
-    MenuItem27: TMenuItem;
-    MenuItem28: TMenuItem;
-    MenuItem29: TMenuItem;
-    MenuItem30: TMenuItem;
-    MenuItem31: TMenuItem;
-    MenuItem4: TMenuItem;
+    mfileOpen: TMenuItem;
+    mfileNew: TMenuItem;
+    mfileExit: TMenuItem;
+    mDoc: TMenuItem;
+    mdocInsertPoly: TMenuItem;
+    pdocInsert: TMenuItem;
+    pdocinsertPoly: TMenuItem;
+    pobjectsItem1: TMenuItem;
+    pdocProperies: TMenuItem;
+    mdocProperties: TMenuItem;
+    mdocInsertRect: TMenuItem;
+    pdocAddPage: TMenuItem;
+    mdocAddPage: TMenuItem;
+    mPage: TMenuItem;
+    mpageRename: TMenuItem;
+    mpageRemove: TMenuItem;
+    mpageProperies: TMenuItem;
+    ppageRename: TMenuItem;
+    ppageRemove: TMenuItem;
+    ppageProperties: TMenuItem;
+    pviewProperties: TMenuItem;
+    ppageAddline: TMenuItem;
+    mviewItem: TMenuItem;
     MenuItem5: TMenuItem;
     acToolbarConfig: TAction;
     ActionList1: TActionList;
     acDocFileOpen: TAction;
-    ImgActions16: TImageList;
-    ImgActions32: TImageList;
-    MainMenu1: TMainMenu;
-    MenuItem1: TMenuItem;
-    MenuItem2: TMenuItem;
-    MenuItem3: TMenuItem;
-    MenuItem6: TMenuItem;
-    MenuItem7: TMenuItem;
-    MenuItem8: TMenuItem;
-    MenuItem9: TMenuItem;
+    Images16: TImageList;
+    Images32: TImageList;
+    menuMain: TMainMenu;
+    mFile: TMenuItem;
+    mView: TMenuItem;
+    mTools: TMenuItem;
+    mtoolsConfig: TMenuItem;
+    mfileClose: TMenuItem;
+    mfileSave: TMenuItem;
     PageControl1: TPageControl;
     Splitter1: TSplitter;
     splitterVert1: TSplitter;
@@ -91,10 +86,10 @@ type
     TabSheet2: TTabSheet;
     WrapperBottom: TPanel;
     WrapperMiddle: TPanel;
-    PopupView: TPopupMenu;
-    PopupPage: TPopupMenu;
-    PopupDocument: TPopupMenu;
-    PopupObjects: TPopupMenu;
+    pmenuView: TPopupMenu;
+    pmenuPage: TPopupMenu;
+    pmenuDoc: TPopupMenu;
+    pmenuObjects: TPopupMenu;
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     ToolButton10: TToolButton;
@@ -117,7 +112,6 @@ type
     procedure acDocAddPageExecute(Sender: TObject);
     procedure acDocInsRectanExecute(Sender: TObject);
     procedure acDocPropExecute(Sender: TObject);
-    procedure acVerConViewExecute(Sender: TObject);
     procedure acVerViewSupExecute(Sender: TObject);
     procedure acViewPropExecute(Sender: TObject);
     procedure cmdMessagesChange(Sender: TObject);
@@ -167,19 +161,19 @@ const
 
 procedure TForm1.priv_fraExploreDocClickRightDoc(Doc: TDocument);
 begin
-  PopupDocument.PopUp;
+  pmenuDoc.PopUp;
 end;
 
 procedure TForm1.priv_frameExploreDocClickRightPage(Page: TDocPage);
 begin
   priv_ExploreDocPage := Page;
-  PopupPage.PopUp;
+  pmenuPage.PopUp;
 end;
 
 procedure TForm1.priv_frameExploreDocClickRightView(View: TFramePaintBox);
 begin
   priv_ExploreDocView := View;
-  PopupView.PopUp;
+  pmenuView.PopUp;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -192,53 +186,44 @@ begin
   frameDocumentExplorer.OnDeletePage := @acPageRemoveExecute;
   frameDocumentExplorer.Initiate(@priv_curDocument);
 
-  //Set the alignment
-  //frameDocumentExplorer.Align := alLeft;
-  //SplitterVert.Align := alLeft;
-  //frameDocumentExplorer.Visible := True;
-  //WrapperBottom.Align := alBottom;
-  //PageControl1.Align := alClient;
-
   //translating
-  MenuItem1.Caption :=msg.get('file');
-  MenuItem11.Caption :=msg.get('newDocument');
-  MenuItem10.Caption :=msg.get('open');
-  MenuItem9.Caption :=msg.get('save');
-  MenuItem8.Caption :=msg.get('close');
-  MenuItem2.Caption :='-';
-  MenuItem12.Caption :=msg.get('exit');
+  mFile.Caption :=msg.get('file');
+  mfileNew.Caption :=msg.get('newDocument');
+  mfileOpen.Caption :=msg.get('open');
+  mfileSave.Caption :=msg.get('save');
+  mfileClose.Caption :=msg.get('close');
+  mfileExit.Caption :=msg.get('exit');
   //
-  MenuItem3.Caption :=msg.get('view');
-  MenuItem4.Caption :=msg.get('newitem8');
-  MenuItem5.Caption :=msg.get('properties');
+  mView.Caption :=msg.get('view');
+  mviewItem.Caption :=msg.get('newitem8');
   //
-  MenuItem13.Caption :=msg.get('document');
-  MenuItem22.Caption :=msg.get('addPage');
-  MenuItem20.Caption :=msg.get('insertRectangle');
-  MenuItem14.Caption :=msg.get('insertPolyline');
-  MenuItem19.Caption :=msg.get('properties');
+  mDoc.Caption :=msg.get('document');
+  mdocAddPage.Caption:=msg.get('addPage');
+  mdocInsertRect.Caption :=msg.get('insertRectangle');
+  mdocInsertPoly.Caption :=msg.get('insertPolyline');
+  mdocProperties.Caption :=msg.get('properties');
   //
-  MenuItem23.Caption :=msg.get('page');
-  MenuItem24.Caption :=msg.get('rename');
-  MenuItem25.Caption :=msg.get('remove');
-  MenuItem26.Caption :=msg.get('properties');
+  mPage.Caption :=msg.get('page');
+  mpageRename.Caption :=msg.get('rename');
+  mpageRemove.Caption :=msg.get('remove');
+  mpageProperies.Caption :=msg.get('properties');
   //
-  MenuItem6.Caption :=msg.get('tools');
-  MenuItem7.Caption :=msg.get('config');
+  mTools.Caption :=msg.get('tools');
+  mtoolsConfig.Caption :=msg.get('config');
   //
-  MenuItem21.Caption :=msg.get('addPage');
-  MenuItem15.Caption :=msg.get('insert');
-  MenuItem16.Caption :=msg.get('insertPolyline');
-  MenuItem18.Caption :=msg.get('properties');
+  pdocAddPage.Caption :=msg.get('addPage');
+  pdocInsert.Caption :=msg.get('insert');
+  pdocinsertPoly.Caption :=msg.get('insertPolyline');
+  pdocProperies.Caption :=msg.get('properties');
   //
-  MenuItem17.Caption :=msg.get('insertPolyline');
+  pobjectsItem1.Caption :=msg.get('insertPolyline');
   //
-  MenuItem31.Caption :=msg.get('addLine');
-  MenuItem27.Caption :=msg.get('rename');
-  MenuItem28.Caption :=msg.get('remove');
-  MenuItem29.Caption :=msg.get('properties');
+  ppageAddline.Caption :=msg.get('addLine');
+  ppageRename.Caption :=msg.get('rename');
+  ppageRemove.Caption :=msg.get('remove');
+  ppageProperties.Caption :=msg.get('properties');
   //
-  MenuItem30.Caption :=msg.get('properties');
+  pviewProperties.Caption :=msg.get('properties');
   // Toolbar1.
   ToolButton1.Caption :=msg.get('rotate'); 
   ToolButton2.Caption :=msg.get('rotate');
@@ -320,7 +305,7 @@ begin
   ToolBar1.ButtonHeight := 38;
   ToolBar1.ButtonWidth := 38;
   ToolBar1.Height := 42;
-  ToolBar1.Images := ImgActions32;
+  ToolBar1.Images := Images32;
 end;
 
 function TForm1.priv_MessageSaveChanges: integer;
@@ -501,13 +486,6 @@ begin
   Self.Close;
 end;
 
-procedure TForm1.acVerConViewExecute(Sender: TObject);
-begin
-  if priv_curDocument = nil then
-    exit;
-  formPerspective.Exec(priv_curDocument.ActivePage.View);
-end;
-
 procedure TForm1.acVerViewSupExecute(Sender: TObject);
 begin
   if priv_curDocument = nil then
@@ -559,7 +537,7 @@ begin
     exit;
   {It checks if the action comes from the document explorer, to give you the
     possibility to take actions, on non-active pages}
-  if ComponentFromAction(Sender) = PopupPage then
+  if ComponentFromAction(Sender) = pmenuPage then
     Page := priv_ExploreDocPage
   else
     Page := priv_curDocument.ActivePage;
@@ -575,7 +553,7 @@ begin
     exit;
   {It checks if the action comes from the document explorer, to give you the
     possibility to take actions, on non-active pages}
-  if ComponentFromAction(Sender) = PopupPage then
+  if ComponentFromAction(Sender) = pmenuPage then
     Page := priv_ExploreDocPage
   else
     Page := priv_curDocument.ActivePage;
