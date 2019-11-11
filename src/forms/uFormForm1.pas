@@ -457,7 +457,10 @@ var
 begin
   //check if changes must be saved
   if priv_MessageSaveChanges = BUT_CANCEL then
+  begin
+	//WriteLn('butcancel');
     exit;
+  end;
   //Create temporary project
   tmpProj := TProject.Create;
   if not formProject.ExecNew(tmpProj) then
