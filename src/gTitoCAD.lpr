@@ -1,4 +1,4 @@
-program GraciasTito;
+program gTitoCAD;
 
 {$mode objfpc}{$H+}
 

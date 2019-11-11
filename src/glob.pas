@@ -8,7 +8,7 @@ uses
   toLang;
 
 const
-  APP_NAME = 'GraciasTito';
+  APP_NAME = 'gTitoCAD';
   {$I meta/APP_VERSION.pas}//APP_VERSION
 
 type

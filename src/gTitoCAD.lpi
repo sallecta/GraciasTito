@@ -36,7 +36,7 @@
     </RequiredPackages>
     <Units Count="15">
       <Unit0>
-        <Filename Value="GraciasTito.lpr"/>
+        <Filename Value="gTitoCAD.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
