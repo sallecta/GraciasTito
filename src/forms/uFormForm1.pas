@@ -285,7 +285,7 @@ procedure TForm1.FormShow(Sender: TObject);
 begin
   priv_ConfigPropertiesChanged;
   priv_Refresh;
-  acProjNew_onExecute(self);
+  //acProjNew_onExecute(self);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);

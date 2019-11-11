@@ -3,7 +3,7 @@ object Form1: TForm1
   Height = 541
   Top = 71
   Width = 855
-  Caption = 'GTCad'
+  Caption = 'gTitoCAD'
   ClientHeight = 512
   ClientWidth = 855
   KeyPreview = True
@@ -383,73 +383,73 @@ object Form1: TForm1
     top = 220
     object acToolbarPoint: TAction
       Category = 'TollBox'
-      Caption = '&Puntero'
+      Caption = 'acToolbarPoint'
       ImageIndex = 14
     end
     object acToolbarDesp: TAction
       Category = 'TollBox'
-      Caption = '&Displace'
+      Caption = 'acToolbarDesp'
       ImageIndex = 13
     end
     object acToolbarRot: TAction
       Category = 'TollBox'
-      Caption = '&Rotar'
+      Caption = 'acToolbarRot'
       ImageIndex = 15
     end
     object acToolbarConfig: TAction
       Category = 'Toolbar'
-      Caption = 'Confi&guración'
+      Caption = 'acToolbarConfig'
       ImageIndex = 22
       OnExecute = acToolbarConfigExecute
     end
     object acVerViewSup: TAction
       Category = 'Show'
-      Caption = 'View S&uperior'
+      Caption = 'acVerViewSup'
       ImageIndex = 20
       OnExecute = acVerViewSupExecute
     end
     object acVerConView: TAction
       Category = 'Show'
-      Caption = 'Control de View...'
+      Caption = 'acVerConView'
       OnExecute = acVerConViewExecute
     end
     object acProjFileNew: TAction
       Category = 'File'
-      Caption = 'Nuevo &Proyecto...'
+      Caption = 'acProjFileNew'
       ImageIndex = 2
       OnExecute = acProjNew_onExecute
       ShortCut = 16462
     end
     object acProjFileOpen: TAction
       Category = 'File'
-      Caption = '&Abrir'
+      Caption = 'acProjFileOpen'
       ImageIndex = 3
     end
     object acProjFileSave: TAction
       Category = 'File'
-      Caption = 'G&uardar'
+      Caption = 'acProjFileSave'
       ImageIndex = 4
     end
     object acProjFileClose: TAction
       Category = 'File'
-      Caption = '&Cerrar'
+      Caption = 'acProjFileClose'
       OnExecute = acProjFileCloseExecute
     end
     object acProjFileLeave: TAction
       Category = 'File'
-      Caption = '&Salir'
+      Caption = 'acProjFileLeave'
       ImageIndex = 6
       OnExecute = acProjFileLeaveExecute
     end
     object acProjAddPage: TAction
       Category = 'Proj'
-      Caption = 'Agregar &Página'
+      Caption = 'acProjAddPage'
       ImageIndex = 34
       OnExecute = acProjAddPageExecute
     end
     object acProjInsPolyline: TAction
       Category = 'Proj'
-      Caption = 'Insertar Po&lilinea'
+      Caption = 'acProjInsPolyline'
       ImageIndex = 31
     end
     object acProjInsRectan: TAction
@@ -466,37 +466,37 @@ object Form1: TForm1
     end
     object acProjInsRect: TAction
       Category = 'Proj'
-      Caption = 'Insertar Rectángulo'
+      Caption = 'acProjInsRect'
     end
     object acProInsCube: TAction
       Category = 'Proj'
-      Caption = 'Insertar C&ubo'
+      Caption = 'acProInsCube'
     end
     object acPageRemove: TAction
       Category = 'Page'
-      Caption = '&Eliminar'
+      Caption = 'acPageRemove'
       ImageIndex = 21
       OnExecute = acPageRemoveExecute
     end
     object acPageCamNom: TAction
       Category = 'Page'
-      Caption = 'Cambiar &Name'
+      Caption = 'acPageCamNom'
       ImageIndex = 34
     end
     object acPageProp: TAction
       Category = 'Page'
-      Caption = '&Propiedades'
+      Caption = 'acPageProp'
       ImageIndex = 32
     end
     object acViewProp: TAction
       Category = 'View'
-      Caption = '&Propiedades'
+      Caption = 'acViewProp'
       ImageIndex = 32
       OnExecute = acViewPropExecute
     end
     object acPageAddLine: TAction
       Category = 'Page'
-      Caption = 'Agregar &Línea'
+      Caption = 'acPageAddLine'
       ImageIndex = 35
       OnExecute = acPageAddLineExecute
     end

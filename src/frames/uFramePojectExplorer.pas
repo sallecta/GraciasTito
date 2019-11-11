@@ -50,7 +50,7 @@ type
     OnDeletePage: TNotifyEvent;
     procedure Refresh;
   public
-    procedure Initiate(Proj: TPtrProject);
+    procedure Initiate(argProj: TPtrProject);
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
   end;
@@ -268,16 +268,16 @@ begin
   end;
   treeNav.EndUpdate;
   nodeProj.Expanded := True;
-  //  NodeSelectByName(ns);  //restaura la selección
+  //  NodeSelectByName(ns);  //restore selection
   NodeSelectByName(curProject^.ActivePage.Name);
 end;
 
-procedure TframeProjectExplorer.Initiate(Proj: TPtrProject);
+procedure TframeProjectExplorer.Initiate(argProj: TPtrProject);
 {Start the frame, passing the address of the current project that is being managed.
 At the moment, it is assumed that he can only manage zero or one project.
 Note that you are given the address of the referendum, as it may change.}
 begin
-  curProject := Proj;   //saves reference
+  curProject := argProj; 
   Refresh;
 end;
 
