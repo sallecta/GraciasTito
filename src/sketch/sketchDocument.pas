@@ -31,7 +31,7 @@ type
   TDrawObjetcs_list = specialize TFPGObjectList<TDrawObj>;
 
   TEvChangePersp = procedure(View: TFramePaintBox) of object;
-  TProject = class;
+  TDocument = class;
 
   { TDocPage }
   TDocPage = class
@@ -42,7 +42,7 @@ type
       xv, yv, zv: single);
   public
     Name: string;
-    parent: TProject;      //Reference to the parent object.
+    parent: TDocument;      //Reference to the parent object.
     docPageObjList: TDrawObjetcs_list;  //List of graphic elements
     objects: TEditorObjList; //List of objects
   public  //Managing views
@@ -58,8 +58,8 @@ type
 
   TDrawPage_list = specialize TFPGObjectList<TDocPage>;
 
-  { TProject }
-  TProject = class
+  { TDocument }
+  TDocument = class
   private
     FActivePage: TDocPage;
     fModified: boolean;   //indicates if it has been modified
@@ -100,7 +100,7 @@ type
     destructor Destroy; override;
   end;
 
-  TPtrProject = ^TProject;
+  TPtrDocument = ^TDocument;
 
 implementation
 
@@ -145,8 +145,8 @@ begin
   inherited Destroy;
 end;
 
-{ TProject }
-procedure TProject.SetModified(AValue: boolean);
+{ TDocument }
+procedure TDocument.SetModified(AValue: boolean);
 begin
   if fModified = AValue then
     Exit;
@@ -156,32 +156,32 @@ begin
       OnModify;
 end;
 
-procedure TProject.page_ChangePerspec(View: TFramePaintBox);
+procedure TDocument.page_ChangePerspec(View: TFramePaintBox);
 {It is generated if any page changes its perspective}
 begin
   if OnChangePersp <> nil then
     OnChangePersp(View);
 end;
 
-procedure TProject.page_ChangeState(ViewState: TViewState);
+procedure TDocument.page_ChangeState(ViewState: TViewState);
 begin
   if OnChangeState <> nil then
     OnChangeState(ViewState);
 end;
 
-procedure TProject.page_MouseMoveVirt(Shift: TShiftState; xp, yp: integer;
+procedure TDocument.page_MouseMoveVirt(Shift: TShiftState; xp, yp: integer;
   xv, yv, zv: single);
 begin
   if OnMouseMoveVirt <> nil then
     OnMouseMoveVirt(Shift, xp, yp, xv, yv, zv);
 end;
 
-procedure TProject.SaveFile;
+procedure TDocument.SaveFile;
 begin
 
 end;
 //Page fields
-procedure TProject.SetActivePage(AValue: TDocPage);
+procedure TDocument.SetActivePage(AValue: TDocPage);
 var
   Page: TDocPage;
 begin
@@ -198,7 +198,7 @@ begin
     end;
 end;
 
-function TProject.IndexOfPage(Page: TDocPage): integer;
+function TDocument.IndexOfPage(Page: TDocPage): integer;
   {Returns the index of a page within the list of pages. If it does not locate the page, it returns -1.}
 var
   i: integer;
@@ -210,7 +210,7 @@ begin
   exit(-1);
 end;
 
-function TProject.PrevPage(Page: TDocPage): TDocPage;
+function TDocument.PrevPage(Page: TDocPage): TDocPage;
   {Returns the previous page to a indicated one. If it is the first one, it returns the same page. If there is an error, return NIL.}
 var
   i: integer;
@@ -225,7 +225,7 @@ begin
   ;
 end;
 
-function TProject.NextPage(Page: TDocPage): TDocPage;
+function TDocument.NextPage(Page: TDocPage): TDocPage;
   {Returns the next page to an indicated one. If it is the last one, it returns the same page. If there is an error, return NIL.}
 var
   i: integer;
@@ -240,7 +240,7 @@ begin
   ;
 end;
 
-function TProject.PageByName(pageName: string): TDocPage;
+function TDocument.PageByName(pageName: string): TDocPage;
   {Returns the reference to a page, given its Name. If you can not find the page, return NIL.}
 var
   Page: TDocPage;
@@ -251,7 +251,7 @@ begin
   exit(nil);
 end;
 
-procedure TProject.SetActivePageByName(pageName: string);
+procedure TDocument.SetActivePageByName(pageName: string);
 var
   Page: TDocPage;
 begin
@@ -263,8 +263,8 @@ begin
     end;
 end;
 
-function TProject.AddPage: TDocPage;
-  {Add a page to the project. Returns the reference to the created page.}
+function TDocument.AddPage: TDocPage;
+  {Add a page to the document. Returns the reference to the created page.}
 var
   Page: TDocPage;
 begin
@@ -279,7 +279,7 @@ begin
   Result := Page;
 end;
 
-procedure TProject.RemovePage(pageName: TDocPage);
+procedure TDocument.RemovePage(pageName: TDocPage);
 {Remove the indicated page.}
 begin
   if pages.Count = 1 then
@@ -299,7 +299,7 @@ begin
   Modified := True;
 end;
 
-procedure TProject.RemovePage(argName: string);
+procedure TDocument.RemovePage(argName: string);
 var
   Page: TDocPage;
 begin
@@ -313,7 +313,7 @@ begin
   ShowMessage(msg.Get('PageDoesNotExist')+ Name);
 end;
 
-procedure TProject.HideAllPages;
+procedure TDocument.HideAllPages;
 {It puts the views of all the pages in visible: = FALSE, so they will not be displayed in the assigned control.}
 var
   Page: TDocPage;
@@ -323,7 +323,7 @@ begin
 end;
 
 
-constructor TProject.Create;
+constructor TDocument.Create;
 var
   Page: TDocPage;
 begin
@@ -333,7 +333,7 @@ begin
   ActivePage := Page;//puts it as active by default
 end;
 
-destructor TProject.Destroy;
+destructor TDocument.Destroy;
 begin
   pages.Destroy;
   inherited Destroy;

@@ -1,4 +1,4 @@
-unit uFormProject;
+unit uFormDocument;
 
 {$mode objfpc}{$H+}
 interface
@@ -8,8 +8,8 @@ uses
   EditBtn, StdCtrls, ButtonPanel, Buttons, ComCtrls, Spin, Menus, sketchDocument, glob;
 
 type
-  { TFormProject }
-  TFormProject = class(TForm)
+  { TFormDocument }
+  TFormDocument = class(TForm)
     ButtonPanel1: TButtonPanel;
     Label1: TLabel;
     MainMenu1: TMainMenu;
@@ -28,26 +28,26 @@ type
   private
     Accepted: boolean;
     ErrorData: boolean;
-    aProject: TProject;
+    aDocument: TDocument;
     procRefresh: TEvRefresh;
   public
-    function Exec(argProj: TProject; soloRead: boolean = False): boolean;
-    function ExecNew(argProj: TProject): boolean;
+    function Exec(argDoc: TDocument; soloRead: boolean = False): boolean;
+    function ExecNew(argDoc: TDocument): boolean;
   end;
 
 var
-  formProject: TFormProject;
+  formDocument: TFormDocument;
 
 implementation
 
 {$R *.lfm}
-{ TFormProject }
-procedure TFormProject.FormCreate(Sender: TObject);
+{ TFormDocument }
+procedure TFormDocument.FormCreate(Sender: TObject);
 begin
   Accepted := False;
 
   // captions
-  Caption:=msg.get('project');
+  Caption:=msg.get('document');
   TabSheet1.caption:=msg.get('general'); 
   Label1.caption:=msg.get('name');
   //
@@ -56,12 +56,12 @@ begin
   Label8.caption:=msg.get('notes');
 end;
 
-procedure TFormProject.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+procedure TFormDocument.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   VerifyClose(Accepted, ErrorData, CanClose);
 end;
 
-procedure TFormProject.OKButtonClick(Sender: TObject);
+procedure TFormDocument.OKButtonClick(Sender: TObject);
 begin
   //Validate
   if trim(TeditName.Text) = '' then
@@ -74,24 +74,24 @@ begin
     Accepted := True;
     exit;
   end;
-  aProject.Name := TeditName.Text;
-  aProject.notes := TMemoNotes.Text;
-  aProject.createdBy := TeditCreatedBy.TextHint;
+  aDocument.Name := TeditName.Text;
+  aDocument.notes := TMemoNotes.Text;
+  aDocument.createdBy := TeditCreatedBy.TextHint;
   Accepted := True;
 end;
 
-procedure TFormProject.CancelButtonClick(Sender: TObject);
+procedure TFormDocument.CancelButtonClick(Sender: TObject);
 begin
   Accepted := False;
 end;
 
-function TFormProject.Exec(argProj: TProject; soloRead: boolean = False): boolean;
+function TFormDocument.Exec(argDoc: TDocument; soloRead: boolean = False): boolean;
 begin
-  aProject := argProj;
+  aDocument := argDoc;
 
-  TeditName.Text := aProject.Name;
-  TeditCreatedBy.Text := aProject.createdBy;
-  TMemoNotes.Text := aProject.notes;
+  TeditName.Text := aDocument.Name;
+  TeditCreatedBy.Text := aDocument.createdBy;
+  TMemoNotes.Text := aDocument.notes;
 
   ButtonPanel1.OKButton.Enabled := not soloRead;
 
@@ -99,14 +99,14 @@ begin
   Result := Accepted;
 end;
 
-function TFormProject.ExecNew(argProj: TProject): boolean;
+function TFormDocument.ExecNew(argDoc: TDocument): boolean;
 
 var
-  projNameIndex: string;
+  docNameIndex: string;
 begin
-  projNameIndex := '1';
-  argProj.Name := msg.Get('ProjectDefaultName') + projNameIndex;
-  Result := Exec(argProj);
+  docNameIndex := '1';
+  argDoc.Name := msg.Get('DocumentDefaultName') + docNameIndex;
+  Result := Exec(argDoc);
 end;
 
 end.

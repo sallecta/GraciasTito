@@ -13,9 +13,9 @@ uses toLang;
 procedure createDefaults(objinst: TObject);
 begin
   TtoLang(objinst).Add('AppName', 'tolangAppName');
-  TtoLang(objinst).Add('ProjectExplorer', 'Project Explorer');
-  TtoLang(objinst).Add('ProjectModifiedSaveChanges',
-      'Project modified. Dou you want to save changes?');//El presupuesto ha sido modificado, ¿Guardar cambios?
+  TtoLang(objinst).Add('DocumentExplorer', 'Document Explorer');
+  TtoLang(objinst).Add('DocumentModifiedSaveChanges',
+      'Document modified. Dou you want to save changes?');//El presupuesto ha sido modificado, ¿Guardar cambios?
   TtoLang(objinst).Add('AskPageDelete', 'Delete page: '); //¿Eliminar página "%s"?
   TtoLang(objinst).Add('InvalidNumber', 'Invalid number'); //Número inválido.
   TtoLang(objinst).Add('ExpressionErrorDetails',
@@ -38,8 +38,8 @@ begin
          'Can not delete last page'); // No se pueden eliminar todas las páginas.
   TtoLang(objinst).Add('PageDoesNotExist',
          'Page does not exist: '); // No existe la página
-  TtoLang(objinst).Add('ProjectDefaultName',
-         'Project'); // Proyecto
+  TtoLang(objinst).Add('DocumentDefaultName',
+         'Document'); // Proyecto
   TtoLang(objinst).Add('documentObjects',
          'Objects'); // objects Gráficos
   TtoLang(objinst).Add('defaultObjName',
@@ -78,8 +78,8 @@ begin
          'Enter next point'); // Ingrese siguiente punto ([C]errar):
   TtoLang(objinst).Add('file',
          '&File'); // &Archivo
-  TtoLang(objinst).Add('newProject',
-         '&New Project...'); // Nuevo &Proyecto...
+  TtoLang(objinst).Add('newDocument',
+         '&New Document...'); // Nuevo &Proyecto...
   TtoLang(objinst).Add('open',
          '&Open'); // &Abrir
   TtoLang(objinst).Add('save',
@@ -92,8 +92,8 @@ begin
          'View'); // &Show
   TtoLang(objinst).Add('newitem8',
          'New Item8'); // empty
-  TtoLang(objinst).Add('project',
-         'Project'); // &Projecto
+  TtoLang(objinst).Add('document',
+         'Document'); // &Documento
   TtoLang(objinst).Add('addPage',
          'Add Page'); // Agregar &Página
   TtoLang(objinst).Add('insertRectangle',
@@ -124,8 +124,8 @@ begin
          'ToolButton8'); // ToolButton8
   TtoLang(objinst).Add('viewSuperior',
          'View Superior'); // View S&uperior
-  TtoLang(objinst).Add('acProjInsRectan',
-         'acProjInsRectan'); // acProjInsRectan
+  TtoLang(objinst).Add('acDocInsRectan',
+         'acDocInsRectan'); // acDocInsRectan
   TtoLang(objinst).Add('editor',
          'Editor'); // Diseño
   TtoLang(objinst).Add('TabSheet2',

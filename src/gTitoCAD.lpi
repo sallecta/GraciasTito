@@ -58,9 +58,9 @@
         <IsPartOfProject Value="True"/>
       </Unit3>
       <Unit4>
-        <Filename Value="forms/uFormProject.pas"/>
+        <Filename Value="forms/uFormDocument.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="formProject"/>
+        <ComponentName Value="formDocument"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit4>
@@ -69,9 +69,9 @@
         <IsPartOfProject Value="True"/>
       </Unit5>
       <Unit6>
-        <Filename Value="frames/uFramePojectExplorer.pas"/>
+        <Filename Value="frames/uFrameDocumetExplorer.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="frameProjectExplorer"/>
+        <ComponentName Value="frameDocumentExplorer"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit6>

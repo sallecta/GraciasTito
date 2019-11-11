@@ -55,12 +55,12 @@ object Form1: TForm1
     object ToolButton6: TToolButton
       Left = 1
       Top = 2
-      Action = acProjFileNew
+      Action = acDocFileNew
     end
     object ToolButton7: TToolButton
       Left = 47
       Top = 2
-      Action = acProjFileSave
+      Action = acDocFileSave
     end
     object ToolButton8: TToolButton
       Left = 147
@@ -77,7 +77,7 @@ object Form1: TForm1
     object ToolButton10: TToolButton
       Left = 24
       Top = 2
-      Action = acProjFileOpen
+      Action = acDocFileOpen
     end
     object ToolButton5: TToolButton
       Left = 224
@@ -87,12 +87,12 @@ object Form1: TForm1
     object ToolButton11: TToolButton
       Left = 201
       Top = 2
-      Action = acProjInsRectan
+      Action = acDocInsRectan
     end
     object ToolButton12: TToolButton
       Left = 178
       Top = 2
-      Action = acProjInsPolyline
+      Action = acDocInsPolyline
     end
     object ToolButton13: TToolButton
       Left = 155
@@ -118,7 +118,7 @@ object Form1: TForm1
     Color = clMenuBar
     ParentColor = False
     TabOrder = 1
-    inline frameProjectExplorer: TframeProjectExplorer
+    inline frameDocumentExplorer: TFrameDocumentExplorer
       AnchorSideLeft.Control = WrapperMiddle
       AnchorSideTop.Control = WrapperMiddle
       AnchorSideRight.Control = splitterVert1
@@ -147,7 +147,7 @@ object Form1: TForm1
       end
     end
     object splitterVert1: TSplitter
-      AnchorSideLeft.Control = frameProjectExplorer
+      AnchorSideLeft.Control = frameDocumentExplorer
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = WrapperMiddle
       AnchorSideBottom.Control = WrapperMiddle
@@ -413,63 +413,63 @@ object Form1: TForm1
       Caption = 'acVerConView'
       OnExecute = acVerConViewExecute
     end
-    object acProjFileNew: TAction
+    object acDocFileNew: TAction
       Category = 'File'
-      Caption = 'acProjFileNew'
+      Caption = 'acDocFileNew'
       ImageIndex = 2
-      OnExecute = acProjNew_onExecute
+      OnExecute = acDocNew_onExecute
       ShortCut = 16462
     end
-    object acProjFileOpen: TAction
+    object acDocFileOpen: TAction
       Category = 'File'
-      Caption = 'acProjFileOpen'
+      Caption = 'acDocFileOpen'
       ImageIndex = 3
     end
-    object acProjFileSave: TAction
+    object acDocFileSave: TAction
       Category = 'File'
-      Caption = 'acProjFileSave'
+      Caption = 'acDocFileSave'
       ImageIndex = 4
     end
-    object acProjFileClose: TAction
+    object acDocFileClose: TAction
       Category = 'File'
-      Caption = 'acProjFileClose'
-      OnExecute = acProjFileCloseExecute
+      Caption = 'acDocFileClose'
+      OnExecute = acDocFileCloseExecute
     end
-    object acProjFileLeave: TAction
+    object acDocFileLeave: TAction
       Category = 'File'
-      Caption = 'acProjFileLeave'
+      Caption = 'acDocFileLeave'
       ImageIndex = 6
-      OnExecute = acProjFileLeaveExecute
+      OnExecute = acDocFileLeaveExecute
     end
-    object acProjAddPage: TAction
-      Category = 'Proj'
-      Caption = 'acProjAddPage'
+    object acDocAddPage: TAction
+      Category = 'Doc'
+      Caption = 'acDocAddPage'
       ImageIndex = 34
-      OnExecute = acProjAddPageExecute
+      OnExecute = acDocAddPageExecute
     end
-    object acProjInsPolyline: TAction
-      Category = 'Proj'
-      Caption = 'acProjInsPolyline'
+    object acDocInsPolyline: TAction
+      Category = 'Doc'
+      Caption = 'acDocInsPolyline'
       ImageIndex = 31
     end
-    object acProjInsRectan: TAction
-      Category = 'Proj'
-      Caption = 'acProjInsRectan'
+    object acDocInsRectan: TAction
+      Category = 'Doc'
+      Caption = 'acDocInsRectan'
       ImageIndex = 33
-      OnExecute = acProjInsRectanExecute
+      OnExecute = acDocInsRectanExecute
     end
-    object acProjProp: TAction
-      Category = 'Proj'
+    object acDocProp: TAction
+      Category = 'Doc'
       Caption = '&Propiedades'
       ImageIndex = 32
-      OnExecute = acProjPropExecute
+      OnExecute = acDocPropExecute
     end
-    object acProjInsRect: TAction
-      Category = 'Proj'
-      Caption = 'acProjInsRect'
+    object acDocInsRect: TAction
+      Category = 'Doc'
+      Caption = 'acDocInsRect'
     end
     object acProInsCube: TAction
-      Category = 'Proj'
+      Category = 'Doc'
       Caption = 'acProInsCube'
     end
     object acPageRemove: TAction
@@ -508,27 +508,27 @@ object Form1: TForm1
     object MenuItem1: TMenuItem
       Caption = 'file'
       object MenuItem11: TMenuItem
-        Action = acProjFileNew
-        Caption = 'newProject'
+        Action = acDocFileNew
+        Caption = 'newDocument'
       end
       object MenuItem10: TMenuItem
-        Action = acProjFileOpen
+        Action = acDocFileOpen
         Caption = 'open'
       end
       object MenuItem9: TMenuItem
-        Action = acProjFileSave
+        Action = acDocFileSave
         Caption = 'save'
       end
       object MenuItem8: TMenuItem
-        Action = acProjFileClose
+        Action = acDocFileClose
         Caption = 'close_'
       end
       object MenuItem2: TMenuItem
-        Action = acProjFileOpen
+        Action = acDocFileOpen
         Caption = '-'
       end
       object MenuItem12: TMenuItem
-        Action = acProjFileLeave
+        Action = acDocFileLeave
         Caption = 'exit'
       end
     end
@@ -542,21 +542,21 @@ object Form1: TForm1
       end
     end
     object MenuItem13: TMenuItem
-      Caption = 'project'
+      Caption = 'document'
       object MenuItem22: TMenuItem
-        Action = acProjAddPage
+        Action = acDocAddPage
         Caption = 'addPage'
       end
       object MenuItem20: TMenuItem
-        Action = acProjInsRect
+        Action = acDocInsRect
         Caption = 'insertRectangle'
       end
       object MenuItem14: TMenuItem
-        Action = acProjInsPolyline
+        Action = acDocInsPolyline
         Caption = 'insertPolyline'
       end
       object MenuItem19: TMenuItem
-        Action = acProjProp
+        Action = acDocProp
         Caption = 'poroperties'
       end
     end
@@ -6359,23 +6359,23 @@ object Form1: TForm1
       0000000000000000000000000000
     }
   end
-  object PopupProject: TPopupMenu
+  object PopupDocument: TPopupMenu
     Images = ImgActions16
     left = 216
     top = 220
     object MenuItem21: TMenuItem
-      Action = acProjAddPage
+      Action = acDocAddPage
       Caption = 'addPage'
     end
     object MenuItem15: TMenuItem
       Caption = 'insert'
       object MenuItem16: TMenuItem
-        Action = acProjInsPolyline
+        Action = acDocInsPolyline
         Caption = 'insertPolyline'
       end
     end
     object MenuItem18: TMenuItem
-      Action = acProjProp
+      Action = acDocProp
       Caption = 'poroperties'
     end
   end
@@ -6384,7 +6384,7 @@ object Form1: TForm1
     left = 216
     top = 296
     object MenuItem17: TMenuItem
-      Action = acProjInsRect
+      Action = acDocInsRect
       Caption = 'insertPolyline'
     end
   end

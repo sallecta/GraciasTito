@@ -1,4 +1,4 @@
-object frameProjectExplorer: TframeProjectExplorer
+object frameDocumentExplorer: TFrameDocumentExplorer
   Left = 0
   Height = 480
   Top = 0
@@ -29,7 +29,7 @@ object frameProjectExplorer: TframeProjectExplorer
     Align = alTop
     Alignment = taCenter
     AutoSize = False
-    Caption = 'projects'
+    Caption = 'documents'
     Color = clMenuBar
     Layout = tlCenter
     ParentColor = False

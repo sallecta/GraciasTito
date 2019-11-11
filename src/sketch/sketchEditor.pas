@@ -904,7 +904,7 @@ begin
 end;
 procedure TEditor.proc_NORMAL(EventType: TViewEvent; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; txt: string);
-{Process events, in the NORMAL state. This is the stable state or Proj defect.
+{Process events, in the NORMAL state. This is the stable state or Doc defect.
 From here they are passed to all other states.}
 var
   o: TGraphicObj;

@@ -6,8 +6,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, ActnList, Menus,
   StdCtrls, ComCtrls, LCLProc, LCLType, Buttons,
-  sketchDocument, uFrameEditor, uFormProject,
-  glob, uFramePojectExplorer, uFormPerspective, uFormViewProp,
+  sketchDocument, uFrameEditor, uFormDocument,
+  glob, uFrameDocumetExplorer, uFormPerspective, uFormViewProp,
   sketchEditor,
   Dialogs;
 
@@ -23,16 +23,16 @@ type
     acToolbarDesp: TAction;
     acToolbarPoint: TAction;
     acToolbarRot: TAction;
-    acProjFileNew: TAction;
-    acProjFileClose: TAction;
-    acProjFileSave: TAction;
-    acProjFileLeave: TAction;
-    acProjInsPolyline: TAction;
-    acProjProp: TAction;
-    acProjInsRect: TAction;
+    acDocFileNew: TAction;
+    acDocFileClose: TAction;
+    acDocFileSave: TAction;
+    acDocFileLeave: TAction;
+    acDocInsPolyline: TAction;
+    acDocProp: TAction;
+    acDocInsRect: TAction;
     acProInsCube: TAction;
-    acProjInsRectan: TAction;
-    acProjAddPage: TAction;
+    acDocInsRectan: TAction;
+    acDocAddPage: TAction;
     acPageProp: TAction;
     acPageCamNom: TAction;
     acPageRemove: TAction;
@@ -45,7 +45,7 @@ type
     cmdInputWrapper: TPanel;
     cmdMessages: TMemo;
     cmdRunBtn: TSpeedButton;
-    frameProjectExplorer: TframeProjectExplorer;
+    frameDocumentExplorer: TFrameDocumentExplorer;
     MenuItem10: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
@@ -72,7 +72,7 @@ type
     MenuItem5: TMenuItem;
     acToolbarConfig: TAction;
     ActionList1: TActionList;
-    acProjFileOpen: TAction;
+    acDocFileOpen: TAction;
     ImgActions16: TImageList;
     ImgActions32: TImageList;
     MainMenu1: TMainMenu;
@@ -93,7 +93,7 @@ type
     WrapperMiddle: TPanel;
     PopupView: TPopupMenu;
     PopupPage: TPopupMenu;
-    PopupProject: TPopupMenu;
+    PopupDocument: TPopupMenu;
     PopupObjects: TPopupMenu;
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
@@ -109,14 +109,14 @@ type
     ToolButton7: TToolButton;
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
-    procedure acProjFileCloseExecute(Sender: TObject);
-    procedure acProjNew_onExecute(Sender: TObject);
-    procedure acProjFileLeaveExecute(Sender: TObject);
+    procedure acDocFileCloseExecute(Sender: TObject);
+    procedure acDocNew_onExecute(Sender: TObject);
+    procedure acDocFileLeaveExecute(Sender: TObject);
     procedure acPageAddLineExecute(Sender: TObject);
     procedure acPageRemoveExecute(Sender: TObject);
-    procedure acProjAddPageExecute(Sender: TObject);
-    procedure acProjInsRectanExecute(Sender: TObject);
-    procedure acProjPropExecute(Sender: TObject);
+    procedure acDocAddPageExecute(Sender: TObject);
+    procedure acDocInsRectanExecute(Sender: TObject);
+    procedure acDocPropExecute(Sender: TObject);
     procedure acVerConViewExecute(Sender: TObject);
     procedure acVerViewSupExecute(Sender: TObject);
     procedure acViewPropExecute(Sender: TObject);
@@ -135,25 +135,25 @@ type
     procedure Label2Click(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
   private
-    priv_curProject: TProject;
-    priv_ExploreProjPage: TDocPage;     //page selected in the project explorer
-    priv_ExploreProjView: TFramePaintBox;  //View selected in the project explorer
+    priv_curDocument: TDocument;
+    priv_ExploreDocPage: TDocPage;     //page selected in the document explorer
+    priv_ExploreDocView: TFramePaintBox;  //View selected in the document explorer
     procedure priv_ConfigPropertiesChanged;
-    procedure priv_curProjectActivePageViewSendMessage(msg: string);
-    procedure priv_curProjectModified;
-    procedure priv_curProjectChangeState(ViewState: TViewState);
-    procedure priv_curProjectMouseMoveVirt(Shift: TShiftState; xp, yp: integer;
+    procedure priv_curDocumentActivePageViewSendMessage(msg: string);
+    procedure priv_curDocumentModified;
+    procedure priv_curDocumentChangeState(ViewState: TViewState);
+    procedure priv_curDocumentMouseMoveVirt(Shift: TShiftState; xp, yp: integer;
       xv, yv, zv: single);
-    procedure priv_curProjectChangeActivePage;
-    procedure priv_frameExploreProjClickRightPage(Page: TDocPage);
-    procedure priv_fraExploreProjClickRightProj(Proj: TProject);
-    procedure priv_frameExploreProjClickRightView(View: TFramePaintBox);
-    procedure priv_curProjectChangeView(View: TFramePaintBox);
+    procedure priv_curDocumentChangeActivePage;
+    procedure priv_frameExploreDocClickRightPage(Page: TDocPage);
+    procedure priv_fraExploreDocClickRightDoc(Doc: TDocument);
+    procedure priv_frameExploreDocClickRightView(View: TFramePaintBox);
+    procedure priv_curDocumentChangeView(View: TFramePaintBox);
     function priv_MessageSaveChanges: integer;
     procedure priv_form1SetCaption;
     procedure priv_Refresh;
   public
-    //frameProjectExplorer: TframeProjectExplorer;  //Project Explorer
+    //frameDocumentExplorer: TFrameDocumentExplorer;  //Document Explorer
   end;
 
 var
@@ -165,43 +165,43 @@ implementation
 const
   BUT_CANCEL = 3;
 
-procedure TForm1.priv_fraExploreProjClickRightProj(Proj: TProject);
+procedure TForm1.priv_fraExploreDocClickRightDoc(Doc: TDocument);
 begin
-  PopupProject.PopUp;
+  PopupDocument.PopUp;
 end;
 
-procedure TForm1.priv_frameExploreProjClickRightPage(Page: TDocPage);
+procedure TForm1.priv_frameExploreDocClickRightPage(Page: TDocPage);
 begin
-  priv_ExploreProjPage := Page;
+  priv_ExploreDocPage := Page;
   PopupPage.PopUp;
 end;
 
-procedure TForm1.priv_frameExploreProjClickRightView(View: TFramePaintBox);
+procedure TForm1.priv_frameExploreDocClickRightView(View: TFramePaintBox);
 begin
-  priv_ExploreProjView := View;
+  priv_ExploreDocView := View;
   PopupView.PopUp;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  //Configure Project Explorer
-  frameProjectExplorer.Name := 'frameProjectExplorer';
-  frameProjectExplorer.OnClickRightProject := @priv_fraExploreProjClickRightProj;
-  frameProjectExplorer.OnClickRightPage := @priv_frameExploreProjClickRightPage;
-  frameProjectExplorer.OnClickRightView := @priv_frameExploreProjClickRightView;
-  frameProjectExplorer.OnDeletePage := @acPageRemoveExecute;
-  frameProjectExplorer.Initiate(@priv_curProject);
+  //Configure Document Explorer
+  frameDocumentExplorer.Name := 'frameDocumentExplorer';
+  frameDocumentExplorer.OnClickRightDocument := @priv_fraExploreDocClickRightDoc;
+  frameDocumentExplorer.OnClickRightPage := @priv_frameExploreDocClickRightPage;
+  frameDocumentExplorer.OnClickRightView := @priv_frameExploreDocClickRightView;
+  frameDocumentExplorer.OnDeletePage := @acPageRemoveExecute;
+  frameDocumentExplorer.Initiate(@priv_curDocument);
 
   //Set the alignment
-  //frameProjectExplorer.Align := alLeft;
+  //frameDocumentExplorer.Align := alLeft;
   //SplitterVert.Align := alLeft;
-  //frameProjectExplorer.Visible := True;
+  //frameDocumentExplorer.Visible := True;
   //WrapperBottom.Align := alBottom;
   //PageControl1.Align := alClient;
 
   //translating
   MenuItem1.Caption :=msg.get('file');
-  MenuItem11.Caption :=msg.get('newProject');
+  MenuItem11.Caption :=msg.get('newDocument');
   MenuItem10.Caption :=msg.get('open');
   MenuItem9.Caption :=msg.get('save');
   MenuItem8.Caption :=msg.get('close');
@@ -212,7 +212,7 @@ begin
   MenuItem4.Caption :=msg.get('newitem8');
   MenuItem5.Caption :=msg.get('properties');
   //
-  MenuItem13.Caption :=msg.get('project');
+  MenuItem13.Caption :=msg.get('document');
   MenuItem22.Caption :=msg.get('addPage');
   MenuItem20.Caption :=msg.get('insertRectangle');
   MenuItem14.Caption :=msg.get('insertPolyline');
@@ -244,13 +244,13 @@ begin
   ToolButton2.Caption :=msg.get('rotate');
   ToolButton3.Caption :=msg.get('rotate');
   ToolButton4.Caption :=msg.get('ToolButton4');
-  ToolButton6.Caption :=msg.get('newProject');
+  ToolButton6.Caption :=msg.get('newDocument');
   ToolButton7.Caption :=msg.get('save');
   ToolButton8.Caption :=msg.get('ToolButton8');
   ToolButton9.Caption :=msg.get('config');
   ToolButton10.Caption :=msg.get('open');
   ToolButton5.Caption :=msg.get('viewSuperior');
-  ToolButton11.Caption :=msg.get('acProjInsRectan');
+  ToolButton11.Caption :=msg.get('acDocInsRectan');
   ToolButton12.Caption :=msg.get('insertPolyline');
   ToolButton13.Caption :=msg.get('addLine');
   //
@@ -275,17 +275,17 @@ begin
   ToolButton13.Caption :=msg.get('addLine');
   ToolButton13.Caption :=msg.get('addLine');
   //
-  frameProjectExplorer.Caption := msg.Get('ProjectExplorer');
+  frameDocumentExplorer.Caption := msg.Get('DocumentExplorer');
   
   //assign actions to functions
-  //acProjFileNew.OnExecute := @acProjNew_onExecute;
+  //acDocFileNew.OnExecute := @acDocNew_onExecute;
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
   priv_ConfigPropertiesChanged;
   priv_Refresh;
-  //acProjNew_onExecute(self);
+  //acDocNew_onExecute(self);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -295,14 +295,14 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  if priv_curProject <> nil then
-    priv_curProject.Destroy;
+  if priv_curDocument <> nil then
+    priv_curDocument.Destroy;
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
 {Intercept the keyboard to manage it according to the chosen control}
 begin
-  if priv_curProject = nil then
+  if priv_curDocument = nil then
     exit;
   //Send all commands to the command box
   if TabSheet1.Focused then
@@ -329,46 +329,46 @@ cancel, the BUT_CANCEL value is returned.}
 var
   answer: Integer;
 begin
-  if (priv_curProject <> nil) and priv_curProject.Modified then
+  if (priv_curDocument <> nil) and priv_curDocument.Modified then
   begin
-    answer := Application.MessageBox(PChar(msg.Get('ProjectModifiedSaveChanges')), 'Question',
+    answer := Application.MessageBox(PChar(msg.Get('DocumentModifiedSaveChanges')), 'Question',
            (MB_ICONQUESTION + MB_YESNO));
     if answer = IDNO then
       exit(BUT_CANCEL);
     if answer = IDYES then
-      priv_curProject.SaveFile;
+      priv_curDocument.SaveFile;
   end;
   Result := 0;   //Default value
 end;
 
 procedure TForm1.priv_form1SetCaption;
 begin
-  if priv_curProject = nil then
+  if priv_curDocument = nil then
     Caption := APP_NAME + ' ' + APP_VERSION
   else
     Caption := APP_NAME + ' ' + APP_VERSION + ' - ' +
-      priv_curProject.Name;
+      priv_curDocument.Name;
 end;
 
 procedure TForm1.priv_Refresh;
 {Refresh the entire interface}
 begin
   priv_form1SetCaption;
-  frameProjectExplorer.Refresh; 
+  frameDocumentExplorer.Refresh; 
 end;
 
-procedure TForm1.priv_curProjectModified;
-//Call when the project has been modified.
+procedure TForm1.priv_curDocumentModified;
+//Call when the document has been modified.
 begin
-  acProjFileSave.Enabled := True;
+  acDocFileSave.Enabled := True;
 end;
 
-procedure TForm1.priv_curProjectChangeState(ViewState: TViewState);
+procedure TForm1.priv_curDocumentChangeState(ViewState: TViewState);
 begin
-  StatusBar.Panels[0].Text := priv_curProject.ActivePage.View.StateAsStr;
+  StatusBar.Panels[0].Text := priv_curDocument.ActivePage.View.StateAsStr;
 end;
 
-procedure TForm1.priv_curProjectMouseMoveVirt(Shift: TShiftState;
+procedure TForm1.priv_curDocumentMouseMoveVirt(Shift: TShiftState;
   xp, yp: integer; xv, yv, zv: single);
 begin
   StatusBar.Panels[3].Text :=
@@ -376,7 +376,7 @@ begin
     ' ' + 'z=' + formatfloat('0.00', zv);
 end;
 
-procedure TForm1.priv_curProjectChangeView(View: TFramePaintBox);
+procedure TForm1.priv_curDocumentChangeView(View: TFramePaintBox);
 begin
   StatusBar.Panels[1].Text :=
     'Alfa=' + formatfloat('0.00', View.Alfa) + ' ' + 'Fi=' +
@@ -386,17 +386,17 @@ begin
     'Zoom=' + formatfloat('0.00', View.Zoom);
 end;
 
-procedure TForm1.priv_curProjectChangeActivePage;
-{The active page of the current project was changed. Show it on the screen}
+procedure TForm1.priv_curDocumentChangeActivePage;
+{The active page of the current document was changed. Show it on the screen}
 var
   ap: TDocPage;
 begin
-  if priv_curProject = nil then
+  if priv_curDocument = nil then
     exit;
   //Plug the viewer into PageControl1, to show it;
-  priv_curProject.HideAllPages; {Hide all the pages first because you may have
+  priv_curDocument.HideAllPages; {Hide all the pages first because you may have
                                       already put your "Parent" in viewer.}
-  ap := priv_curProject.ActivePage;
+  ap := priv_curDocument.ActivePage;
   ap.View.Parent := TabSheet1;   //Place it here
   ap.View.Left := Random(200);
   ap.View.Top := Random(200);
@@ -427,7 +427,7 @@ procedure TForm1.cmdInputKeyDown(Sender: TObject; var Key: word; Shift: TShiftSt
 var
   strCmd: string;
 begin
-  if priv_curProject = nil then
+  if priv_curDocument = nil then
     exit;
   if key = VK_RETURN then
   begin
@@ -436,24 +436,24 @@ begin
       exit;
     strCmd := UpCase(strCmd);  //Convert upper case
     //Command entered.
-    priv_curProject.ActivePage.View.ExecuteCommand(strCmd);
+    priv_curDocument.ActivePage.View.ExecuteCommand(strCmd);
   end
   else if key = VK_ESCAPE then
-    priv_curProject.ActivePage.View.ExecuteCommand('CANCEL')//Convert key to command
+    priv_curDocument.ActivePage.View.ExecuteCommand('CANCEL')//Convert key to command
   ;
 end;
 
-procedure TForm1.priv_curProjectActivePageViewSendMessage(msg: string);
-{A message has arrived from the project}
+procedure TForm1.priv_curDocumentActivePageViewSendMessage(msg: string);
+{A message has arrived from the document}
 begin
   cmdMessages.Lines.Add(cmdInput.Text);
   cmdInputLabel.Caption := msg;
   cmdInput.Text := '';
 end;
 ///////////////////////////// Actions ///////////////////////////////
-procedure TForm1.acProjNew_onExecute(Sender: TObject);
+procedure TForm1.acDocNew_onExecute(Sender: TObject);
 var
-  tmpProj: TProject;
+  tmpDoc: TDocument;
 begin
   //check if changes must be saved
   if priv_MessageSaveChanges = BUT_CANCEL then
@@ -461,65 +461,65 @@ begin
 	//WriteLn('butcancel');
     exit;
   end;
-  //Create temporary project
-  tmpProj := TProject.Create;
-  if not formProject.ExecNew(tmpProj) then
+  //Create temporary document
+  tmpDoc := TDocument.Create;
+  if not formDocument.ExecNew(tmpDoc) then
   begin
     //it was canceled
-    tmpProj.Destroy;  //It will not work
-    exit;  //leaving the current project
+    tmpDoc.Destroy;  //It will not work
+    exit;  //leaving the current document
   end;
-  //Close current project and assign the temporary to the current one
-  acProjFileCloseExecute(self);   //close current if it was open
-  priv_curProject := tmpProj;  //points to the temporary
-  priv_curProject.OnModify := @priv_curProjectModified;
-  priv_curProject.OnChangePersp := @priv_curProjectChangeView;
-  priv_curProject.OnChangeActivePage := @priv_curProjectChangeActivePage;
-  priv_curProject.OnMouseMoveVirt := @priv_curProjectMouseMoveVirt;
-  priv_curProject.OnChangeState := @priv_curProjectChangeState;
-  priv_curProject.ActivePage.View.OnSendMessage := @priv_curProjectActivePageViewSendMessage;
-  priv_curProjectChangeActivePage;  //for priv_Refresh in your viewer
-  priv_curProject.ActivePage.View.InitView;  //start the axes
-  priv_curProject.SaveFile;
+  //Close current document and assign the temporary to the current one
+  acDocFileCloseExecute(self);   //close current if it was open
+  priv_curDocument := tmpDoc;  //points to the temporary
+  priv_curDocument.OnModify := @priv_curDocumentModified;
+  priv_curDocument.OnChangePersp := @priv_curDocumentChangeView;
+  priv_curDocument.OnChangeActivePage := @priv_curDocumentChangeActivePage;
+  priv_curDocument.OnMouseMoveVirt := @priv_curDocumentMouseMoveVirt;
+  priv_curDocument.OnChangeState := @priv_curDocumentChangeState;
+  priv_curDocument.ActivePage.View.OnSendMessage := @priv_curDocumentActivePageViewSendMessage;
+  priv_curDocumentChangeActivePage;  //for priv_Refresh in your viewer
+  priv_curDocument.ActivePage.View.InitView;  //start the axes
+  priv_curDocument.SaveFile;
   priv_Refresh;
 end;
 
-procedure TForm1.acProjFileCloseExecute(Sender: TObject);
+procedure TForm1.acDocFileCloseExecute(Sender: TObject);
 begin
-  if priv_curProject = nil then
-    exit;  //there is no open project
-  //check if there is a modified project
+  if priv_curDocument = nil then
+    exit;  //there is no open document
+  //check if there is a modified document
   if priv_MessageSaveChanges = BUT_CANCEL then
     exit;
-  priv_curProject.Destroy;
-  priv_curProject := nil;   //marks it as closed
+  priv_curDocument.Destroy;
+  priv_curDocument := nil;   //marks it as closed
   priv_Refresh;
 end;
 
-procedure TForm1.acProjFileLeaveExecute(Sender: TObject);
+procedure TForm1.acDocFileLeaveExecute(Sender: TObject);
 begin
   Self.Close;
 end;
 
 procedure TForm1.acVerConViewExecute(Sender: TObject);
 begin
-  if priv_curProject = nil then
+  if priv_curDocument = nil then
     exit;
-  formPerspective.Exec(priv_curProject.ActivePage.View);
+  formPerspective.Exec(priv_curDocument.ActivePage.View);
 end;
 
 procedure TForm1.acVerViewSupExecute(Sender: TObject);
 begin
-  if priv_curProject = nil then
+  if priv_curDocument = nil then
     exit;
-  priv_curProject.ActivePage.View.Alfa := 0;
-  priv_curProject.ActivePage.View.Fi := 0;
-  priv_curProject.ActivePage.View.Editor.Refresh;
+  priv_curDocument.ActivePage.View.Alfa := 0;
+  priv_curDocument.ActivePage.View.Fi := 0;
+  priv_curDocument.ActivePage.View.Editor.Refresh;
 end;
 
 procedure TForm1.acViewPropExecute(Sender: TObject);
 begin
-  formViewProp.Exec(priv_ExploreProjView);
+  formViewProp.Exec(priv_ExploreDocView);
 end;
 
 procedure TForm1.cmdMessagesChange(Sender: TObject);
@@ -532,22 +532,22 @@ begin
 
 end;
 
-procedure TForm1.acProjAddPageExecute(Sender: TObject);
+procedure TForm1.acDocAddPageExecute(Sender: TObject);
 begin
-  if priv_curProject = nil then
-    exit;  //there is no open project
-  priv_curProject.AddPage;
+  if priv_curDocument = nil then
+    exit;  //there is no open document
+  priv_curDocument.AddPage;
   priv_Refresh;
 end;
 
-procedure TForm1.acProjPropExecute(Sender: TObject);
+procedure TForm1.acDocPropExecute(Sender: TObject);
 begin
-  if priv_curProject = nil then
+  if priv_curDocument = nil then
     exit;
-  if formProject.Exec(priv_curProject) then
+  if formDocument.Exec(priv_curDocument) then
   begin
-    priv_curProject.Modified := True;
-    frameProjectExplorer.Refresh;
+    priv_curDocument.Modified := True;
+    frameDocumentExplorer.Refresh;
   end;
 end;
 
@@ -555,30 +555,30 @@ procedure TForm1.acPageAddLineExecute(Sender: TObject);  //Add line
 var
   Page: TDocPage;
 begin
-  if priv_curProject = nil then
+  if priv_curDocument = nil then
     exit;
-  {It checks if the action comes from the project explorer, to give you the
+  {It checks if the action comes from the document explorer, to give you the
     possibility to take actions, on non-active pages}
   if ComponentFromAction(Sender) = PopupPage then
-    Page := priv_ExploreProjPage
+    Page := priv_ExploreDocPage
   else
-    Page := priv_curProject.ActivePage;
+    Page := priv_curDocument.ActivePage;
   Page.View.ExecuteCommand('LINE');
   priv_Refresh;
 end;
 
-procedure TForm1.acProjInsRectanExecute(Sender: TObject);
+procedure TForm1.acDocInsRectanExecute(Sender: TObject);
 var
   Page: TDocPage;
 begin
-  if priv_curProject = nil then
+  if priv_curDocument = nil then
     exit;
-  {It checks if the action comes from the project explorer, to give you the
+  {It checks if the action comes from the document explorer, to give you the
     possibility to take actions, on non-active pages}
   if ComponentFromAction(Sender) = PopupPage then
-    Page := priv_ExploreProjPage
+    Page := priv_ExploreDocPage
   else
-    Page := priv_curProject.ActivePage;
+    Page := priv_curDocument.ActivePage;
   Page.View.ExecuteCommand('RECTANGLE');
   priv_Refresh;
 end;
@@ -587,11 +587,11 @@ end;
 
 procedure TForm1.acPageRemoveExecute(Sender: TObject);
 begin
-  if priv_curProject = nil then
+  if priv_curDocument = nil then
     exit;
-  if Application.MessageBox(PChar(msg.Get('AskPageDelete')+priv_curProject.ActivePage.Name), '', (MB_ICONQUESTION + MB_YESNO)) <> IDYES then
+  if Application.MessageBox(PChar(msg.Get('AskPageDelete')+priv_curDocument.ActivePage.Name), '', (MB_ICONQUESTION + MB_YESNO)) <> IDYES then
     exit;
-  priv_curProject.RemovePage(priv_curProject.ActivePage);
+  priv_curDocument.RemovePage(priv_curDocument.ActivePage);
   priv_Refresh;
 end;
 

@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, uFormForm1, uFormPerspective,
-  uFormProject, uFramePojectExplorer, uFormViewProp, sketchDxf, sketchCore,
+  uFormDocument, uFrameDocumetExplorer, uFormViewProp, sketchDxf, sketchCore,
   sketchEditor, toLang, glob
   { you can add units after this };
 
@@ -21,7 +21,7 @@ begin
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
   Application.CreateForm(TFormPerspective, formPerspective);
-  Application.CreateForm(TFormProject, formProject);
+  Application.CreateForm(TFormDocument, formDocument);
   Application.CreateForm(TFormViewProp, formViewProp);
   Application.Run;
 end.

@@ -1,4 +1,4 @@
-object formProject: TFormProject
+object formDocument: TFormDocument
   Left = 813
   Height = 395
   Top = 72
