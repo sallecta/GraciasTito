@@ -46,10 +46,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit1>
-      <Unit2>
-        <Filename Value="sketch/sketchEvalExpres.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit2>
       <Unit3>
         <Filename Value="forms/uFormPerspective.pas"/>
         <IsPartOfProject Value="True"/>

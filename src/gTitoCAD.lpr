@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, uFormForm1, sketchEvalExpres, uFormPerspective,
+  Forms, uFormForm1, uFormPerspective,
   uFormProject, uFramePojectExplorer, uFormViewProp, sketchDxf, sketchCore,
   sketchEditor, toLang, glob
   { you can add units after this };
