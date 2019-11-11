@@ -4,7 +4,7 @@ unit uFormPerspective;
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Spin, ExtCtrls, uFramePaintBox,
+  Spin, ExtCtrls, uFrameEditor,
   glob
   ;
 type

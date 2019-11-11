@@ -91,7 +91,7 @@
         <ResourceBaseClass Value="Form"/>
       </Unit9>
       <Unit10>
-        <Filename Value="frames/uFramePaintBox.pas"/>
+        <Filename Value="frames/uFrameEditor.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="framePaintBox"/>
         <HasResources Value="True"/>

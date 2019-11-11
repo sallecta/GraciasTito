@@ -6,7 +6,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, ActnList, Menus,
   StdCtrls, ComCtrls, LCLProc, LCLType, Buttons,
-  sketchDocument, uFramePaintBox, uFormProject,
+  sketchDocument, uFrameEditor, uFormProject,
   glob, uFramePojectExplorer, uFormPerspective, uFormViewProp,
   sketchEditor,
   Dialogs;

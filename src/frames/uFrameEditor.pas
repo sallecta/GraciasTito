@@ -3,7 +3,7 @@ This Frame will be used to place our graphic editor. Includes a PaintBox,
 as graphic output.
 Being a frame, it can be included in any form.
 }
-unit uFramePaintBox;
+unit uFrameEditor;
 
 {$mode objfpc}{$H+}
 interface

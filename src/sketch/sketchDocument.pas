@@ -5,7 +5,7 @@ interface
 
 uses
   Classes, SysUtils, fgl, Graphics,
-  uFramePaintBox, sketchCore, sketchDxf, sketchEditor, Dialogs,
+  uFrameEditor, sketchCore, sketchDxf, sketchEditor, Dialogs,
   glob
   ;
 

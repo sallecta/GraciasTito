@@ -4,7 +4,7 @@ unit uFormViewProp;
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  Buttons, StdCtrls, Spin, sketchDocument, uFramePaintBox,
+  Buttons, StdCtrls, Spin, sketchDocument, uFrameEditor,
   glob
   ;
 type
