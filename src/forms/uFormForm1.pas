@@ -20,9 +20,11 @@ type
   { TForm1 }
   TForm1 = class(TForm)
   published
+    acDocNew: TAction;
+    acToolbarDesp: TAction;
     acToolbarPoint: TAction;
     acToolbarRot: TAction;
-    acDocFileNew: TAction;
+    acDocNewCustom: TAction;
     acDocFileClose: TAction;
     acDocFileSave: TAction;
     acDocFileLeave: TAction;
@@ -42,8 +44,9 @@ type
     cmdMessages: TMemo;
     cmdRunBtn: TSpeedButton;
     frameDocumentExplorer: TFrameDocumentExplorer;
-    mfileOpen: TMenuItem;
     mfileNew: TMenuItem;
+    mfileOpen: TMenuItem;
+    mfileNewCustom: TMenuItem;
     mfileExit: TMenuItem;
     mDoc: TMenuItem;
     mdocInsertPoly: TMenuItem;
@@ -67,7 +70,7 @@ type
     mviewItem: TMenuItem;
     MenuItem5: TMenuItem;
     acToolbarConfig: TAction;
-    ActionList1: TActionList;
+    actions: TActionList;
     acDocFileOpen: TAction;
     Images16: TImageList;
     Images32: TImageList;
@@ -105,6 +108,7 @@ type
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
     procedure acDocFileCloseExecute(Sender: TObject);
+    procedure acDocNewExecute(Sender: TObject);
     procedure acDocNew_onExecute(Sender: TObject);
     procedure acDocFileLeaveExecute(Sender: TObject);
     procedure acPageAddLineExecute(Sender: TObject);
@@ -123,6 +127,7 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure acToolbarConfigExecute(Sender: TObject);
+    procedure mFileClick(Sender: TObject);
     procedure SplitterHorCanOffset(Sender: TObject; var NewOffset: Integer;
       var Accept: Boolean);
     procedure WrapperBottomClick(Sender: TObject);
@@ -187,8 +192,9 @@ begin
   frameDocumentExplorer.Initiate(@priv_curDocument);
 
   //translating
-  mFile.Caption :=msg.get('file');
+  mFile.Caption :=msg.get('file'); 
   mfileNew.Caption :=msg.get('newDocument');
+  mfileNewCustom.Caption :=msg.get('newCustomDocument');
   mfileOpen.Caption :=msg.get('open');
   mfileSave.Caption :=msg.get('save');
   mfileClose.Caption :=msg.get('close');
@@ -243,7 +249,6 @@ begin
   TabSheet2.Caption :=msg.get('TabSheet2');
   //
   cmdInputLabel.Caption :=msg.get('commandPrompt');
-  //btnRubtnRunCmd_oldion :=msg.get('');
   ToolButton13.Caption :=msg.get('addLine');
   ToolButton13.Caption :=msg.get('addLine');
   ToolButton13.Caption :=msg.get('addLine');
@@ -263,7 +268,7 @@ begin
   frameDocumentExplorer.Caption := msg.Get('DocumentExplorer');
   
   //assign actions to functions
-  //acDocFileNew.OnExecute := @acDocNew_onExecute;
+  //acDocNewCustom.OnExecute := @acDocNew_onExecute;
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
@@ -481,6 +486,11 @@ begin
   priv_Refresh;
 end;
 
+procedure TForm1.acDocNewExecute(Sender: TObject);
+begin
+  writeln('not implemented');
+end;
+
 procedure TForm1.acDocFileLeaveExecute(Sender: TObject);
 begin
   Self.Close;
@@ -574,6 +584,11 @@ begin
 end;
 
 procedure TForm1.acToolbarConfigExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.mFileClick(Sender: TObject);
 begin
 
 end;

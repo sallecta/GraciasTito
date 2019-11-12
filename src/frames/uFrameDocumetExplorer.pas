@@ -20,8 +20,8 @@ type
 
   TFrameDocumentExplorer = class(TFrame)
     treeNav: TTreeView;
-    ImgActions16: TImageList;
-    ImgActions32: TImageList;
+    Images16: TImageList;
+    Images32: TImageList;
     Label2: TLabel;
     procedure treeNavKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
   private
@@ -237,7 +237,7 @@ begin
   if curDocument^ = nil then
   begin
     //There is no current document
-    nodeDoc := treeNav.items.AddChild(nil, '<<No Documents>>');
+    nodeDoc := treeNav.items.AddChild(nil, msg.get('noDocuments'));
     exit;
   end;
   //There is an open document

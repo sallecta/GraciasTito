@@ -1,11 +1,10 @@
-object frameDocumentExplorer: TFrameDocumentExplorer
+object FrameDocumentExplorer: TFrameDocumentExplorer
   Left = 0
   Height = 480
   Top = 0
   Width = 170
   ClientHeight = 480
   ClientWidth = 170
-  LCLVersion = '2.0.6.0'
   TabOrder = 0
   DesignLeft = 319
   DesignTop = 215
@@ -15,7 +14,7 @@ object frameDocumentExplorer: TFrameDocumentExplorer
     Top = 24
     Width = 170
     Align = alClient
-    Images = ImgActions16
+    Images = Images16
     ReadOnly = True
     TabOrder = 0
     OnKeyDown = treeNavKeyDown
@@ -35,7 +34,7 @@ object frameDocumentExplorer: TFrameDocumentExplorer
     ParentColor = False
     Transparent = False
   end
-  object ImgActions16: TImageList
+  object Images16: TImageList
     left = 40
     top = 48
     Bitmap = {
@@ -202,11 +201,11 @@ object frameDocumentExplorer: TFrameDocumentExplorer
       00220000000B00000000FFFFFF00
     }
   end
-  object ImgActions32: TImageList
+  object Images32: TImageList
     Height = 32
     Width = 32
-    left = 104
-    top = 48
+    left = 40
+    top = 112
     Bitmap = {
       4C690500000020000000200000000000000000000000030B0D03010607060105
       0606010506060105060602050606020506060206060602060606020606060206

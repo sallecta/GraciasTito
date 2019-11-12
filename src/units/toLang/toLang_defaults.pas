@@ -79,7 +79,9 @@ begin
   TtoLang(objinst).Add('file',
          '&File'); // &Archivo
   TtoLang(objinst).Add('newDocument',
-         '&New Document...'); // Nuevo &Proyecto...
+         '&New document'); // Nuevo &Proyecto...
+  TtoLang(objinst).Add('newCustomDocument',
+         'New custom &document...');
   TtoLang(objinst).Add('open',
          '&Open'); // &Abrir
   TtoLang(objinst).Add('save',
@@ -196,8 +198,8 @@ begin
          'Page'); // Página
   TtoLang(objinst).Add('objectExample',
          'Example object'); // empty
-  TtoLang(objinst).Add('empty',
-         'empty'); // empty
+  TtoLang(objinst).Add('noDocuments',
+         'No documents'); // empty
   TtoLang(objinst).Add('empty',
          'empty'); // empty
   TtoLang(objinst).Add('empty',
