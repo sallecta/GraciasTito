@@ -21,23 +21,18 @@ type
   TForm1 = class(TForm)
   published
     acDocNew: TAction;
-    acToolbarDesp: TAction;
-    acToolbarPoint: TAction;
-    acToolbarRot: TAction;
     acDocNewCustom: TAction;
-    acDocFileClose: TAction;
-    acDocFileSave: TAction;
-    acDocFileLeave: TAction;
-    acDocInsPolyline: TAction;
+    acDocClose: TAction;
+    acDocSave: TAction;
+    acAppExit: TAction;
     acDocProp: TAction;
-    acDocInsRect: TAction;
-    acDocInsRectan: TAction;
-    acDocAddPage: TAction;
+    acPageAdd: TAction;
     acPageProp: TAction;
     acPageRemove: TAction;
-    acPageAddLine: TAction;
+    acDrawLinePoly: TAction;
     acViewProp: TAction;
-    acVerViewSup: TAction;
+    btnPoly: TToolButton;
+    btnSep1: TToolButton;
     cmdInput: TEdit;
     cmdInputLabel: TLabel;
     cmdInputWrapper: TPanel;
@@ -50,12 +45,9 @@ type
     mfileExit: TMenuItem;
     mDoc: TMenuItem;
     mdocInsertPoly: TMenuItem;
-    pdocInsert: TMenuItem;
-    pdocinsertPoly: TMenuItem;
     pobjectsItem1: TMenuItem;
     pdocProperies: TMenuItem;
     mdocProperties: TMenuItem;
-    mdocInsertRect: TMenuItem;
     pdocAddPage: TMenuItem;
     mdocAddPage: TMenuItem;
     mPage: TMenuItem;
@@ -66,12 +58,11 @@ type
     ppageRemove: TMenuItem;
     ppageProperties: TMenuItem;
     pviewProperties: TMenuItem;
-    ppageAddline: TMenuItem;
-    mviewItem: TMenuItem;
+    ppageAddlPoly: TMenuItem;
+    mviewProps: TMenuItem;
     MenuItem5: TMenuItem;
-    acToolbarConfig: TAction;
     actions: TActionList;
-    acDocFileOpen: TAction;
+    acDocOpen: TAction;
     Images16: TImageList;
     Images32: TImageList;
     menuMain: TMainMenu;
@@ -87,35 +78,26 @@ type
     StatusBar: TStatusBar;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
+    btnNewCustomDoc: TToolButton;
     WrapperBottom: TPanel;
     WrapperMiddle: TPanel;
     pmenuView: TPopupMenu;
     pmenuPage: TPopupMenu;
     pmenuDoc: TPopupMenu;
     pmenuObjects: TPopupMenu;
-    ToolBar1: TToolBar;
-    ToolButton1: TToolButton;
-    ToolButton10: TToolButton;
-    ToolButton11: TToolButton;
-    ToolButton12: TToolButton;
-    ToolButton13: TToolButton;
-    ToolButton2: TToolButton;
-    ToolButton3: TToolButton;
-    ToolButton4: TToolButton;
-    ToolButton5: TToolButton;
-    ToolButton6: TToolButton;
-    ToolButton7: TToolButton;
-    ToolButton8: TToolButton;
-    ToolButton9: TToolButton;
-    procedure acDocFileCloseExecute(Sender: TObject);
+    ToolBar: TToolBar;
+    procedure acDocCloseExecute(Sender: TObject);
+    procedure acDocInsPolylineExecute(Sender: TObject);
     procedure acDocNewExecute(Sender: TObject);
     procedure acDocNew_onExecute(Sender: TObject);
-    procedure acDocFileLeaveExecute(Sender: TObject);
-    procedure acPageAddLineExecute(Sender: TObject);
+    procedure acAppExitExecute(Sender: TObject);
+    procedure acDrawLinePolyExecute(Sender: TObject);
+    procedure acPagePropExecute(Sender: TObject);
     procedure acPageRemoveExecute(Sender: TObject);
-    procedure acDocAddPageExecute(Sender: TObject);
+    procedure acPageAddExecute(Sender: TObject);
     procedure acDocInsRectanExecute(Sender: TObject);
     procedure acDocPropExecute(Sender: TObject);
+    procedure acToolbarPointExecute(Sender: TObject);
     procedure acVerViewSupExecute(Sender: TObject);
     procedure acViewPropExecute(Sender: TObject);
     procedure cmdMessagesChange(Sender: TObject);
@@ -128,15 +110,17 @@ type
     procedure FormShow(Sender: TObject);
     procedure acToolbarConfigExecute(Sender: TObject);
     procedure mFileClick(Sender: TObject);
+    procedure mviewPropsClick(Sender: TObject);
     procedure SplitterHorCanOffset(Sender: TObject; var NewOffset: Integer;
       var Accept: Boolean);
+    procedure ToolBarClick(Sender: TObject);
     procedure WrapperBottomClick(Sender: TObject);
     procedure Label2Click(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
   private
     priv_curDocument: TDocument;
     priv_ExploreDocPage: TDocPage;     //page selected in the document explorer
-    priv_ExploreDocView: TFramePaintBox;  //View selected in the document explorer
+    priv_ExploreDocView: TframeEditor;  //View selected in the document explorer
     procedure priv_ConfigPropertiesChanged;
     procedure priv_curDocumentActivePageViewSendMessage(msg: string);
     procedure priv_curDocumentModified;
@@ -146,8 +130,8 @@ type
     procedure priv_curDocumentChangeActivePage;
     procedure priv_frameExploreDocClickRightPage(Page: TDocPage);
     procedure priv_fraExploreDocClickRightDoc(Doc: TDocument);
-    procedure priv_frameExploreDocClickRightView(View: TFramePaintBox);
-    procedure priv_curDocumentChangeView(View: TFramePaintBox);
+    procedure priv_frameExploreDocClickRightView(View: TframeEditor);
+    procedure priv_curDocumentChangeView(View: TframeEditor);
     function priv_MessageSaveChanges: integer;
     procedure priv_form1SetCaption;
     procedure priv_Refresh;
@@ -175,7 +159,7 @@ begin
   pmenuPage.PopUp;
 end;
 
-procedure TForm1.priv_frameExploreDocClickRightView(View: TFramePaintBox);
+procedure TForm1.priv_frameExploreDocClickRightView(View: TframeEditor);
 begin
   priv_ExploreDocView := View;
   pmenuView.PopUp;
@@ -201,11 +185,10 @@ begin
   mfileExit.Caption :=msg.get('exit');
   //
   mView.Caption :=msg.get('view');
-  mviewItem.Caption :=msg.get('newitem8');
+  mviewProps.Caption :=msg.get('properties');
   //
   mDoc.Caption :=msg.get('document');
   mdocAddPage.Caption:=msg.get('addPage');
-  mdocInsertRect.Caption :=msg.get('insertRectangle');
   mdocInsertPoly.Caption :=msg.get('insertPolyline');
   mdocProperties.Caption :=msg.get('properties');
   //
@@ -218,52 +201,23 @@ begin
   mtoolsConfig.Caption :=msg.get('config');
   //
   pdocAddPage.Caption :=msg.get('addPage');
-  pdocInsert.Caption :=msg.get('insert');
-  pdocinsertPoly.Caption :=msg.get('insertPolyline');
   pdocProperies.Caption :=msg.get('properties');
   //
   pobjectsItem1.Caption :=msg.get('insertPolyline');
   //
-  ppageAddline.Caption :=msg.get('addLine');
+  ppageAddlPoly.Caption :=msg.get('addLine');
   ppageRename.Caption :=msg.get('rename');
   ppageRemove.Caption :=msg.get('remove');
   ppageProperties.Caption :=msg.get('properties');
   //
   pviewProperties.Caption :=msg.get('properties');
-  // Toolbar1.
-  ToolButton1.Caption :=msg.get('rotate'); 
-  ToolButton2.Caption :=msg.get('rotate');
-  ToolButton3.Caption :=msg.get('rotate');
-  ToolButton4.Caption :=msg.get('ToolButton4');
-  ToolButton6.Caption :=msg.get('newDocument');
-  ToolButton7.Caption :=msg.get('save');
-  ToolButton8.Caption :=msg.get('ToolButton8');
-  ToolButton9.Caption :=msg.get('config');
-  ToolButton10.Caption :=msg.get('open');
-  ToolButton5.Caption :=msg.get('viewSuperior');
-  ToolButton11.Caption :=msg.get('acDocInsRectan');
-  ToolButton12.Caption :=msg.get('insertPolyline');
-  ToolButton13.Caption :=msg.get('addLine');
+  // ToolBar.
+  btnPoly.Caption :=msg.get('addLine');
   //
   TabSheet1.Caption :=msg.get('editor');
   TabSheet2.Caption :=msg.get('TabSheet2');
   //
   cmdInputLabel.Caption :=msg.get('commandPrompt');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
-  ToolButton13.Caption :=msg.get('addLine');
   //
   frameDocumentExplorer.Caption := msg.Get('DocumentExplorer');
   
@@ -306,11 +260,11 @@ procedure TForm1.priv_ConfigPropertiesChanged;
 //Configuration properties are changed
 begin
   StatusBar.Visible := true;
-  ToolBar1.Visible := true;
-  ToolBar1.ButtonHeight := 38;
-  ToolBar1.ButtonWidth := 38;
-  ToolBar1.Height := 42;
-  ToolBar1.Images := Images32;
+  ToolBar.Visible := true;
+  ToolBar.ButtonHeight := 38;
+  ToolBar.ButtonWidth := 38;
+  ToolBar.Height := 42;
+  ToolBar.Images := Images32;
 end;
 
 function TForm1.priv_MessageSaveChanges: integer;
@@ -350,7 +304,7 @@ end;
 procedure TForm1.priv_curDocumentModified;
 //Call when the document has been modified.
 begin
-  acDocFileSave.Enabled := True;
+  acDocSave.Enabled := True;
 end;
 
 procedure TForm1.priv_curDocumentChangeState(ViewState: TViewState);
@@ -366,7 +320,7 @@ begin
     ' ' + 'z=' + formatfloat('0.00', zv);
 end;
 
-procedure TForm1.priv_curDocumentChangeView(View: TFramePaintBox);
+procedure TForm1.priv_curDocumentChangeView(View: TframeEditor);
 begin
   StatusBar.Panels[1].Text :=
     'Alfa=' + formatfloat('0.00', View.Alfa) + ' ' + 'Fi=' +
@@ -460,7 +414,6 @@ begin
     exit;  //leaving the current document
   end;
   //Close current document and assign the temporary to the current one
-  acDocFileCloseExecute(self);   //close current if it was open
   priv_curDocument := tmpDoc;  //points to the temporary
   priv_curDocument.OnModify := @priv_curDocumentModified;
   priv_curDocument.OnChangePersp := @priv_curDocumentChangeView;
@@ -474,7 +427,7 @@ begin
   priv_Refresh;
 end;
 
-procedure TForm1.acDocFileCloseExecute(Sender: TObject);
+procedure TForm1.acDocCloseExecute(Sender: TObject);
 begin
   if priv_curDocument = nil then
     exit;  //there is no open document
@@ -486,12 +439,17 @@ begin
   priv_Refresh;
 end;
 
+procedure TForm1.acDocInsPolylineExecute(Sender: TObject);
+begin
+
+end;
+
 procedure TForm1.acDocNewExecute(Sender: TObject);
 begin
   writeln('not implemented');
 end;
 
-procedure TForm1.acDocFileLeaveExecute(Sender: TObject);
+procedure TForm1.acAppExitExecute(Sender: TObject);
 begin
   Self.Close;
 end;
@@ -520,7 +478,7 @@ begin
 
 end;
 
-procedure TForm1.acDocAddPageExecute(Sender: TObject);
+procedure TForm1.acPageAddExecute(Sender: TObject);
 begin
   if priv_curDocument = nil then
     exit;  //there is no open document
@@ -539,7 +497,12 @@ begin
   end;
 end;
 
-procedure TForm1.acPageAddLineExecute(Sender: TObject);  //Add line
+procedure TForm1.acToolbarPointExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.acDrawLinePolyExecute(Sender: TObject);  //Add line
 var
   Page: TDocPage;
 begin
@@ -553,6 +516,11 @@ begin
     Page := priv_curDocument.ActivePage;
   Page.View.ExecuteCommand('LINE');
   priv_Refresh;
+end;
+
+procedure TForm1.acPagePropExecute(Sender: TObject);
+begin
+
 end;
 
 procedure TForm1.acDocInsRectanExecute(Sender: TObject);
@@ -593,8 +561,18 @@ begin
 
 end;
 
+procedure TForm1.mviewPropsClick(Sender: TObject);
+begin
+
+end;
+
 procedure TForm1.SplitterHorCanOffset(Sender: TObject; var NewOffset: Integer;
   var Accept: Boolean);
+begin
+
+end;
+
+procedure TForm1.ToolBarClick(Sender: TObject);
 begin
 
 end;

@@ -25,9 +25,9 @@ type
     procedure btnApplyClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    View: TFramePaintBox;
+    View: TframeEditor;
   public
-    procedure Exec(argView: TFramePaintBox);
+    procedure Exec(argView: TframeEditor);
   end;
 
 var
@@ -66,7 +66,7 @@ begin
   btnApply.caption:=msg.get('apply');
 end;
 
-procedure TFormViewProp.Exec(argView: TFramePaintBox);
+procedure TFormViewProp.Exec(argView: TframeEditor);
 begin
   View := argView;
   chbShowAxes.Checked    := View.Editor.ShowAxes;

@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 343
   Height = 541
-  Top = 154
+  Top = 104
   Width = 855
   Caption = 'gTitoCAD'
   ClientHeight = 512
@@ -15,7 +15,7 @@ object Form1: TForm1
   OnShow = FormShow
   Position = poDesktopCenter
   LCLVersion = '2.0.6.0'
-  object ToolBar1: TToolBar
+  object ToolBar: TToolBar
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
@@ -23,86 +23,33 @@ object Form1: TForm1
     Height = 26
     Top = 0
     Width = 855
-    Caption = 'ToolBar1'
+    Caption = 'ToolBar'
     Color = clMenuBar
     Images = Images16
     ParentColor = False
     TabOrder = 0
-    object ToolButton1: TToolButton
-      Left = 78
-      Top = 2
-      Action = acToolbarRot
-      ImageIndex = 14
-    end
-    object ToolButton2: TToolButton
-      Left = 101
-      Top = 2
-      Action = acToolbarRot
-      ImageIndex = 13
-    end
-    object ToolButton3: TToolButton
-      Left = 124
-      Top = 2
-      Action = acToolbarRot
-    end
-    object ToolButton4: TToolButton
-      Left = 70
-      Height = 22
-      Top = 2
-      Caption = 'ToolButton4'
-      Style = tbsSeparator
-    end
-    object ToolButton6: TToolButton
+    OnClick = ToolBarClick
+    object btnNewCustomDoc: TToolButton
       Left = 1
       Top = 2
       Action = acDocNewCustom
     end
-    object ToolButton7: TToolButton
-      Left = 47
-      Top = 2
-      Action = acDocFileSave
-    end
-    object ToolButton8: TToolButton
-      Left = 147
+    object btnSep1: TToolButton
+      Left = 24
       Height = 22
       Top = 2
-      Caption = 'ToolButton8'
+      Caption = 'btnSep1'
       Style = tbsSeparator
     end
-    object ToolButton9: TToolButton
-      Left = 247
+    object btnPoly: TToolButton
+      Left = 32
       Top = 2
-      Action = acToolbarConfig
-    end
-    object ToolButton10: TToolButton
-      Left = 24
-      Top = 2
-      Action = acDocFileOpen
-    end
-    object ToolButton5: TToolButton
-      Left = 224
-      Top = 2
-      Action = acVerViewSup
-    end
-    object ToolButton11: TToolButton
-      Left = 201
-      Top = 2
-      Action = acDocInsRectan
-    end
-    object ToolButton12: TToolButton
-      Left = 178
-      Top = 2
-      Action = acDocInsPolyline
-    end
-    object ToolButton13: TToolButton
-      Left = 155
-      Top = 2
-      Action = acPageAddLine
+      Action = acDrawLinePoly
     end
   end
   object WrapperMiddle: TPanel
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = ToolBar1
+    AnchorSideTop.Control = ToolBar
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -141,9 +88,8 @@ object Form1: TForm1
         Color = clWhite
         ExpandSignType = tvestPlusMinus
       end
-      inherited Label2: TLabel
+      inherited lblTreeNav: TLabel
         Width = 150
-        ParentColor = True
       end
     end
     object splitterVert1: TSplitter
@@ -381,59 +327,11 @@ object Form1: TForm1
     Images = Images16
     left = 400
     top = 220
-    object acToolbarPoint: TAction
-      Category = 'Toolbar'
-      Caption = 'acToolbarPoint'
-      ImageIndex = 14
-    end
-    object acToolbarDesp: TAction
-      Category = 'Toolbar'
-      Caption = 'acToolbarDesp'
-      ImageIndex = 13
-    end
-    object acToolbarRot: TAction
-      Category = 'Toolbar'
-      Caption = 'acToolbarRot'
-      ImageIndex = 15
-    end
-    object acToolbarConfig: TAction
-      Category = 'Toolbar'
-      Caption = 'acToolbarConfig'
-      ImageIndex = 22
-      OnExecute = acToolbarConfigExecute
-    end
-    object acVerViewSup: TAction
-      Category = 'View'
-      Caption = 'acVerViewSup'
-      ImageIndex = 20
-      OnExecute = acVerViewSupExecute
-    end
-    object acDocAddPage: TAction
-      Category = 'Doc'
+    object acPageAdd: TAction
+      Category = 'Page'
       Caption = 'acDocAddPage'
       ImageIndex = 34
-      OnExecute = acDocAddPageExecute
-    end
-    object acDocInsPolyline: TAction
-      Category = 'Doc'
-      Caption = 'acDocInsPolyline'
-      ImageIndex = 31
-    end
-    object acDocInsRectan: TAction
-      Category = 'Doc'
-      Caption = 'acDocInsRectan'
-      ImageIndex = 33
-      OnExecute = acDocInsRectanExecute
-    end
-    object acDocProp: TAction
-      Category = 'Doc'
-      Caption = 'properties'
-      ImageIndex = 32
-      OnExecute = acDocPropExecute
-    end
-    object acDocInsRect: TAction
-      Category = 'Doc'
-      Caption = 'acDocInsRect'
+      OnExecute = acPageAddExecute
     end
     object acPageRemove: TAction
       Category = 'Page'
@@ -445,6 +343,7 @@ object Form1: TForm1
       Category = 'Page'
       Caption = 'acPageProp'
       ImageIndex = 32
+      OnExecute = acPagePropExecute
     end
     object acViewProp: TAction
       Category = 'View'
@@ -452,44 +351,50 @@ object Form1: TForm1
       ImageIndex = 32
       OnExecute = acViewPropExecute
     end
-    object acPageAddLine: TAction
-      Category = 'Page'
-      Caption = 'acPageAddLine'
+    object acDrawLinePoly: TAction
+      Category = 'Draw'
+      Caption = 'acDrawLine'
       ImageIndex = 35
-      OnExecute = acPageAddLineExecute
+      OnExecute = acDrawLinePolyExecute
     end
     object acDocNew: TAction
-      Category = 'File'
+      Category = 'Doc'
       Caption = 'acDocNew'
       OnExecute = acDocNewExecute
     end
     object acDocNewCustom: TAction
-      Category = 'File'
+      Category = 'Doc'
       Caption = 'acDocNewCustom'
       ImageIndex = 2
       OnExecute = acDocNew_onExecute
       ShortCut = 16462
     end
-    object acDocFileOpen: TAction
-      Category = 'File'
-      Caption = 'acDocFileOpen'
+    object acDocOpen: TAction
+      Category = 'Doc'
+      Caption = 'acDocOpen'
       ImageIndex = 3
     end
-    object acDocFileSave: TAction
-      Category = 'File'
-      Caption = 'acDocFileSave'
+    object acDocSave: TAction
+      Category = 'Doc'
+      Caption = 'acDocSave'
       ImageIndex = 4
     end
-    object acDocFileClose: TAction
-      Category = 'File'
-      Caption = 'acDocFileClose'
-      OnExecute = acDocFileCloseExecute
+    object acDocProp: TAction
+      Category = 'Doc'
+      Caption = 'acDocProp'
+      ImageIndex = 32
+      OnExecute = acDocPropExecute
     end
-    object acDocFileLeave: TAction
-      Category = 'File'
+    object acDocClose: TAction
+      Category = 'Doc'
+      Caption = 'acDocClose'
+      OnExecute = acDocCloseExecute
+    end
+    object acAppExit: TAction
+      Category = 'App'
       Caption = 'acDocFileLeave'
       ImageIndex = 6
-      OnExecute = acDocFileLeaveExecute
+      OnExecute = acAppExitExecute
     end
   end
   object menuMain: TMainMenu
@@ -543,41 +448,38 @@ object Form1: TForm1
         Action = acDocNewCustom
       end
       object mfileOpen: TMenuItem
-        Action = acDocFileOpen
+        Action = acDocOpen
         Caption = 'mfileOpen'
       end
       object mfileSave: TMenuItem
-        Action = acDocFileSave
+        Action = acDocSave
         Caption = 'mfileSave'
       end
       object mfileClose: TMenuItem
-        Action = acDocFileClose
+        Action = acDocClose
         Caption = 'mfileClose'
       end
       object mfileExit: TMenuItem
-        Action = acDocFileLeave
+        Action = acAppExit
         Caption = 'mfileExit'
       end
     end
     object mView: TMenuItem
       Caption = 'mView'
-      object mviewItem: TMenuItem
-        Caption = 'mviewItem'
+      object mviewProps: TMenuItem
+        Action = acViewProp
+        OnClick = mviewPropsClick
       end
     end
     object mDoc: TMenuItem
       Caption = 'mDoc'
       object mdocAddPage: TMenuItem
-        Action = acDocAddPage
+        Action = acPageAdd
         Caption = 'mdocAddPage'
       end
-      object mdocInsertRect: TMenuItem
-        Action = acDocInsRect
-        Caption = 'mdocInsertRect'
-      end
       object mdocInsertPoly: TMenuItem
-        Action = acDocInsPolyline
         Caption = 'mdocInsertPoly'
+        ImageIndex = 31
       end
       object mdocProperties: TMenuItem
         Action = acDocProp
@@ -6388,15 +6290,8 @@ object Form1: TForm1
     left = 216
     top = 220
     object pdocAddPage: TMenuItem
-      Action = acDocAddPage
+      Action = acPageAdd
       Caption = 'pdocAddPage'
-    end
-    object pdocInsert: TMenuItem
-      Caption = 'pdocInsert'
-      object pdocinsertPoly: TMenuItem
-        Action = acDocInsPolyline
-        Caption = 'pdocinsertPoly'
-      end
     end
     object pdocProperies: TMenuItem
       Action = acDocProp
@@ -6408,16 +6303,16 @@ object Form1: TForm1
     left = 216
     top = 296
     object pobjectsItem1: TMenuItem
-      Action = acDocInsRectan
+      Caption = 'acDocInsRectan'
+      ImageIndex = 33
     end
   end
   object pmenuPage: TPopupMenu
     Images = Images16
     left = 296
     top = 220
-    object ppageAddline: TMenuItem
-      Action = acPageAddLine
-      Caption = 'ppageAddline'
+    object ppageAddlPoly: TMenuItem
+      Action = acDrawLinePoly
     end
     object ppageRename: TMenuItem
       Caption = 'ppageRename'

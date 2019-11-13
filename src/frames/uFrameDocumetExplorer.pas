@@ -14,15 +14,15 @@ type
   TEvClickRightDoc = procedure(Doc: TDocument) of object;
   TEvClickRightPage = procedure(Page: TDocPage) of object;
   TEvClickRightObj = procedure(obj: TDrawObjetcs_list) of object;
-  TEvClickRightView = procedure(View: TFramePaintBox) of object;
+  TEvClickRightView = procedure(View: TframeEditor) of object;
 
   { TFrameDocumentExplorer }
 
   TFrameDocumentExplorer = class(TFrame)
     treeNav: TTreeView;
-    Images16: TImageList;
-    Images32: TImageList;
-    Label2: TLabel;
+    docexplImages16: TImageList;
+    docexplImages32: TImageList;
+    lblTreeNav: TLabel;
     procedure treeNavKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
   private
     curDocument: TPtrDocument;
@@ -230,7 +230,7 @@ var
   argGraphicObject: TGraphicObj;
 begin
   //show your title
-  Label2.Caption := self.Caption;
+  lblTreeNav.Caption := self.Caption;
 
   //  ns := NodeSelectedGetName;  //guarda elemento ObjSelected
   treeNav.Items.Clear;  //clean items

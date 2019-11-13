@@ -30,7 +30,7 @@ type
 
   TDrawObjetcs_list = specialize TFPGObjectList<TDrawObj>;
 
-  TEvChangePersp = procedure(View: TFramePaintBox) of object;
+  TEvChangePersp = procedure(View: TframeEditor) of object;
   TDocument = class;
 
   { TDocPage }
@@ -46,7 +46,7 @@ type
     docPageObjList: TDrawObjetcs_list;  //List of graphic elements
     objects: TEditorObjList; //List of objects
   public  //Managing views
-    View: TFramePaintBox;   //One View at the time
+    View: TframeEditor;   //One View at the time
     OnChangePersp: TEvChangePersp;
     //Change x_offs, y_offs, x_cam, y_cam, alpha, fi or zoom
     OnMouseMoveVirt: TEvMousePaintBox;
@@ -64,7 +64,7 @@ type
     FActivePage: TDocPage;
     fModified: boolean;   //indicates if it has been modified
     procedure page_ChangeState(ViewState: TViewState);
-    procedure page_ChangePerspec(View: TFramePaintBox);
+    procedure page_ChangePerspec(View: TframeEditor);
     procedure page_MouseMoveVirt(Shift: TShiftState; xp, yp: integer;
       xv, yv, zv: single);
     procedure SetActivePage(AValue: TDocPage);
@@ -127,7 +127,7 @@ constructor TDocPage.Create;
 begin
   docPageObjList := TDrawObjetcs_list.Create(True);
   objects := TEditorObjList.Create(True);   //container
-  View := TFramePaintBox.Create(nil, objects);  //create a View
+  View := TframeEditor.Create(nil, objects);  //create a View
   View.Editor.VirtScreen.backColor := clBlack;
   View.Editor.ShowAxes := True;
   View.Editor.ShowRotPoint := True;
@@ -156,7 +156,7 @@ begin
       OnModify;
 end;
 
-procedure TDocument.page_ChangePerspec(View: TFramePaintBox);
+procedure TDocument.page_ChangePerspec(View: TframeEditor);
 {It is generated if any page changes its perspective}
 begin
   if OnChangePersp <> nil then

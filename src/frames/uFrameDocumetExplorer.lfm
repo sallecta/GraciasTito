@@ -14,13 +14,13 @@ object FrameDocumentExplorer: TFrameDocumentExplorer
     Top = 24
     Width = 170
     Align = alClient
-    Images = Images16
+    Images = docexplImages16
     ReadOnly = True
     TabOrder = 0
     OnKeyDown = treeNavKeyDown
     Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
   end
-  object Label2: TLabel
+  object lblTreeNav: TLabel
     Left = 0
     Height = 24
     Top = 0
@@ -34,7 +34,7 @@ object FrameDocumentExplorer: TFrameDocumentExplorer
     ParentColor = False
     Transparent = False
   end
-  object Images16: TImageList
+  object docexplImages16: TImageList
     left = 40
     top = 48
     Bitmap = {
@@ -201,7 +201,7 @@ object FrameDocumentExplorer: TFrameDocumentExplorer
       00220000000B00000000FFFFFF00
     }
   end
-  object Images32: TImageList
+  object docexplImages32: TImageList
     Height = 32
     Width = 32
     left = 40
