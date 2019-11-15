@@ -8,209 +8,209 @@ procedure createDefaults(objinst: TObject);
 
 implementation
 
-uses uToLang;
+uses toLang;
 
 procedure createDefaults(objinst: TObject);
 begin
-  tuToLang(objinst).Add('AppName', 'tolangAppName');
-  tuToLang(objinst).Add('DocumentExplorer', 'Document Explorer');
-  tuToLang(objinst).Add('DocumentModifiedSaveChanges',
+  TtoLang(objinst).Add('AppName', 'tolangAppName');
+  TtoLang(objinst).Add('DocumentExplorer', 'Document Explorer');
+  TtoLang(objinst).Add('DocumentModifiedSaveChanges',
       'Document modified. Dou you want to save changes?');//El presupuesto ha sido modificado, ¿Guardar cambios?
-  tuToLang(objinst).Add('AskPageDelete', 'Delete page: '); //¿Eliminar página "%s"?
-  tuToLang(objinst).Add('InvalidNumber', 'Invalid number'); //Número inválido.
-  tuToLang(objinst).Add('ExpressionErrorDetails',
+  TtoLang(objinst).Add('AskPageDelete', 'Delete page: '); //¿Eliminar página "%s"?
+  TtoLang(objinst).Add('InvalidNumber', 'Invalid number'); //Número inválido.
+  TtoLang(objinst).Add('ExpressionErrorDetails',
        'Expression error. Expected: ');// Error en expresión. Se esperaba
-  tuToLang(objinst).Add('FailedStringToFloat: ',
+  TtoLang(objinst).Add('FailedStringToFloat: ',
        'Failed convert string to float: '); // Error en número:
-  tuToLang(objinst).Add('EndOfStringNotFound',
+  TtoLang(objinst).Add('EndOfStringNotFound',
         'End of string not found'); // No se encontro fin de cadena
-  tuToLang(objinst).Add('CantDevideByZero.',
+  TtoLang(objinst).Add('CantDevideByZero.',
          'Can not devide by zero'); // No se puede dividir por cero.
-  tuToLang(objinst).Add('CantEvaluate0of0.',
+  TtoLang(objinst).Add('CantEvaluate0of0.',
          'Can not Evaluate 0 ^ 0'); // No se puede Evaluate 0^0
-  tuToLang(objinst).Add('NoOperatorRecognized',
+  TtoLang(objinst).Add('NoOperatorRecognized',
          'No operator is recognized: '); // No se reconoce operador:
-  tuToLang(objinst).Add('UnknownFuncOrVar',
+  TtoLang(objinst).Add('UnknownFuncOrVar',
          'Unknown function or variable: '); // Función o variable desconocida:
-  tuToLang(objinst).Add('SyntaxError.',
+  TtoLang(objinst).Add('SyntaxError.',
          'SyntaxError'); // Error de sintaxis
-  tuToLang(objinst).Add('CantDeleteLastPage',
+  TtoLang(objinst).Add('CantDeleteLastPage',
          'Can not delete last page'); // No se pueden eliminar todas las páginas.
-  tuToLang(objinst).Add('PageDoesNotExist',
+  TtoLang(objinst).Add('PageDoesNotExist',
          'Page does not exist: '); // No existe la página
-  tuToLang(objinst).Add('DocumentDefaultName',
+  TtoLang(objinst).Add('DocumentDefaultName',
          'Document'); // Proyecto
-  tuToLang(objinst).Add('documentObjects',
+  TtoLang(objinst).Add('documentObjects',
          'Objects'); // objects Gráficos
-  tuToLang(objinst).Add('defaultObjName',
+  TtoLang(objinst).Add('defaultObjName',
          'Object'); // Objeto
-  tuToLang(objinst).Add('stateNormal',
+  TtoLang(objinst).Add('stateNormal',
          'Normal'); // stateNormal
-  tuToLang(objinst).Add('stateSelMultiple',
+  TtoLang(objinst).Add('stateSelMultiple',
          'Multiple selection'); // Selecc. Múltiple
-  tuToLang(objinst).Add('stateObjectsMoving.',
+  TtoLang(objinst).Add('stateObjectsMoving.',
          'Objects moving'); // 'Moviendo objects'
-  tuToLang(objinst).Add('stateScreenScrolling.',
+  TtoLang(objinst).Add('stateScreenScrolling.',
          'Screen scrolling'); // 'Desplaz. Pantalla'
-  tuToLang(objinst).Add('stateScreenRotating',
+  TtoLang(objinst).Add('stateScreenRotating',
          'Screen rotating'); // Rotando Pantalla
-  tuToLang(objinst).Add('stateDimensioningObjects',
+  TtoLang(objinst).Add('stateDimensioningObjects',
          'Dimensioning objects'); // 'Dimension.objects'
-  tuToLang(objinst).Add('stateMouseZooming',
+  TtoLang(objinst).Add('stateMouseZooming',
          'Mouse zooming'); // 'Zoom con ratón'
-  tuToLang(objinst).Add('stateLineCreating',
+  TtoLang(objinst).Add('stateLineCreating',
          'Line creating'); // Modo línea
-  tuToLang(objinst).Add('stateRectangleCreating',
+  TtoLang(objinst).Add('stateRectangleCreating',
          'Rectangle creating'); // Modo Rectángulo
-  tuToLang(objinst).Add('stateUnknown',
+  TtoLang(objinst).Add('stateUnknown',
          'Unknown state'); // << Desconocido >>;
-  tuToLang(objinst).Add('CommandUnknown',
+  TtoLang(objinst).Add('CommandUnknown',
          'Uunknown command: '); // Comando desconocido:
-  tuToLang(objinst).Add('enterStartingPoint',
+  TtoLang(objinst).Add('enterStartingPoint',
          '>> Enter starting point:'); // >> Ingrese punto inicial:
-  tuToLang(objinst).Add('commandPrompt',
+  TtoLang(objinst).Add('commandPrompt',
          '>>'); // '>> Comando:'
-  tuToLang(objinst).Add('errEnterStartPoint',
+  TtoLang(objinst).Add('errEnterStartPoint',
          'ERROR. Enter starting point:'); // ERROR: Ingrese punto inicial:
-  tuToLang(objinst).Add('enterFollowingPoint',
+  TtoLang(objinst).Add('enterFollowingPoint',
          'Enter following point: '); // '>> Ingrese siguiente punto ([C]errar):'
-  tuToLang(objinst).Add('enterNextPoint',
+  TtoLang(objinst).Add('enterNextPoint',
          'Enter next point'); // Ingrese siguiente punto ([C]errar):
-  tuToLang(objinst).Add('file',
+  TtoLang(objinst).Add('file',
          '&File'); // &Archivo
-  tuToLang(objinst).Add('newDocument',
+  TtoLang(objinst).Add('newDocument',
          '&New document'); // Nuevo &Proyecto...
-  tuToLang(objinst).Add('newCustomDocument',
+  TtoLang(objinst).Add('newCustomDocument',
          'New custom &document...');
-  tuToLang(objinst).Add('open',
+  TtoLang(objinst).Add('open',
          '&Open'); // &Abrir
-  tuToLang(objinst).Add('save',
+  TtoLang(objinst).Add('save',
          '&Save'); // G&uardar 
-  tuToLang(objinst).Add('close',
+  TtoLang(objinst).Add('close',
          '&Close'); // Cerrar
-  tuToLang(objinst).Add('exit',
+  TtoLang(objinst).Add('exit',
          '&Exit'); // Salir
-  tuToLang(objinst).Add('view',
+  TtoLang(objinst).Add('view',
          'View'); // &Show
-  tuToLang(objinst).Add('newitem8',
+  TtoLang(objinst).Add('newitem8',
          'New Item8'); // empty
-  tuToLang(objinst).Add('document',
+  TtoLang(objinst).Add('document',
          'Document'); // &Documento
-  tuToLang(objinst).Add('addPage',
+  TtoLang(objinst).Add('addPage',
          'Add Page'); // Agregar &Página
-  tuToLang(objinst).Add('insertRectangle',
+  TtoLang(objinst).Add('insertRectangle',
          'Insert rectangle'); // Insertar Rectángulo
-  tuToLang(objinst).Add('insertPolyline',
+  TtoLang(objinst).Add('insertPolyline',
          'Insert polyline'); // Insertar Po&lilinea
-  tuToLang(objinst).Add('properties',
+  TtoLang(objinst).Add('properties',
          'Properties'); // Propiedades
-  tuToLang(objinst).Add('page',
+  TtoLang(objinst).Add('page',
          'Page'); // Pa&gina
-  tuToLang(objinst).Add('rename',
+  TtoLang(objinst).Add('rename',
          'Rename'); // Cambiar &Name
-  tuToLang(objinst).Add('remove',
+  TtoLang(objinst).Add('remove',
          'Remove'); // Eliminar
-  tuToLang(objinst).Add('tools',
+  TtoLang(objinst).Add('tools',
          'Tools'); // &Herramientas
-  tuToLang(objinst).Add('config',
+  TtoLang(objinst).Add('config',
          'Configuration'); // Confi&guración
-  tuToLang(objinst).Add('insert',
+  TtoLang(objinst).Add('insert',
          'Insert'); // &Insertar
-  tuToLang(objinst).Add('addLine',
+  TtoLang(objinst).Add('addLine',
          'Add line'); // Agregar &Línea
-  tuToLang(objinst).Add('rotate',
+  TtoLang(objinst).Add('rotate',
          '&Rotate'); // &Rotar
-  tuToLang(objinst).Add('ToolButton4',
+  TtoLang(objinst).Add('ToolButton4',
          'ToolButton4'); // ToolButton4
-  tuToLang(objinst).Add('ToolButton8',
+  TtoLang(objinst).Add('ToolButton8',
          'ToolButton8'); // ToolButton8
-  tuToLang(objinst).Add('viewSuperior',
+  TtoLang(objinst).Add('viewSuperior',
          'View Superior'); // View S&uperior
-  tuToLang(objinst).Add('acDocInsRectan',
+  TtoLang(objinst).Add('acDocInsRectan',
          'acDocInsRectan'); // acDocInsRectan
-  tuToLang(objinst).Add('editor',
+  TtoLang(objinst).Add('editor',
          'Editor'); // Diseño
-  tuToLang(objinst).Add('TabSheet2',
+  TtoLang(objinst).Add('TabSheet2',
          'TabSheet2'); // TabSheet2
-  tuToLang(objinst).Add('ok',
+  TtoLang(objinst).Add('ok',
          'OK'); // empty
-  tuToLang(objinst).Add('cancel',
+  TtoLang(objinst).Add('cancel',
          'Cancel'); // empty
-  tuToLang(objinst).Add('apply',
+  TtoLang(objinst).Add('apply',
          'Apply'); // empty
-  tuToLang(objinst).Add('showToolbar',
+  TtoLang(objinst).Add('showToolbar',
          'Show toolbar'); // Show Barra de &Herramientas
-  tuToLang(objinst).Add('icons',
+  TtoLang(objinst).Add('icons',
          'Icons');
-  tuToLang(objinst).Add('small',
+  TtoLang(objinst).Add('small',
          'Small');
-  tuToLang(objinst).Add('big',
+  TtoLang(objinst).Add('big',
           'Big');
-  tuToLang(objinst).Add('showStatusbar',
+  TtoLang(objinst).Add('showStatusbar',
          'Show status bar'); // Show Barra de &state
-  tuToLang(objinst).Add('showAxes',
+  TtoLang(objinst).Add('showAxes',
          'Show axes'); // Show &Ejes Coordenados.
-  tuToLang(objinst).Add('axesLength',
+  TtoLang(objinst).Add('axesLength',
          'Axes length'); // Longitud de ejes:
-  tuToLang(objinst).Add('showCoordPoint',
+  TtoLang(objinst).Add('showCoordPoint',
          'Show coordinate point'); // Mostrar Coord. del &Puntero en barra de state.
-  tuToLang(objinst).Add('mouseWheelIncrement',
+  TtoLang(objinst).Add('mouseWheelIncrement',
          'Mouse wheel increment'); // Incremento de ángulo con la rueda del Ratón:
-  tuToLang(objinst).Add('prompt',
+  TtoLang(objinst).Add('prompt',
          'Prompt'); // Prompt:
-  tuToLang(objinst).Add('general',
+  TtoLang(objinst).Add('general',
          'General'); // empty
-  tuToLang(objinst).Add('view',
+  TtoLang(objinst).Add('view',
          'View'); // empty
-  tuToLang(objinst).Add('commandPanel',
+  TtoLang(objinst).Add('commandPanel',
          'Command panel'); // empty
-  tuToLang(objinst).Add('readPerspective',
+  TtoLang(objinst).Add('readPerspective',
          'Read Perspective'); // &Leer Perspectiva.
-  tuToLang(objinst).Add('xpos',
+  TtoLang(objinst).Add('xpos',
          'X pos'); // empty
-  tuToLang(objinst).Add('ypos',
+  TtoLang(objinst).Add('ypos',
          'Y pos'); // empty
-  tuToLang(objinst).Add('clearPerspective',
+  TtoLang(objinst).Add('clearPerspective',
          'Clear perspective'); // Lim&piar Perspectiva
-  tuToLang(objinst).Add('xoffs',
+  TtoLang(objinst).Add('xoffs',
          'X offset'); // X_Cam:
-  tuToLang(objinst).Add('yoffs',
+  TtoLang(objinst).Add('yoffs',
          'Y offset'); // Y_Cam:
-  tuToLang(objinst).Add('setPerspective',
+  TtoLang(objinst).Add('setPerspective',
          'Set perspective'); // Fijar Perspectiva
-  tuToLang(objinst).Add('alphaAngle',
+  TtoLang(objinst).Add('alphaAngle',
          'Alpha angle'); // empty
-  tuToLang(objinst).Add('fiAngle',
+  TtoLang(objinst).Add('fiAngle',
          'Fi angle'); // empty
-  tuToLang(objinst).Add('zoom',
+  TtoLang(objinst).Add('zoom',
          'Zoom'); // empty
-  tuToLang(objinst).Add('name',
+  TtoLang(objinst).Add('name',
          'Name'); // empty
-  tuToLang(objinst).Add('notes',
+  TtoLang(objinst).Add('notes',
          'Notes'); // Notas
-  tuToLang(objinst).Add('author',
+  TtoLang(objinst).Add('author',
          'Author'); // Creado por:
-  tuToLang(objinst).Add('showRotationPoint',
+  TtoLang(objinst).Add('showRotationPoint',
          'Show rotation point'); // Show Punto de &Giro
-  tuToLang(objinst).Add('showGrid',
+  TtoLang(objinst).Add('showGrid',
          'Show grid'); // Show &Cuadrícula
-  tuToLang(objinst).Add('page',
+  TtoLang(objinst).Add('page',
          'Page'); // Página
-  tuToLang(objinst).Add('objectExample',
+  TtoLang(objinst).Add('objectExample',
          'Example object'); // empty
-  tuToLang(objinst).Add('noDocuments',
+  TtoLang(objinst).Add('noDocuments',
          'No documents'); // empty
-  tuToLang(objinst).Add('empty',
+  TtoLang(objinst).Add('empty',
          'empty'); // empty
-  tuToLang(objinst).Add('empty',
+  TtoLang(objinst).Add('empty',
          'empty'); // empty
-  tuToLang(objinst).Add('empty',
+  TtoLang(objinst).Add('empty',
          'empty'); // empty
-  tuToLang(objinst).Add('empty',
+  TtoLang(objinst).Add('empty',
          'empty'); // empty
-  tuToLang(objinst).Add('empty',
+  TtoLang(objinst).Add('empty',
          'empty'); // empty
-  tuToLang(objinst).Add('empty',
+  TtoLang(objinst).Add('empty',
          'empty'); // empty
 
 end;

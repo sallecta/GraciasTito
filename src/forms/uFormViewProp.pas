@@ -4,8 +4,7 @@ unit uFormViewProp;
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  Buttons, StdCtrls, Spin, sketchDocument, uFrameEditor,
-  glob
+  Buttons, StdCtrls, Spin, sketchDocument, uFrameEditor
   ;
 type
 
@@ -34,6 +33,7 @@ var
   formViewProp: TFormViewProp;
 
 implementation
+uses glob;
 {$R *.lfm}
 
 { TFormViewProp }

@@ -8,20 +8,18 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, uFormForm1, 
-  uFormDocument, uFrameDocumetExplorer, uFormViewProp, sketchDxf, sketchCore,
-  sketchEditor, toLang, glob
-  { you can add units after this };
+  glob;
 
 {$R *.res}
 
 begin
   //load defaults messages from units/toLang/toLang_defaults.pas
-  glob.msg := tlang.Create();
+
   RequireDerivedFormResource := True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
-  Application.CreateForm(TFormDocument, formDocument);
-  Application.CreateForm(TFormViewProp, formViewProp);
+  Application.CreateForm(TForm1,glob.Form1);
+  //Application.CreateForm(TFormDocument, formDocument);
+  //Application.CreateForm(TFormViewProp, formViewProp);
   Application.Run;
 end.
 

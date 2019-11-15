@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
-  <ProjectOptions>
+  <DocumentOptions>
     <Version Value="11"/>
     <General>
       <Flags>
@@ -8,7 +8,7 @@
         <MainUnitHasTitleStatement Value="False"/>
         <MainUnitHasScaledStatement Value="False"/>
       </Flags>
-      <SessionStorage Value="InProjectDir"/>
+      <SessionStorage Value="InDocumentDir"/>
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
       <Title Value="gui_resourceless"/>
@@ -100,24 +100,24 @@
     <Units Count="4">
       <Unit0>
         <Filename Value="gui_resourceless.lpr"/>
-        <IsPartOfProject Value="True"/>
+        <IsPartOfDocument Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="form_main.pas"/>
-        <IsPartOfProject Value="True"/>
+        <IsPartOfDocument Value="True"/>
         <UnitName Value="form_Main"/>
       </Unit1>
       <Unit2>
-        <Filename Value="glob.pas"/>
-        <IsPartOfProject Value="True"/>
+        <Filename Value="gvars.pas"/>
+        <IsPartOfDocument Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="../utolang.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="uToLang"/>
+        <Filename Value="../toLang.pas"/>
+        <IsPartOfDocument Value="True"/>
+        <UnitName Value="toLang_main"/>
       </Unit3>
     </Units>
-  </ProjectOptions>
+  </DocumentOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <Target>

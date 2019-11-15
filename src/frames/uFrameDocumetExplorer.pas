@@ -6,8 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, ComCtrls, StdCtrls, LCLType, ActnList,
-  sketchDocument, uFrameEditor, sketchCore,
-  glob
+  sketchDocument, uFrameEditor, sketchCore
   ;
 
 type
@@ -56,6 +55,7 @@ type
   end;
 
 implementation
+uses glob;
 
 {$R *.lfm}
 const

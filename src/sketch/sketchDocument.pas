@@ -5,9 +5,7 @@ interface
 
 uses
   Classes, SysUtils, fgl, Graphics,
-  uFrameEditor, sketchCore, sketchDxf, sketchEditor, Dialogs,
-  glob
-  ;
+  uFrameEditor, sketchCore, sketchEditor, Dialogs  ;
 
 type
   TMeasureUnits = (
@@ -103,6 +101,7 @@ type
   TPtrDocument = ^TDocument;
 
 implementation
+uses glob;
 
 procedure TDocPage.ViewChangePersp;
 begin
@@ -269,7 +268,6 @@ var
   Page: TDocPage;
 begin
   Page := TDocPage.Create;
-  Page.Name := msg.get('page') + IntToStr(pages.Count + 1);
   Page.parent := self;
   Page.OnChangePersp := @page_ChangePerspec;
   Page.OnMouseMoveVirt := @page_MouseMoveVirt;

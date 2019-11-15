@@ -5,7 +5,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  EditBtn, StdCtrls, ButtonPanel, Buttons, ComCtrls, Spin, Menus, sketchDocument, glob;
+  EditBtn, StdCtrls, ButtonPanel, Buttons, ComCtrls, Spin, Menus, sketchDocument;
 
 type
   { TFormDocument }
@@ -29,7 +29,7 @@ type
     Accepted: boolean;
     ErrorData: boolean;
     aDocument: TDocument;
-    procRefresh: TEvRefresh;
+    procRefresh: procedure of object;
   public
     function Exec(argDoc: TDocument; soloRead: boolean = False): boolean;
     function ExecNew(argDoc: TDocument): boolean;
@@ -39,6 +39,7 @@ var
   formDocument: TFormDocument;
 
 implementation
+uses glob;
 
 {$R *.lfm}
 { TFormDocument }
@@ -58,7 +59,7 @@ end;
 
 procedure TFormDocument.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-  VerifyClose(Accepted, ErrorData, CanClose);
+
 end;
 
 procedure TFormDocument.OKButtonClick(Sender: TObject);

@@ -1,54 +1,10 @@
-{
-VisGraf3D unit
-=====================
-By Tito Hinostroza 01/04/2017
 
-Description
-============
-Defines the class TEditor that implements a viewer-editor of graphic objects.
-To work you must associate with a PaintBox control (where the objects will appreciate)
-graphics) and a list of objects of type TEditorObjList, defined in the unit
-ogDefObjGraf.
-This unit is based on the ogEditGraf library, where it would be equivalent to
-the ogMotEdicion unit, with the difference that here, the main class, does not include
-to the container of objects but only a referecncia, and that the focus here is on handling
-of states before of events.
-The idea is that this class provides a higher level layer on the graphic engine
-to show and edit objects with the mouse and by commands.
-In summary, the TEditor class must meet the following requirements:
-
-1. Be associated with a list of objects "TEditorObjList". Does not include the container,
-   but it is only a viewer-editor.
-2. Must intercept mouse events, for editing. This is one of
-   the main functions of this class.
-3. This class must be in charge of executing the commands. This is another one of
-   the main functions of this class.
-4. Objects must only be modified through this class. They should not be done
-   directly from outside. This will allow taking control of the actions for
-   implement the Undo and Redo.
-5. The changes in the objects must be informed, through the OnModify event.
-6. This class must restrict access to the graphics engine. The idea is that it can adapt
-   without problems to other graphics engines.
-
-There are only two ways to interact from outside, with the viewer:
-
-1. Through commands and data. Through the methods ExecuteCommand () and SendData ().
-2. With Mouse events on the PaintBox.
-
-There is not, nor should there be another form of interaction. The keys must be converted first
-in commands or data, before sending them to this viewer.
-
-The viewer communicates with the outside, through the events.
-
-}
 unit sketchEditor;
 {$mode objfpc}{$H+}
 INTERFACE
 uses
   Classes, Controls, ExtCtrls, Graphics, LCLProc, LCLType, fgl,
-  MotGraf3d, sketchCore, sketchDxf,
-  glob
-  ;
+  MotGraf3d, sketchCore, sketchDxf;
 const
   ZOOM_MAX_EDITOR = 5  ;//Defines the maximal zoom allowed in a diagram
   ZOOM_MIN_EDITOR = 0.1;//Defines the minimal zoom allowed in a diagram
@@ -219,7 +175,7 @@ type
   end;
 
 implementation
-
+uses glob;
 
 procedure TEditor.SetState(AValue: TViewState);
 begin

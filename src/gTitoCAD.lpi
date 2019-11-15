@@ -34,7 +34,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="13">
       <Unit0>
         <Filename Value="gTitoCAD.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -98,6 +98,10 @@
         <Filename Value="units/toLang/toLang.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="handlers/uhDoc.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit12>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -107,7 +111,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="forms;frames;sketch;units/toLang;units/MotGraf_5at_9Jan2017"/>
+      <OtherUnitFiles Value="forms;handlers;frames;sketch;units/toLang;units/MotGraf_5at_9Jan2017"/>
       <UnitOutputDirectory Value="../ignore/lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

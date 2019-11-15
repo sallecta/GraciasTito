@@ -5,6 +5,7 @@ object FrameDocumentExplorer: TFrameDocumentExplorer
   Width = 170
   ClientHeight = 480
   ClientWidth = 170
+  LCLVersion = '2.0.6.0'
   TabOrder = 0
   DesignLeft = 319
   DesignTop = 215
