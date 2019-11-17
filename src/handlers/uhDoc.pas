@@ -9,35 +9,46 @@ type
   tuhDoc =  class
   public
     constructor Create; overload;
-procedure doNewCustom(argForm: TObject);
+procedure doNewReserved(argForm: TObject); 
+procedure doProps(argForm: TObject);
 procedure doClose(argForm: TObject);
   end;
 
 
 implementation
-uses glob, sketchDocument, uformForm1;
+uses glob, uDoc, uForm1, uFormDocProps;
 
 constructor tuhDoc.Create;
 begin
   inherited;
 end;
 
-procedure tuhDoc.doNewCustom(argForm: TObject);
+procedure tuhDoc.doNewReserved(argForm: TObject);
 var
   argForm1: TForm1;
 begin 
   argForm1 := TForm1(argForm);
   argForm1.doc.Free;
-  argform1.doc := TDocument.Create;
-  argForm1.doc.OnChangePersp := @argForm1.curDocumentChangeView;
-  argForm1.doc.OnChangeActivePage := @argForm1.curDocumentChangeActivePage;
-  argForm1.doc.OnMouseMoveVirt := @argForm1.curDocumentMouseMoveVirt;
-  argForm1.doc.OnChangeState := @argForm1.curDocumentChangeState;
-  argForm1.doc.ActivePage.View.OnSendMessage := @argForm1.curDocumentActivePageViewSendMessage;
-  argForm1.curDocumentChangeActivePage;  //for priv_Refresh in your viewer
-  argForm1.doc.ActivePage.View.InitView;  //start the axes
-  argForm1.doc.SaveFile;
+  argform1.doc := TDoc.Create;
+  argform1.doc.Name := msg.Get('document');
+  argform1.doc.ActivePage.name := msg.Get('page');
+  argForm1.showActivePage;
   argForm1.Refresh;
+end;
+
+procedure tuhDoc.doProps(argForm: TObject);
+var
+  argForm1: TForm1;
+  locFormDocProp: TFormDocProps;
+begin
+  argForm1 := TForm1(argForm);
+  locFormDocProp := TFormDocProps(glob.formDocProps);
+  if argForm1.doc = nil then
+    exit;
+  if locFormDocProp.Exec(argForm1.doc) then
+  begin
+    argForm1.frameDocumentExplorer.Refresh;
+  end;
 end;
 
 procedure tuhDoc.doClose(argForm: TObject);
@@ -47,9 +58,6 @@ begin
   argForm1 := TForm1(argForm);
   if argForm1.doc = nil then
     exit;  //nothing to doClose
-  //check if there is a modified document
-  if argForm1.MessageSaveChanges = glob.BUT_CANCEL then
-    exit;
   argForm1.doc.Destroy;
   argForm1.doc := nil;   //marks it as closed
   argForm1.Refresh;

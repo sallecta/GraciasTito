@@ -38,10 +38,8 @@ begin
          'Can not delete last page'); // No se pueden eliminar todas las páginas.
   tuToLang(objinst).Add('PageDoesNotExist',
          'Page does not exist: '); // No existe la página
-  tuToLang(objinst).Add('DocumentDefaultName',
-         'Document'); // Proyecto
   tuToLang(objinst).Add('documentObjects',
-         'Objects'); // objects Gráficos
+         'sketchCoreObjects'); // sketchCoreObjects Gráficos
   tuToLang(objinst).Add('defaultObjName',
          'Object'); // Objeto
   tuToLang(objinst).Add('stateNormal',
@@ -49,13 +47,13 @@ begin
   tuToLang(objinst).Add('stateSelMultiple',
          'Multiple selection'); // Selecc. Múltiple
   tuToLang(objinst).Add('stateObjectsMoving.',
-         'Objects moving'); // 'Moviendo objects'
+         'sketchCoreObjects moving'); // 'Moviendo sketchCoreObjects'
   tuToLang(objinst).Add('stateScreenScrolling.',
          'Screen scrolling'); // 'Desplaz. Pantalla'
   tuToLang(objinst).Add('stateScreenRotating',
          'Screen rotating'); // Rotando Pantalla
   tuToLang(objinst).Add('stateDimensioningObjects',
-         'Dimensioning objects'); // 'Dimension.objects'
+         'Dimensioning sketchCoreObjects'); // 'Dimension.sketchCoreObjects'
   tuToLang(objinst).Add('stateMouseZooming',
          'Mouse zooming'); // 'Zoom con ratón'
   tuToLang(objinst).Add('stateLineCreating',
@@ -78,10 +76,10 @@ begin
          'Enter next point'); // Ingrese siguiente punto ([C]errar):
   tuToLang(objinst).Add('file',
          '&File'); // &Archivo
-  tuToLang(objinst).Add('newDocument',
-         '&New document'); // Nuevo &Proyecto...
+ tuToLang(objinst).Add('newReservedDocument',
+         '&New document');
   tuToLang(objinst).Add('newCustomDocument',
-         'New custom &document...');
+         'New custom &document');
   tuToLang(objinst).Add('open',
          '&Open'); // &Abrir
   tuToLang(objinst).Add('save',
@@ -90,8 +88,8 @@ begin
          '&Close'); // Cerrar
   tuToLang(objinst).Add('exit',
          '&Exit'); // Salir
-  tuToLang(objinst).Add('view',
-         'View'); // &Show
+  tuToLang(objinst).Add('frameEditor',
+         'Editor'); // &Show
   tuToLang(objinst).Add('newitem8',
          'New Item8'); // empty
   tuToLang(objinst).Add('document',
@@ -125,7 +123,7 @@ begin
   tuToLang(objinst).Add('ToolButton8',
          'ToolButton8'); // ToolButton8
   tuToLang(objinst).Add('viewSuperior',
-         'View Superior'); // View S&uperior
+         'frameEditor Superior'); // frameEditor S&uperior
   tuToLang(objinst).Add('acDocInsRectan',
          'acDocInsRectan'); // acDocInsRectan
   tuToLang(objinst).Add('editor',
@@ -160,8 +158,8 @@ begin
          'Prompt'); // Prompt:
   tuToLang(objinst).Add('general',
          'General'); // empty
-  tuToLang(objinst).Add('view',
-         'View'); // empty
+  tuToLang(objinst).Add('frameEditor',
+         'frameEditor'); // empty
   tuToLang(objinst).Add('commandPanel',
          'Command panel'); // empty
   tuToLang(objinst).Add('readPerspective',
@@ -198,12 +196,12 @@ begin
          'Page'); // Página
   tuToLang(objinst).Add('objectExample',
          'Example object'); // empty
-  tuToLang(objinst).Add('noDocuments',
-         'No documents'); // empty
-  tuToLang(objinst).Add('empty',
-         'empty'); // empty
-  tuToLang(objinst).Add('empty',
-         'empty'); // empty
+  tuToLang(objinst).Add('draw',
+         'Draw'); // empty
+  tuToLang(objinst).Add('drawPoly',
+         'Draw poly line'); // empty
+  tuToLang(objinst).Add('nodocuments',
+         'No Documents'); // empty
   tuToLang(objinst).Add('empty',
          'empty'); // empty
   tuToLang(objinst).Add('empty',

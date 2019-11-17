@@ -12,14 +12,14 @@ const
   ZOOM_STEP_EDITOR = 1.15;
   OFFSET_EDITOR = 10;
 type
-  //ObjType of event produced in the View
+  //ObjType of event produced in the frameEditor
   TViewEvent = (
     vmeMouseDown,
     vmeMouseMove,
     vmeMouseUp,
     vmeCmdStart    //Start of command
   );
-  {ObjType of the event handler of the View. Only mouse or event events are expected.}
+  {ObjType of the event handler of the frameEditor. Only mouse or event events are expected.}
   TViewEventHandler = procedure(EventType: TViewEvent; Button: TMouseButton;
                             Shift: TShiftState; xp, yp: Integer; txt: string) of object;
 
@@ -28,9 +28,9 @@ type
       //Visual editor states
        VS_NORMAL,      //No operation is being performed
       VS_SELECTINGMULT,   //You are in multiple selection mode
-      VS_OBJS_MOVING,    //Indicates that one or more objects are moving
+      VS_OBJS_MOVING,    //Indicates that one or more sketchCoreObjects are moving
       VS_SCREEN_SCROLLING,
-      VS_SCREEN_ANG,   //Indicates offset of View angles
+      VS_SCREEN_ANG,   //Indicates offset of frameEditor angles
       VS_DIMEN_OBJ,   // Indicates that an object is being dimensioned
       VS_ZOOMING,    //Indicates that you are in a Zoom Processing
       //Additional states for commands
@@ -46,8 +46,8 @@ type
   TEditor = class
   private
     FState: TViewState;
-    procedure GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean=true);
-    procedure GraphicObjectDelete(obj: TGraphicObj);
+    procedure GraphicObjectAdd(argGraphicObject: sketchCoreObj; AutoPos: boolean=true);
+    procedure GraphicObjectDelete(obj: sketchCoreObj);
     procedure DeleteSelected;
     procedure proc_COMM_RECTAN(EventType: TViewEvent; Button: TMouseButton;
       Shift: TShiftState; xp, yp: Integer; txt: string);
@@ -55,8 +55,8 @@ type
     procedure VirtualScreen_ChangeView;
   protected
     PBox         : TPaintBox;   //Output Control
-    MovingObject: TGraphicObj;    //reference to object that captured movement
-    MarkedObject   : TGraphicObj;
+    MovingObject: sketchCoreObj;    //reference to object that captured movement
+    MarkedObject   : sketchCoreObj;
     Moving : Boolean;     //Control flag for the start of the movement
     procedure PBox_MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
                         xp, yp: Integer); virtual;
@@ -84,16 +84,16 @@ type
     xvPt       : Single;
     yvPt       : Single;
     zvPt       : Single;
-    objects     : TEditorObjList;
-    selection   : TEditorObjList;
+    sketchCoreObjects     : TSketchCoreObjects;
+    selection   : TSketchCoreObjects;
     VirtScreen         : TVirtScreen;    //graphic output
     Wheel_step    : Single;
     ShowAxes : boolean;
     AxesDistance : integer;
     ShowRotPoint: boolean;
     ShowGrid  : boolean;
-    function ObjSelected: TGraphicObj;
-    function ObjByName(argName: string): TGraphicObj;
+    function ObjSelected: sketchCoreObj;
+    function ObjByName(argName: string): sketchCoreObj;
     procedure Refresh;
     procedure SelectAll;
     procedure SelectNone();
@@ -113,7 +113,7 @@ type
     y_cam_prev: Single;
     procedure ZoomToClick(factor: real=ZOOM_STEP_EDITOR; xr: integer=0;
       yr: integer=0);
-    function PreviousVisible(c: TGraphicObj): TGraphicObj;
+    function PreviousVisible(c: sketchCoreObj): sketchCoreObj;
     procedure DrawRectangleSeleccion;
 
     function inRectangleSeleccion(X, Y: Single): Boolean;
@@ -124,20 +124,20 @@ type
     procedure moveLeft(offs: Double=OFFSET_EDITOR);
     procedure Displace(dx, dy: integer);
     function VisibleObjectsCount: Integer;
-    function FirstVisible: TGraphicObj;
+    function FirstVisible: sketchCoreObj;
     function RectangleSelectionIsNil: Boolean;
     procedure ZoomReduceClick(factor: Real=ZOOM_STEP_EDITOR; x_zoom: Real=0;
       y_zoom: Real=0);
-    function SelectObjectAt(xp, yp: Integer): TGraphicObj;
+    function SelectObjectAt(xp, yp: Integer): sketchCoreObj;
     procedure SelectPrevious;
     procedure SelectNext;
-    function NextVisible(c: TGraphicObj): TGraphicObj;
-    function LastVisible: TGraphicObj;
-    function VerifyMouseMovement(X, Y: Integer): TGraphicObj;
+    function NextVisible(c: sketchCoreObj): sketchCoreObj;
+    function LastVisible: sketchCoreObj;
+    function VerifyMouseMovement(X, Y: Integer): sketchCoreObj;
     procedure VerifyToMove(xp, yp: Integer);
   public
-    procedure GraphicObject_Select(obj: TGraphicObj);     //Response to Event
-    procedure GraphicObject_Unselec(obj: TGraphicObj);    //Response to Event
+    procedure GraphicObject_Select(obj: sketchCoreObj);     //Response to Event
+    procedure GraphicObject_Unselec(obj: sketchCoreObj);    //Response to Event
     procedure GraphicObject_SetPointer(argPoint: integer);  //Response to Event
   private
     {Container that associates the state with its handling procedure. Use to access
@@ -170,7 +170,7 @@ type
                             Shift: TShiftState; xp, yp: Integer; txt: string);
   public //Inicialización
     procedure RestoreState(msg: string='');
-    constructor Create(PB0: TPaintBox; objectList: TEditorObjList);
+    constructor Create(PB0: TPaintBox; objectList: TSketchCoreObjects);
     destructor Destroy; override;
   end;
 
@@ -220,7 +220,7 @@ begin
 end;
 procedure TEditor.PBox_Paint(Sender: TObject);
 var
-  o:TGraphicObj;
+  o:sketchCoreObj;
   x, y, xGrid1, xGrid2, yGrid1, yGrid2: Single;
   nGrid, ix, distCovered, step: Integer;
 begin
@@ -259,8 +259,8 @@ begin
         y := y + step;
       end;
     end;
-    //Draw objects
-    for o In objects do begin
+    //Draw sketchCoreObjects
+    for o In sketchCoreObjects do begin
       o.Draw;
     end;
     //Draw axis
@@ -321,14 +321,14 @@ begin
   CallEventState(State, vmeCmdStart, mbExtra1, [], 0, 0, command); //Process according to state
 end;
 
-procedure TEditor.Refresh();  //   Optional s: TGraphicObj = Nothing
+procedure TEditor.Refresh();  //   Optional s: sketchCoreObj = Nothing
 begin
   PBox.Invalidate;
 end;
-function TEditor.SelectObjectAt(xp, yp: Integer): TGraphicObj;
+function TEditor.SelectObjectAt(xp, yp: Integer): sketchCoreObj;
 var
   i: Integer;
-  s: TGraphicObj;
+  s: sketchCoreObj;
 begin
   Result := NIL;
   For i := selection.Count-1 downTo 0 do begin
@@ -338,8 +338,8 @@ begin
         Exit;
     End;
   end;
-  For i := objects.Count-1 downTo 0 do begin
-    s := objects[i];
+  For i := sketchCoreObjects.Count-1 downTo 0 do begin
+    s := sketchCoreObjects[i];
     If not s.SelLocked and s.isSelected(xp, yp) Then begin
         Result := s;
         Exit;
@@ -351,7 +351,7 @@ procedure TEditor.VerifyToMove(xp, yp: Integer);
 could be below the pointer and update "EstPuntero".
 It should only be executed once at the beginning of the movement, for this purpose
 use the Moving flag, which should be set to FALSE here.}
-var s: TGraphicObj;
+var s: sketchCoreObj;
 begin
     for s In selection  do begin
       if s.PosLocked then continue;
@@ -363,7 +363,7 @@ begin
           Exit;
       end;
     end;
-    for s In objects do begin
+    for s In sketchCoreObjects do begin
       if s.PosLocked then continue;
       s.StartMove(xp, yp);
       if s.Processing Then begin
@@ -375,15 +375,15 @@ begin
       end;
     end;
 {No object has captured, the event, we assume that the
-Simple scrolling of selected objects Debug.Print "VerifParaMover: VS_OBJS_MOVING" }
+Simple scrolling of selected sketchCoreObjects Debug.Print "VerifParaMover: VS_OBJS_MOVING" }
     State := VS_OBJS_MOVING;
     MovingObject := nil;
     Moving := False;
 End;
-function TEditor.VerifyMouseMovement(X, Y: Integer): TGraphicObj;
-{It animates the marking of the objects when the mouse passes over them
+function TEditor.VerifyMouseMovement(X, Y: Integer): sketchCoreObj;
+{It animates the marking of the sketchCoreObjects when the mouse passes over them
 Returns reference to the object through which the cirsor passes    }
-var s: TGraphicObj;
+var s: sketchCoreObj;
 begin
 
     s := SelectObjectAt(X, Y);
@@ -416,61 +416,61 @@ begin
 End;
 //***********Functions to manage the visible elements and selection by keyboard**********
 function TEditor.VisibleObjectsCount: Integer;
-//returns the number of visible objects
+//returns the number of visible sketchCoreObjects
 var
-  v: TGraphicObj;
+  v: sketchCoreObj;
   tmp: Integer;
 begin
   tmp := 0;
-  For v in objects do begin
+  For v in sketchCoreObjects do begin
     if v.visible then Inc(tmp);
   end;
   Result := tmp;
 end;
-function TEditor.FirstVisible: TGraphicObj;
+function TEditor.FirstVisible: sketchCoreObj;
 var
   i: integer;
 begin
-  for i:=0 to objects.Count-1 do begin
-    if objects[i].visible then begin
-      Result := objects[i];
+  for i:=0 to sketchCoreObjects.Count-1 do begin
+    if sketchCoreObjects[i].visible then begin
+      Result := sketchCoreObjects[i];
       exit;
     end;
   end;
 End;
-function TEditor.LastVisible: TGraphicObj;
+function TEditor.LastVisible: sketchCoreObj;
 var
   i: Integer;
 begin
-  for i:=objects.Count-1 downto 0 do begin
-    if objects[i].visible then begin
-      Result := objects[i];
+  for i:=sketchCoreObjects.Count-1 downto 0 do begin
+    if sketchCoreObjects[i].visible then begin
+      Result := sketchCoreObjects[i];
       exit;
     end;
   end;
 end;
-function TEditor.NextVisible(c: TGraphicObj): TGraphicObj;
+function TEditor.NextVisible(c: sketchCoreObj): sketchCoreObj;
 var
   i: Integer;
 begin
-    For i := 0 To objects.Count-1 do begin
-      if objects[i] = c Then break;
+    For i := 0 To sketchCoreObjects.Count-1 do begin
+      if sketchCoreObjects[i] = c Then break;
     end;
     repeat
       Inc(i);
-      If i >= objects.Count Then begin
+      If i >= sketchCoreObjects.Count Then begin
         Result := FirstVisible;
         Exit;
       end;
-    until objects[i].visible;
-    Result := objects[i];
+    until sketchCoreObjects[i].visible;
+    Result := sketchCoreObjects[i];
 end;
-function TEditor.PreviousVisible(c: TGraphicObj): TGraphicObj;
+function TEditor.PreviousVisible(c: sketchCoreObj): sketchCoreObj;
 var
   i: Integer;
 begin
-    For i := 0 To objects.Count-1 do begin
-      If objects[i] = c Then break;
+    For i := 0 To sketchCoreObjects.Count-1 do begin
+      If sketchCoreObjects[i] = c Then break;
     end;
     repeat
       Dec(i);
@@ -478,12 +478,12 @@ begin
         Result := LastVisible;
         Exit;
       End;
-    until objects[i].visible;
-    Result := objects[i];
+    until sketchCoreObjects[i].visible;
+    Result := sketchCoreObjects[i];
 End;
 procedure TEditor.SelectNext;
 var
-  s: TGraphicObj;
+  s: sketchCoreObj;
 begin
     if VisibleObjectsCount() = 0 Then exit;
     if selection.Count = 1 Then begin
@@ -500,7 +500,7 @@ begin
 end;
 procedure TEditor.SelectPrevious;
 var
-  s: TGraphicObj;
+  s: sketchCoreObj;
 begin
     if VisibleObjectsCount() = 0 Then exit;
     if selection.Count = 1 then begin
@@ -542,17 +542,17 @@ begin
 End;
 ///////////////////////// Selection functions/////////////////////////////
 procedure TEditor.SelectAll;
-var obj: TGraphicObj;
+var obj: sketchCoreObj;
 begin
-    For obj In objects do obj.Select;
+    For obj In sketchCoreObjects do obj.Select;
 End;
 procedure TEditor.SelectNone();
-var s: TGraphicObj;
+var s: sketchCoreObj;
 begin
-  For s In objects do
+  For s In sketchCoreObjects do
     if s.Selected then s.Deselect;
 End;
-function  TEditor.ObjSelected: TGraphicObj;
+function  TEditor.ObjSelected: sketchCoreObj;
 //Returns the ObjSelected object. If there is no ObjSelected, it returns NIL.
 begin
   Result := nil;
@@ -560,12 +560,12 @@ begin
   //there is at least one
   Result := selection[selection.Count-1];  //returns the only or last
 End;
-function  TEditor.ObjByName(argName: string): TGraphicObj;
-var s: TGraphicObj;
+function  TEditor.ObjByName(argName: string): sketchCoreObj;
+var s: sketchCoreObj;
 begin
   Result := nil;
   if argName = '' then exit;
-  For s In objects do
+  For s In sketchCoreObjects do
     if s.Name = argName then begin
        Result := s;
        break;
@@ -626,11 +626,11 @@ begin
 }
     VirtScreen.Displace(dx, dy);
 end;
-//Modification of objects
-procedure TEditor.GraphicObjectAdd(argGraphicObject: TGraphicObj; AutoPos: boolean = true);
+//Modification of sketchCoreObjects
+procedure TEditor.GraphicObjectAdd(argGraphicObject: sketchCoreObj; AutoPos: boolean = true);
 {
 Add a graphic object to the editor. The graphic object must have been created previously,
-  and be of Type TGraphicObj or a descendant. "AutoPos", allows automatic positioning
+  and be of Type sketchCoreObj or a descendant. "AutoPos", allows automatic positioning
   to the object on the screen, so that you avoid putting it always in the same position.
 }
 var
@@ -640,26 +640,26 @@ begin
   if OnModify<>nil then OnModify;
   //Position trying to always appear on the screen
   if AutoPos Then begin  //Position is calculated
-    x := VirtScreen.Xvirt(100, 100) + 30 * objects.Count Mod 400;
-    y := VirtScreen.Yvirt(100, 100) + 30 * objects.Count Mod 400;
+    x := VirtScreen.Xvirt(100, 100) + 30 * sketchCoreObjects.Count Mod 400;
+    y := VirtScreen.Yvirt(100, 100) + 30 * sketchCoreObjects.Count Mod 400;
     argGraphicObject.PlaceAt(x,y);
   end;
   //configure events to be controlled by this editor
   argGraphicObject.OnSelect   := @GraphicObject_Select;
   argGraphicObject.OnDeselect := @GraphicObject_Unselec;
   argGraphicObject.OnCamPoint := @GraphicObject_SetPointer;
-  objects.Add(argGraphicObject);
+  sketchCoreObjects.Add(argGraphicObject);
 end;
-procedure TEditor.GraphicObjectDelete(obj: TGraphicObj);
+procedure TEditor.GraphicObjectDelete(obj: sketchCoreObj);
 begin
   obj.Deselect;
-  objects.Remove(obj);
+  sketchCoreObjects.Remove(obj);
   obj := nil;
   if OnModify<>nil then OnModify;
 End;
 procedure TEditor.DeleteSelected;
 var
-  v: TGraphicObj;
+  v: sketchCoreObj;
 begin
   For v In selection  do  //explore all
     GraphicObjectDelete(v);
@@ -727,8 +727,8 @@ begin
     Else
         inRectangleSeleccion := False;
 End;
-//////////////////  "TGraphicObj" Events  ///////////////////////
-procedure TEditor.GraphicObject_Select(obj: TGraphicObj);
+//////////////////  "sketchCoreObj" Events  ///////////////////////
+procedure TEditor.GraphicObject_Select(obj: sketchCoreObj);
 {
 Add a graphic object to the "selection" list. This method should not be called directly.
   If you want to select an object you must use the object.Select form.
@@ -736,7 +736,7 @@ Add a graphic object to the "selection" list. This method should not be called d
 begin
   selection.Add(obj);
 End;
-procedure TEditor.GraphicObject_Unselec(obj: TGraphicObj);
+procedure TEditor.GraphicObject_Unselec(obj: sketchCoreObj);
 {
 Remove a graphic object from the "selection" list. This method should not be called directly.
   If you want to remove the selection from an object, you must use the object.Select form.
@@ -747,7 +747,7 @@ begin
 End;
 procedure TEditor.GraphicObject_SetPointer(argPoint: integer);
 {
-Procedure that changes the mouse pointer. It is used to provide the "TGraphicObj" objects
+Procedure that changes the mouse pointer. It is used to provide the "sketchCoreObj" sketchCoreObjects
   the possibility of changing the pointer.
 }
 begin
@@ -863,9 +863,9 @@ procedure TEditor.proc_NORMAL(EventType: TViewEvent; Button: TMouseButton;
 {Process events, in the NORMAL state. This is the stable state or Doc defect.
 From here they are passed to all other states.}
 var
-  o: TGraphicObj;
-  s: TGraphicObj;
-  o_sel: TGraphicObj;  //ObjSelected
+  o: sketchCoreObj;
+  s: sketchCoreObj;
+  o_sel: sketchCoreObj;  //ObjSelected
 begin
   if EventType = vmeMouseDown then begin
      o_sel := SelectObjectAt(xp, yp);
@@ -952,16 +952,16 @@ end;
 procedure TEditor.proc_SELECTINGMULT(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
-  o: TGraphicObj;
-  s: TGraphicObj;
+  o: sketchCoreObj;
+  s: sketchCoreObj;
 begin
   if EventType = vmeMouseDown then begin
   end else if EventType = vmeMouseMove then begin
     x2Sel := xp;
     y2Sel := xp;
     //check those that are selected
-    if objects.Count < 100 Then begin//iterate for few objects only
-        for s In objects do begin
+    if sketchCoreObjects.Count < 100 Then begin//iterate for few sketchCoreObjects only
+        for s In sketchCoreObjects do begin
           if s.SelLocked then continue;
           if inRectangleSeleccion(s.XCent, s.YCent) And Not s.Selected Then begin
             s.Select;
@@ -973,8 +973,8 @@ begin
     End;
     Refresh
   end else if EventType = vmeMouseUp then begin
-    if objects.Count > 100 Then begin  //You need to update because the multiple selection is different
-      for o in objects do
+    if sketchCoreObjects.Count > 100 Then begin  //You need to update because the multiple selection is different
+      for o in sketchCoreObjects do
         if inRectangleSeleccion(o.XCent, o.YCent) And Not o.Selected Then o.Select;
     end;
     State := VS_NORMAL;
@@ -983,8 +983,8 @@ end;
 procedure TEditor.proc_OBJS_MOVING(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
-  s: TGraphicObj;
-  o: TGraphicObj;
+  s: sketchCoreObj;
+  o: sketchCoreObj;
 begin
   if EventType = vmeMouseDown then begin
   end else if EventType = vmeMouseMove then begin
@@ -997,7 +997,7 @@ begin
         o.MouseUp(self, Button, Shift, xp, yp, State = VS_OBJS_MOVING);
     State := VS_NORMAL;  //end of movement
     Refresh;
-    //Generate events The moved objects can be determined from the selection.
+    //Generate events The moved sketchCoreObjects can be determined from the selection.
     if OnObjectsMoved<>nil then OnObjectsMoved;
   end;
 end;
@@ -1265,15 +1265,15 @@ begin
   PBox.Cursor := crDefault;
   if msg<>'' then OnSendMessage(msg);
 end;
-constructor TEditor.Create(PB0: TPaintBox; objectList: TEditorObjList);
+constructor TEditor.Create(PB0: TPaintBox; objectList: TSketchCoreObjects);
 {Initialization method of the Viewer class. The PaintBox should be indicated
-output where the graphic objects will be controlled.
-and you should also receive the list of objects to be managed.}
+output where the graphic sketchCoreObjects will be controlled.
+and you should also receive the list of sketchCoreObjects to be managed.}
 var
   argGraphicObject: TMyObject;
 begin
   PBox := PB0;
-  objects := objectList;
+  sketchCoreObjects := objectList;
   //Intercept events
   PBox.OnMouseUp   := @PBox_MouseUp;
   PBox.OnMouseDown := @PBox_MouseDown;
@@ -1285,8 +1285,8 @@ begin
   VirtScreen := TVirtScreen.Create(PBox);
   VirtScreen.SetFont('MS Sans Serif');
   VirtScreen.OnChangeView:=@VirtualScreen_ChangeView;
-  selection := TEditorObjList.Create(FALSE);  {create list without possession ", because the
-                                              administration will do "objects".}
+  selection := TSketchCoreObjects.Create(FALSE);  {create list without possession ", because the
+                                              administration will do "sketchCoreObjects".}
   RestoreState;
   Wheel_step  := 0.1;
   ClearEventState;

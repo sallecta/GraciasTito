@@ -1,31 +1,6 @@
 {
 Unit sketchCore
-====================
-By Tito Hinostroza 24/09/2014
-
-Description
-===========
-Defines the primary graphic objects that will be used by higher level objects in
-a graphic object editor.
-The TGraphicObj object is the base object from which the most specific objects
-should be derived that will be drawn on the screen.
-It also includes the definition of control points, which allow to resize the
-object; and buttons that can be included in the graphic objects.
-Only basic objects must be defined in this unit, which can be used in many
-applications. The most specific ones should be put in another unit.
-It is not recommended to modify this unit to adapt the graphic objects to the
-application.
-If you want to handle another kind of general objects, it is better to create
-another general class of TGraphicObj.
-
-The class hierarchy is:
-
-TObjVisible ----------------------------------------> TGraphicObj ---> Derive objects here
-              |                                          |
-               --> TControlPoint --(They are included in)------
-              |                                          |
-               --> TogButton --(They can be included in)--
-
+бля, пиздец нахуй
 }
 unit sketchCore;
 {$mode objfpc}{$H+}
@@ -34,12 +9,12 @@ uses
   Classes, Controls, SysUtils, Fgl, Graphics, GraphType, Types, ExtCtrls, MotGraf3d;
 
 const
-  MINWIDTH = 20;//Minimum width of graphic objects in pixels (Virtual Coord)
-  MINHEIGHT = 20;//High minimum of graphic objects in Twips (Virtual Coord)
+  MINWIDTH = 20;//Minimum width of graphic sketchCoreObjects in pixels (Virtual Coord)
+  MINHEIGHT = 20;//High minimum of graphic sketchCoreObjects in Twips (Virtual Coord)
 
 type
   { TObjVsible }
-  //Base class for all visible objects
+  //Base class for all visible sketchCoreObjects
   TObjVsible = class
   protected
     Xvirt,Yvirt,Zvirt  : Single;//virtual coordinates
@@ -131,13 +106,13 @@ Event that generates a control point when it is being moved by the Moues.
 
   ButtonsList = specialize TFPGObjectList<TogButton>;//To manage the buttons
 
-  TGraphicObj = class;
-  TEventSelect = procedure(obj: TGraphicObj) of object;//Procedure-event to select
+  sketchCoreObj = class;
+  TEventSelect = procedure(obj: sketchCoreObj) of object;//Procedure-event to select
   TEventChPoint = procedure(PointType: Integer) of object; //Procedure-event to change point
 
-  { TGraphicObj }
-  {This is the parent Object of all visible graphic objects that are managed by the editing engine}
-  TGraphicObj = class(TObjVsible)
+  { sketchCoreObj }
+  {This is the parent Object of all visible graphic sketchCoreObjects that are managed by the editing engine}
+  sketchCoreObj = class(TObjVsible)
   private
   protected
     ControlPoint        : TControlPoint;      //variable for Control Point
@@ -186,7 +161,7 @@ Event that generates a control point when it is being moved by the Moues.
     destructor Destroy; override;
   end;
 
-  TEditorObjList = specialize TFPGObjectList<TGraphicObj>;
+  TSketchCoreObjects = specialize TFPGObjectList<sketchCoreObj>;
 
 implementation
 const
@@ -263,8 +238,8 @@ begin
    end;
 end;
 
-{ TGraphicObj }
-function TGraphicObj.getSelectedControlPoint(xp, yp:integer): TControlPoint;
+{ sketchCoreObj }
+function sketchCoreObj.getSelectedControlPoint(xp, yp:integer): TControlPoint;
 //Indicates if you select any control point and returns the reference.
 var point: TControlPoint;
 begin
@@ -272,35 +247,35 @@ begin
   for point in ControlPoints do
       if point.isSelected(xp,yp) then begin getSelectedControlPoint := point; Exit; end;
 end;
-function TGraphicObj.XCent: Single;
+function sketchCoreObj.XCent: Single;
 begin
    Result := Xvirt + width / 2;
 end;
-function TGraphicObj.YCent: Single;
+function sketchCoreObj.YCent: Single;
 begin
    Result := Yvirt + height / 2;
 end;
-procedure TGraphicObj.Select;
+procedure sketchCoreObj.Select;
 begin
    if Selected then exit; 
    Selected := true; 
    //Call the event that selects the object. The editor must respond
    if Assigned(OnSelect) then OnSelect(self);//call the event
 end;
-procedure TGraphicObj.Deselect;
+procedure sketchCoreObj.Deselect;
 begin
    if not Selected then exit; 
    Selected := false; 
    //Call the event that selects the object. The editor must respond
    if Assigned(OnDeselect) then OnDeselect(self);  //llama al evento
 end;
-procedure TGraphicObj.Delete;
+procedure sketchCoreObj.Delete;
 begin
   Erased := true;
 end;
-procedure TGraphicObj.MoveR(xr, yr: Integer; nobjetos: Integer);
+procedure sketchCoreObj.MoveR(xr, yr: Integer; nobjetos: Integer);
 {Method that works as MouseMove event of the object. The normal thing that produces a displacement of the object.
-"nobjects" is the number of objects that move. Usually it's just one}
+"nobjects" is the number of sketchCoreObjects that move. Usually it's just one}
 var dx , dy: Single;
 begin
      If Selected Then begin
@@ -324,7 +299,7 @@ begin
      End;
 end;
 
-function TGraphicObj.isSelected(xr, yr:integer): Boolean;
+function sketchCoreObj.isSelected(xr, yr:integer): Boolean;
 { Returns true if the screen coordinate xr, yr falls at such a point
 that "would" the selection of the form. }
 var xv , yv : Single; //virtual corodinates
@@ -338,7 +313,7 @@ begin
       if getSelectedControlPoint(xr,yr) <> NIL then isSelected := True;
     end;
 End;
-procedure TGraphicObj.Draw;
+procedure sketchCoreObj.Draw;
 const tm = 3;
 var
   pdc  : TControlPoint;
@@ -356,8 +331,8 @@ begin
      for pdc in ControlPoints do pdc.Draw;   //Draw control points
   End;
 end;
-procedure TGraphicObj.StartMove(xr, yr: Integer);
-{ Procedure to process the StartMove event of the graphic objects
+procedure sketchCoreObj.StartMove(xr, yr: Integer);
+{ Procedure to process the StartMove event of the graphic sketchCoreObjects
 It is executed at the beginning of movement to the object }
 begin
   Xprev := xr; Yprev := yr;
@@ -371,7 +346,7 @@ begin
       Resizing := True; 
    end;
 end;
-procedure TGraphicObj.MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
+procedure sketchCoreObj.MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
 //Method that works as an "MouseDown" event
 begin
 //  MovingObject := NIL;
@@ -381,7 +356,7 @@ begin
     Processing := True;
   End;
 End;
-procedure TGraphicObj.MouseUp(Sender: TObject; mbtn: TMouseButton;
+procedure sketchCoreObj.MouseUp(Sender: TObject; mbtn: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; solto_objeto: Boolean);
 { Method that works as a MouseUp event the "solto_objeto" flag indicates that
 the object has been dropped after being dragged }
@@ -409,7 +384,7 @@ begin
        exit;
     end;
 end;
-procedure TGraphicObj.MouseMove(Sender: TObject; Shift: TShiftState; xp, yp: Integer);
+procedure sketchCoreObj.MouseMove(Sender: TObject; Shift: TShiftState; xp, yp: Integer);
 //Response to the MouseMove event. Must be received when the Mouse passes over the object
 var pc: TControlPoint;
 begin
@@ -424,12 +399,12 @@ begin
            OnCamPoint(crDefault);
     end;
 end;
-procedure TGraphicObj.MouseWheel(Sender: TObject; Shift: TShiftState;
+procedure sketchCoreObj.MouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
 
 end;
-constructor TGraphicObj.Create(argVirtScreen: TVirtScreen);
+constructor sketchCoreObj.Create(argVirtScreen: TVirtScreen);
 begin
   inherited Create;
   erased := false;
@@ -447,28 +422,28 @@ begin
   canHighlight := true;
 end;
 
-procedure TGraphicObj.RelocateElements;
+procedure sketchCoreObj.RelocateElements;
 begin
 end;
 
-procedure TGraphicObj.ReconstructGeom;
+procedure sketchCoreObj.ReconstructGeom;
 begin
   RelocateElements;
 end;
-destructor TGraphicObj.Destroy;
+destructor sketchCoreObj.Destroy;
 begin
   Buttons.Free; 
   ControlPoints.Free;
   inherited Destroy;
 end;
-procedure TGraphicObj.PlaceAt(x0, y0: Single);
+procedure sketchCoreObj.PlaceAt(x0, y0: Single);
 //Locate the object in specific coordinates
 begin
   Xvirt := x0;
   Yvirt := y0;
   RelocateElements;
 end;
-function TGraphicObj.AddButton(argWidth, argHeight: Integer; argType: TBtnType;
+function sketchCoreObj.AddButton(argWidth, argHeight: Integer; argType: TBtnType;
   argEvenBTclk: TEvenBTclk): TogButton;
 //Add a button to the object.
 begin
@@ -477,7 +452,7 @@ begin
   Result.height := argHeight;
   Buttons.Add(Result);
 end;
-function TGraphicObj.AddControlPoint(argDdisplaceType: TControlPointOffs; ProcDimen: TEvPointCtrlMoveXY): TControlPoint;
+function sketchCoreObj.AddControlPoint(argDdisplaceType: TControlPointOffs; ProcDimen: TEvPointCtrlMoveXY): TControlPoint;
 //Add a control point
 begin
   Result := TControlPoint.CreateIt(VirtScreen, argDdisplaceType, ProcDimen);

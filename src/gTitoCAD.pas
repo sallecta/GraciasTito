@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, uFormForm1, 
+  Forms, uForm1, uFormDocProps, uFormViewProp,
   glob;
 
 {$R *.res}
@@ -18,8 +18,8 @@ begin
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TForm1,glob.Form1);
-  //Application.CreateForm(TFormDocument, formDocument);
-  //Application.CreateForm(TFormViewProp, formViewProp);
+  Application.CreateForm(TFormDocProps, glob.formDocProps);
+  Application.CreateForm(TFormViewProp, glob.formViewProp);
   Application.Run;
 end.
 

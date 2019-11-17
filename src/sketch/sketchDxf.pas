@@ -1,6 +1,6 @@
 {
-Define graphic objects.
-All of them must descend from TGraphicObj, so that they can be treated
+Define graphic sketchCoreObjects.
+All of them must descend from sketchCoreObj, so that they can be treated
 by the "ogMotEdicion" engine}
 
 unit sketchDxf;
@@ -23,7 +23,7 @@ type
   TDxf = class;
   TDxf_list = specialize TFPGObjectList<TDxf>;
   { TMyObject }
-  TMyObject = class(TGraphicObj)  //graphic object that we will draw
+  TMyObject = class(sketchCoreObj)  //graphic object that we will draw
     procedure Draw; override;  //Draw the graphic object
     constructor Create(argVirtScreen: TVirtScreen); override;
   private
@@ -32,7 +32,7 @@ type
 
   { TDxf }
   {The object is defined to be compatible with DXF files.}
-  TDxf = class(TGraphicObj)
+  TDxf = class(sketchCoreObj)
   private
     pc0, pc1, pcM: TControlPoint;
     procedure ControlPoint_0_Move(x_vPoint, y_vPoint, dx, dy: single);
@@ -49,7 +49,7 @@ type
     P0: TPoint3D;
     P1: TPoint3D;
     radius: double;
-    vertexs: TDxf_list;   {Vertex list. Only instance for objects
+    vertexs: TDxf_list;   {Vertex list. Only instance for sketchCoreObjects
                                 complex. It is very heavy to keep a list of
                                 TDxf. It should be optimized}
     blkName: string;    //used when it is from Type dxfBlock.

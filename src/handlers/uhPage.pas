@@ -16,7 +16,7 @@ procedure doRemove(argForm: TObject);
 
 
 implementation
-uses glob, sketchDocument, uformForm1;
+uses glob, uDoc, uForm1;
 
 constructor tuhPage.Create;
 begin
@@ -26,12 +26,13 @@ end;
 procedure tuhPage.doAdd(argForm: TObject);
 var
   argForm1: TForm1;
+  newPage: TDoc.TDocPage;
 begin
-  writeln('tuhPage.doAdd');
   argForm1 := TForm1(argForm);
   if argForm1.doc = nil then
     exit;  //there is no open document
-  argForm1.doc.AddPage;
+  newPage:=argForm1.doc.AddPage;
+  newPage.Name:=msg.Get('page');
   argForm1.Refresh;
 end;
 

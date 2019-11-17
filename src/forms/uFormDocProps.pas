@@ -1,15 +1,15 @@
-unit uFormDocument;
+unit uFormDocProps;
 
 {$mode objfpc}{$H+}
 interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  EditBtn, StdCtrls, ButtonPanel, Buttons, ComCtrls, Spin, Menus, sketchDocument;
+  EditBtn, StdCtrls, ButtonPanel, Buttons, ComCtrls, Spin, Menus, uDoc;
 
 type
-  { TFormDocument }
-  TFormDocument = class(TForm)
+  { TFormDocProps }
+  TFormDocProps = class(TForm)
     ButtonPanel1: TButtonPanel;
     Label1: TLabel;
     MainMenu1: TMainMenu;
@@ -28,22 +28,22 @@ type
   private
     Accepted: boolean;
     ErrorData: boolean;
-    aDocument: TDocument;
+    aDocument: TDoc;
     procRefresh: procedure of object;
   public
-    function Exec(argDoc: TDocument; soloRead: boolean = False): boolean;
-    function ExecNew(argDoc: TDocument): boolean;
+    function Exec(argDoc: TDoc): boolean;
+    function ExecNew(argDoc: TDoc): boolean;
   end;
 
 var
-  formDocument: TFormDocument;
+  formDocProps: TFormDocProps;
 
 implementation
 uses glob;
 
 {$R *.lfm}
-{ TFormDocument }
-procedure TFormDocument.FormCreate(Sender: TObject);
+{ TFormDocProps }
+procedure TFormDocProps.FormCreate(Sender: TObject);
 begin
   Accepted := False;
 
@@ -57,12 +57,12 @@ begin
   Label8.caption:=msg.get('notes');
 end;
 
-procedure TFormDocument.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+procedure TFormDocProps.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
 
 end;
 
-procedure TFormDocument.OKButtonClick(Sender: TObject);
+procedure TFormDocProps.OKButtonClick(Sender: TObject);
 begin
   //Validate
   if trim(TeditName.Text) = '' then
@@ -81,12 +81,12 @@ begin
   Accepted := True;
 end;
 
-procedure TFormDocument.CancelButtonClick(Sender: TObject);
+procedure TFormDocProps.CancelButtonClick(Sender: TObject);
 begin
   Accepted := False;
 end;
 
-function TFormDocument.Exec(argDoc: TDocument; soloRead: boolean = False): boolean;
+function TFormDocProps.Exec(argDoc: TDoc): boolean;
 begin
   aDocument := argDoc;
 
@@ -94,13 +94,11 @@ begin
   TeditCreatedBy.Text := aDocument.createdBy;
   TMemoNotes.Text := aDocument.notes;
 
-  ButtonPanel1.OKButton.Enabled := not soloRead;
-
   Self.ShowModal;
   Result := Accepted;
 end;
 
-function TFormDocument.ExecNew(argDoc: TDocument): boolean;
+function TFormDocProps.ExecNew(argDoc: TDoc): boolean;
 
 var
   docNameIndex: string;

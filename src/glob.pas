@@ -6,7 +6,7 @@ interface
 uses
   Classes, SysUtils, Forms,
   //local
-  uToLang, uhDoc, uhPage;
+  uToLang, uhDoc, uhPage, uhView, uhDraw;
 
 const
   APP_NAME = 'gTitoCAD';
@@ -20,14 +20,16 @@ const
 
 var
   msg: uToLang.tuToLang;
-  Form1: TForm;
+  Form1, formDocProps, formViewProp: TForm;
   hDoc: uhDoc.tuhDoc;
   hPage: uhPage.tuhPage;
+  hView: uhView.tuhView;
+  hDraw: uhDraw.tuhDraw;
 
 
 
 implementation
-uses  uFormForm1;
+uses  uForm1;
 
 initialization
 glob.msg := tuToLang.Create();

@@ -11,8 +11,8 @@ Y  /|\
     +--------------------> X
 
 With the exception that there is a Z coordinate that rises perpendicular to the XY plane,
-in the line of View.
-By changing the angles ALfa and Fi, it is possible to obtain a perspective view or
+in the line of frameEditor.
+By changing the angles ALfa and Fi, it is possible to obtain a perspective frameEditor or
 projection similar to the isometric.
 }
 unit MotGraf3d;
@@ -222,7 +222,7 @@ begin
       xv := (x2c * cosa * cosi + sena * (y2c - zv * seni)) / cosi + x_cam;
       yv := (cosa * (y2c - zv * seni) - x2c * sena * cosi) / cosi + y_cam;
   end;
-  //Si los ángulos de View alfa y fi son cero (caso normal), bastaría con
+  //Si los ángulos de frameEditor alfa y fi son cero (caso normal), bastaría con
   //xv = x2c + x_cam
   //yv = y2c + y_cam
 end;
@@ -238,7 +238,7 @@ begin
 end;
 procedure TVirtScreen.ObtenerDesplazXY(xp, yp: Integer; Xprev, Yprev: Integer;
   var dx, dy: Single);
-{Obtiene los desplazamientos dx, dy virtuales, para los objects gráficos en base a
+{Obtiene los desplazamientos dx, dy virtuales, para los sketchCoreObjects gráficos en base a
 los movimientos del ratón.
 Esta es otra de las funciones importantes, que se usa para el control de la
 pantalla, con el movimiento del ratón.}

@@ -45,7 +45,7 @@ type
     procedure Editor_MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure Editor_SendMessage(msg: string);
   public
-    objects: TEditorObjList;
+    sketchCoreObjects: TSketchCoreObjects;
     Editor: TEditor;
     Modified: boolean;
     OnObjectsRemove: TOnObjectsRemove;
@@ -67,7 +67,7 @@ type
     function StateAsStr: string;
   public
     procedure InitView;
-    constructor Create(AOwner: TComponent; ListObjGraf: TEditorObjList);
+    constructor Create(AOwner: TComponent; ListObjGraf: TSketchCoreObjects);
     destructor Destroy; override;
   end;
 
@@ -77,10 +77,10 @@ implementation
 
 procedure TframeEditor.documentObjectsDeleteAll;
 begin
-  if objects.Count = 0 then
+  if sketchCoreObjects.Count = 0 then
     exit;
   Editor.SelectNone;
-  objects.Clear;
+  sketchCoreObjects.Clear;
   Editor.RestoreState;
   Modified := True;
   if OnObjectsRemove <> nil then
@@ -207,16 +207,15 @@ begin
   Editor.VirtScreen.Alfa := 0;
   Editor.VirtScreen.Fi := 0;
   Editor.VirtScreen.Zoom := 0.5;
-  //Locate (0,0) to 10 pixels from the bottom left corner
   Editor.VirtScreen.x_cam := ((PaintBox1.Width div 2) - 10) / Editor.VirtScreen.Zoom;
   Editor.VirtScreen.y_cam := ((PaintBox1.Height div 2) - 10) / Editor.VirtScreen.Zoom;
 end;
 
-constructor TframeEditor.Create(AOwner: TComponent; ListObjGraf: TEditorObjList);
+constructor TframeEditor.Create(AOwner: TComponent; ListObjGraf: TSketchCoreObjects);
 begin
   inherited Create(AOwner);
-  objects := ListObjGraf;
-  Editor := TEditor.Create(PaintBox1, objects);
+  sketchCoreObjects := ListObjGraf;
+  Editor := TEditor.Create(PaintBox1, sketchCoreObjects);
   Editor.OnModify := @Editor_Modified;
   Editor.OnChangeView := @Editor_ViewChange;
   Editor.OnMouseMove := @Editor_MouseMove;

@@ -6,14 +6,14 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, ComCtrls, StdCtrls, LCLType, ActnList,
-  sketchDocument, uFrameEditor, sketchCore
+  uDoc, uFrameEditor, sketchCore
   ;
 
 type
-  TEvClickRightDoc = procedure(Doc: TDocument) of object;
-  TEvClickRightPage = procedure(Page: TDocPage) of object;
-  TEvClickRightObj = procedure(obj: TDrawObjetcs_list) of object;
-  TEvClickRightView = procedure(View: TframeEditor) of object;
+  TEvClickRightDoc = procedure(Doc: TDoc) of object;
+  TEvClickRightPage = procedure(Page: TDoc.TDocPage) of object;
+  TEvClickRightObj = procedure(obj: TDoc.TDocPageEntities) of object;
+  TEvClickRightView = procedure(frameEditor: TframeEditor) of object;
 
   { TFrameDocumentExplorer }
 
@@ -24,7 +24,7 @@ type
     lblTreeNav: TLabel;
     procedure treeNavKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
   private
-    curDocument: TPtrDocument;
+    ptrDocument: TPtrDocument;
     function NodeIsObject(node: TTreeNode): boolean;
     function NodeIsView(node: TTreeNode): boolean;
     function NodeObjectSelected: TTreeNode;
@@ -76,7 +76,7 @@ end;
 function TFrameDocumentExplorer.NodeGetSelected: TTreeNode;
   {Returns the currently selected node. }
 begin
-  if curDocument^ = nil then
+  if ptrDocument^ = nil then
     exit(nil);
   Result := treeNav.Selected;
 end;
@@ -175,7 +175,7 @@ procedure TFrameDocumentExplorer.treeNavMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
   node: TTreeNode;
-  Page: TDocPage;
+  Page: TDoc.TDocPage;
 begin
   node := treeNav.GetNodeAt(x, y);
   if node = nil then
@@ -188,25 +188,25 @@ begin
     if NodeDocumentSelected <> nil then
     begin //selected document
       if OnClickRightDocument <> nil then
-        OnClickRightDocument(curDocument^);
+        OnClickRightDocument(ptrDocument^);
     end
     else if NodePageSelected <> nil then
     begin  //selected page
-      Page := curDocument^.PageByName(NodeSelectedGetName);
+      Page := ptrDocument^.PageByName(NodeSelectedGetName);
       if OnClickRightPage <> nil then
         OnClickRightPage(Page);
     end
     else if NodeViewSelected <> nil then
     begin
-      Page := curDocument^.PageByName(NodeGetSelected.Parent.Text);
+      Page := ptrDocument^.PageByName(NodeGetSelected.Parent.Text);
       if OnClickRightView <> nil then
-        OnClickRightView(Page.View);
+        OnClickRightView(Page.frameEditor);
     end
     else if NodeObjectSelected <> nil then
     begin
-      Page := curDocument^.PageByName(NodeGetSelected.Parent.Text);
+      Page := ptrDocument^.PageByName(NodeGetSelected.Parent.Text);
       if OnClickRightObject <> nil then
-        OnClickRightObject(Page.docPageObjList);
+        OnClickRightObject(Page.docPageEntities);
     end;
   end;
 end;
@@ -215,7 +215,7 @@ procedure TFrameDocumentExplorer.treeNavSelectionChanged(Sender: TObject);
 {The selected item has changed. Take the corresponding actions.}
 begin
   if NodePageSelected <> nil then
-    curDocument^.SetActivePageByName(NodePageSelected.Text) ;
+    ptrDocument^.SetActivePageByName(NodePageSelected.Text) ;
     //A page has been selected, the active page changes
 
 end;
@@ -223,44 +223,40 @@ end;
 procedure TFrameDocumentExplorer.Refresh;
 {Refreshes the appearance of the frame, according to the current document.}
 var
-  Page: TDocPage;
+  Page: TDoc.TDocPage;
   nodePage: TTreeNode;
   nodeDoc: TTreeNode;
   nodeGeom, nodeView, nodeGraphicObj: TTreeNode;
-  argGraphicObject: TGraphicObj;
+  argGraphicObject: sketchCoreObj;
 begin
-  //show your title
   lblTreeNav.Caption := self.Caption;
-
-  //  ns := NodeSelectedGetName;  //guarda elemento ObjSelected
-  treeNav.Items.Clear;  //clean items
-  if curDocument^ = nil then
+  treeNav.Items.Clear;
+  if ptrDocument^ = nil then
   begin
-    //There is no current document
     nodeDoc := treeNav.items.AddChild(nil, msg.get('noDocuments'));
     exit;
   end;
   //There is an open document
   //Add document node
-  nodeDoc := treeNav.items.AddChild(nil, curDocument^.Name);  //add current document
+  nodeDoc := treeNav.items.AddChild(nil, ptrDocument^.Name);  //add current document
   nodeDoc.ImageIndex := IMIND_DOC;
   nodeDoc.SelectedIndex := IMIND_DOC;
   //Add page nodes
   treeNav.BeginUpdate;
-  for Page in curDocument^.pages do
+  for Page in ptrDocument^.docPages do
   begin
     nodePage := treeNav.Items.AddChild(nodeDoc, Page.Name);
     nodePage.ImageIndex := IMIND_PAGE;
     nodePage.SelectedIndex := IMIND_PAGE;
-    //Add graphic objects fields
+    //Add graphic sketchCoreObjects fields
     nodeGeom := treeNav.items.AddChild(nodePage, msg.get('documentObjects'));
     nodeGeom.ImageIndex := IMIND_GRAOBJ;
     nodeGeom.SelectedIndex := IMIND_GRAOBJ;
 
-    for argGraphicObject in Page.View.objects do
+    for argGraphicObject in Page.frameEditor.sketchCoreObjects do
       nodeGraphicObj := treeNav.items.AddChild(nodeGeom, msg.get('defaultObjName'));
-    //Add field View
-    nodeView := treeNav.items.AddChild(nodePage, 'View');
+    //Add field frameEditor
+    nodeView := treeNav.items.AddChild(nodePage, 'frameEditor');
     nodeView.ImageIndex := IMIND_VIEW;
     nodeView.SelectedIndex := IMIND_VIEW;
 
@@ -269,7 +265,7 @@ begin
   treeNav.EndUpdate;
   nodeDoc.Expanded := True;
   //  NodeSelectByName(ns);  //restore selection
-  NodeSelectByName(curDocument^.ActivePage.Name);
+  NodeSelectByName(ptrDocument^.ActivePage.Name);
 end;
 
 procedure TFrameDocumentExplorer.Initiate(argDoc: TPtrDocument);
@@ -277,7 +273,7 @@ procedure TFrameDocumentExplorer.Initiate(argDoc: TPtrDocument);
 At the moment, it is assumed that he can only manage zero or one document.
 Note that you are given the address of the referendum, as it may change.}
 begin
-  curDocument := argDoc; 
+  ptrDocument := argDoc; 
   Refresh;
 end;
 

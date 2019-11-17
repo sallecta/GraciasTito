@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 438
+  Left = 503
   Height = 541
-  Top = 100
+  Top = 97
   Width = 855
   Caption = 'gTitoCAD'
   ClientHeight = 512
@@ -31,12 +31,12 @@ object Form1: TForm1
     ParentColor = False
     TabOrder = 0
     OnClick = ToolBarClick
-    object btnNewCustomDoc: TToolButton
+    object btnNewReservedDoc: TToolButton
       Left = 1
       Top = 2
       Caption = 'acDocNewCustom'
       ImageIndex = 2
-      OnClick = btnNewCustomDocClick
+      OnClick = btnNewReservedDocClick
     end
     object btnSep1: TToolButton
       Left = 39
@@ -48,8 +48,9 @@ object Form1: TForm1
     object btnPoly: TToolButton
       Left = 47
       Top = 2
-      Action = acDrawLinePoly
+      Caption = 'btnPoly'
       ImageIndex = 31
+      OnClick = btnPolyClick
     end
   end
   object WrapperMiddle: TPanel
@@ -124,14 +125,14 @@ object Form1: TForm1
       Height = 361
       Top = 1
       Width = 698
-      ActivePage = TabSheet1
+      ActivePage = tabEditor
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Bottom = 10
       TabIndex = 0
       TabOrder = 2
       OnChange = PageControl1Change
-      object TabSheet1: TTabSheet
-        Caption = 'editor'
+      object tabEditor: TTabSheet
+        Caption = 'tabEditor'
       end
       object TabSheet2: TTabSheet
         Caption = 'tabSheet2'
@@ -328,35 +329,6 @@ object Form1: TForm1
       SimplePanel = False
     end
   end
-  object actions: TActionList
-    Images = Images16
-    left = 400
-    top = 220
-    object acPageProp: TAction
-      Category = 'Page'
-      Caption = 'acPageProp'
-      ImageIndex = 32
-      OnExecute = acPagePropExecute
-    end
-    object acViewProp: TAction
-      Category = 'View'
-      Caption = 'acViewProp'
-      ImageIndex = 32
-      OnExecute = acViewPropExecute
-    end
-    object acDrawLinePoly: TAction
-      Category = 'Draw'
-      Caption = 'acDrawLine'
-      ImageIndex = 35
-      OnExecute = acDrawLinePolyExecute
-    end
-    object acDocProp: TAction
-      Category = 'Doc'
-      Caption = 'acDocProp'
-      ImageIndex = 32
-      OnExecute = acDocPropExecute
-    end
-  end
   object menuMain: TMainMenu
     Images = Images16
     left = 400
@@ -364,56 +336,66 @@ object Form1: TForm1
     object mFile: TMenuItem
       Caption = 'mFile'
       OnClick = mFileClick
-      object mfileNewCustom: TMenuItem
-        Caption = 'mfileNewCustom'
+      object mfileNewReserved: TMenuItem
+        Caption = 'mfileNewReserved'
         ImageIndex = 2
         ShortCut = 16462
-        OnClick = mfileNewCustomClick
+        OnClick = mfileNewReservedClick
       end
       object mfileClose: TMenuItem
         Caption = 'mfileClose'
+        ImageIndex = 21
         OnClick = mfileCloseClick
       end
       object mfileExit: TMenuItem
         Caption = 'mfileExit'
+        ImageIndex = 6
         OnClick = mfileExitClick
       end
     end
     object mView: TMenuItem
       Caption = 'mView'
       object mviewProps: TMenuItem
-        Action = acViewProp
+        Caption = 'mviewProps'
+        ImageIndex = 26
         OnClick = mviewPropsClick
       end
     end
     object mDoc: TMenuItem
       Caption = 'mDoc'
-      object mdocAddPage: TMenuItem
-        Caption = 'mdocAddPage'
-        OnClick = mdocAddPageClick
-      end
-      object mdocInsertPoly: TMenuItem
-        Caption = 'mdocInsertPoly'
-        ImageIndex = 31
-      end
       object mdocProperties: TMenuItem
-        Action = acDocProp
         Caption = 'mdocProperties'
+        ImageIndex = 32
+        OnClick = mdocPropertiesClick
       end
     end
     object mPage: TMenuItem
       Caption = 'mPage'
+      object mpageAdd: TMenuItem
+        Caption = 'mpageAdd'
+        ImageIndex = 2
+        OnClick = mpageAddClick
+      end
       object mpageRename: TMenuItem
         Caption = 'mpageRename'
         ImageIndex = 34
       end
       object mpageRemove: TMenuItem
         Caption = 'mpageRemove'
+        ImageIndex = 21
         OnClick = mpageRemoveClick
       end
       object mpageProperies: TMenuItem
-        Action = acPageProp
         Caption = 'mpageProperies'
+        ImageIndex = 32
+      end
+    end
+    object mDraw: TMenuItem
+      Caption = 'mDraw'
+      object mdrawPoly: TMenuItem
+        Caption = 'mdrawPoly'
+        ImageIndex = 31
+        OnClick = mdrawPolyClick
       end
     end
   end
@@ -6202,14 +6184,13 @@ object Form1: TForm1
       OnClick = pdocAddPageClick
     end
     object pdocProperies: TMenuItem
-      Action = acDocProp
       Caption = 'pdocProperies'
     end
   end
   object pmenuObjects: TPopupMenu
     Images = Images16
     left = 216
-    top = 296
+    top = 320
     object pobjectsItem1: TMenuItem
       Caption = 'acDocInsRectan'
       ImageIndex = 33
@@ -6217,10 +6198,11 @@ object Form1: TForm1
   end
   object pmenuPage: TPopupMenu
     Images = Images16
-    left = 296
-    top = 220
+    left = 336
+    top = 216
     object ppageAddlPoly: TMenuItem
-      Action = acDrawLinePoly
+      Caption = 'acDrawLine'
+      ImageIndex = 35
     end
     object ppageRename: TMenuItem
       Caption = 'ppageRename'
@@ -6231,16 +6213,16 @@ object Form1: TForm1
       OnClick = ppageRemoveClick
     end
     object ppageProperties: TMenuItem
-      Action = acPageProp
       Caption = 'ppageProperties'
+      ImageIndex = 32
     end
   end
   object pmenuView: TPopupMenu
     Images = Images16
-    left = 296
-    top = 296
+    left = 328
+    top = 304
     object pviewProperties: TMenuItem
-      Action = acViewProp
+      OnClick = pviewPropertiesClick
     end
   end
 end

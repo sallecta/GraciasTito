@@ -5,9 +5,15 @@
     <General>
       <Flags>
         <SaveOnlyProjectUnits Value="True"/>
+        <MainUnitIsPascalSource Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <MainUnitHasScaledStatement Value="False"/>
       </Flags>
-      <SessionStorage Value="InProjectDir"/>
+      <SessionStorage Value="InIDEConfig"/>
       <MainUnit Value="0"/>
+      <Title Value="gTitoCAD"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
     </General>
@@ -34,26 +40,26 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="13">
+    <Units Count="17">
       <Unit0>
-        <Filename Value="gTitoCAD.lpr"/>
+        <Filename Value="gTitoCAD.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="forms/uFormForm1.pas"/>
+        <Filename Value="forms/uForm1.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit1>
       <Unit2>
-        <Filename Value="sketch/sketchDocument.pas"/>
+        <Filename Value="sketch/uDoc.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="forms/uFormDocument.pas"/>
+        <Filename Value="forms/uFormDocProps.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormDocument"/>
+        <ComponentName Value="formDocProps"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit3>
@@ -86,7 +92,7 @@
       <Unit9>
         <Filename Value="frames/uFrameEditor.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="framePaintBox"/>
+        <ComponentName Value="frameEditor"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
       </Unit9>
@@ -95,13 +101,30 @@
         <IsPartOfProject Value="True"/>
       </Unit10>
       <Unit11>
-        <Filename Value="units/toLang/toLang.pas"/>
+        <Filename Value="units/toLang/utolang.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="uToLang"/>
       </Unit11>
       <Unit12>
         <Filename Value="handlers/uhDoc.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit12>
+      <Unit13>
+        <Filename Value="handlers/uhDraw.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="handlers/uhPage.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="handlers/uhView.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="units/toLang/toLang_defaults.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit16>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

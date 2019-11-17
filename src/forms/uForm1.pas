@@ -1,4 +1,4 @@
-unit uFormForm1;
+unit uForm1;
 
 {$mode objfpc}{$H+}
 interface
@@ -7,7 +7,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, ActnList, Menus,
   StdCtrls, ComCtrls, LCLProc, LCLType, Buttons, Dialogs,
   //local
-  sketchDocument, uFrameEditor, uFormDocument,
+  uDoc, uFrameEditor, uFormDocProps,
   uFrameDocumetExplorer, uFormViewProp,
   sketchEditor
   ;
@@ -21,10 +21,6 @@ type
   { TForm1 }
   TForm1 = class(TForm)
   published
-    acDocProp: TAction;
-    acPageProp: TAction;
-    acDrawLinePoly: TAction;
-    acViewProp: TAction;
     btnPoly: TToolButton;
     btnSep1: TToolButton;
     cmdInput: TEdit;
@@ -33,15 +29,16 @@ type
     cmdMessages: TMemo;
     cmdRunBtn: TSpeedButton;
     frameDocumentExplorer: TFrameDocumentExplorer;
-    mfileNewCustom: TMenuItem;
+    mDraw: TMenuItem;
+    mdrawPoly: TMenuItem;
+    mpageAdd: TMenuItem;
+    mfileNewReserved: TMenuItem;
     mfileExit: TMenuItem;
     mDoc: TMenuItem;
-    mdocInsertPoly: TMenuItem;
     pobjectsItem1: TMenuItem;
     pdocProperies: TMenuItem;
     mdocProperties: TMenuItem;
     pdocAddPage: TMenuItem;
-    mdocAddPage: TMenuItem;
     mPage: TMenuItem;
     mpageRename: TMenuItem;
     mpageRemove: TMenuItem;
@@ -53,7 +50,6 @@ type
     ppageAddlPoly: TMenuItem;
     mviewProps: TMenuItem;
     MenuItem5: TMenuItem;
-    actions: TActionList;
     Images16: TImageList;
     Images32: TImageList;
     menuMain: TMainMenu;
@@ -64,9 +60,9 @@ type
     Splitter1: TSplitter;
     splitterVert1: TSplitter;
     StatusBar: TStatusBar;
-    TabSheet1: TTabSheet;
+    tabEditor: TTabSheet;
     TabSheet2: TTabSheet;
-    btnNewCustomDoc: TToolButton;
+    btnNewReservedDoc: TToolButton;
     WrapperBottom: TPanel;
     WrapperMiddle: TPanel;
     pmenuView: TPopupMenu;
@@ -74,14 +70,10 @@ type
     pmenuDoc: TPopupMenu;
     pmenuObjects: TPopupMenu;
     ToolBar: TToolBar;
-    procedure acDrawLinePolyExecute(Sender: TObject);
-    procedure acPagePropExecute(Sender: TObject);
-    procedure acDocInsRectanExecute(Sender: TObject);
-    procedure acDocPropExecute(Sender: TObject);
     procedure acToolbarPointExecute(Sender: TObject);
     procedure acVerViewSupExecute(Sender: TObject);
-    procedure acViewPropExecute(Sender: TObject);
-    procedure btnNewCustomDocClick(Sender: TObject);
+    procedure btnNewReservedDocClick(Sender: TObject);
+    procedure btnPolyClick(Sender: TObject);
     procedure cmdMessagesChange(Sender: TObject);
     procedure cmdRunBtnClick(Sender: TObject);
     procedure cmdInputKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
@@ -92,14 +84,19 @@ type
     procedure FormShow(Sender: TObject);
     procedure acToolbarConfigExecute(Sender: TObject);
     procedure mdocAddPageClick(Sender: TObject);
+    procedure mdocInsertPolyClick(Sender: TObject);
+    procedure mdocPropertiesClick(Sender: TObject);
+    procedure mdrawPolyClick(Sender: TObject);
     procedure mFileClick(Sender: TObject);
     procedure mfileCloseClick(Sender: TObject);
     procedure mfileExitClick(Sender: TObject);
-    procedure mfileNewCustomClick(Sender: TObject);
+    procedure mfileNewReservedClick(Sender: TObject);
+    procedure mpageAddClick(Sender: TObject);
     procedure mpageRemoveClick(Sender: TObject);
     procedure mviewPropsClick(Sender: TObject);
     procedure pdocAddPageClick(Sender: TObject);
     procedure ppageRemoveClick(Sender: TObject);
+    procedure pviewPropertiesClick(Sender: TObject);
     procedure SplitterHorCanOffset(Sender: TObject; var NewOffset: Integer;
       var Accept: Boolean);
     procedure ToolBarClick(Sender: TObject);
@@ -107,20 +104,17 @@ type
     procedure Label2Click(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
   public
-    doc: TDocument;
-    ExploreDocPage: TDocPage;     //page selected in the document explorer
-    ExploreDocView: TframeEditor;  //View selected in the document explorer
+    doc: TDoc;
+    DocumetExplorer_page: TDoc.TDocPage;     //page selected in the document explorer
+    DocumetExplorer_frameEditor: TframeEditor;  //frameEditor selected in the document explorer
     public
-    procedure curDocumentActivePageViewSendMessage(msg: string);
     procedure curDocumentChangeState(ViewState: TViewState);
     procedure curDocumentMouseMoveVirt(Shift: TShiftState; xp, yp: integer;
       xv, yv, zv: single);
-    procedure curDocumentChangeActivePage;
-    procedure frameExploreDocClickRightPage(Page: TDocPage);
-    procedure fraExploreDocClickRightDoc(argDoc: TDocument);
-    procedure frameExploreDocClickRightView(View: TframeEditor);
-    procedure curDocumentChangeView(View: TframeEditor);
-    function MessageSaveChanges: integer;
+    procedure showActivePage;
+    procedure frameExploreDocClickRightPage(Page: TDoc.TDocPage);
+    procedure fraExploreDocClickRightDoc(argDoc: TDoc);
+    procedure frameExploreDocClickRightView(frameEditor: TframeEditor);
     procedure form1SetCaption;
     procedure Refresh;
 
@@ -130,20 +124,20 @@ implementation
 uses glob;
 {$R *.lfm}
 
-procedure TForm1.fraExploreDocClickRightDoc(argDoc: TDocument);
+procedure TForm1.fraExploreDocClickRightDoc(argDoc: TDoc);
 begin
   pmenuDoc.PopUp;
 end;
 
-procedure TForm1.frameExploreDocClickRightPage(Page: TDocPage);
+procedure TForm1.frameExploreDocClickRightPage(Page: TDoc.TDocPage);
 begin
-  ExploreDocPage := Page;
+  DocumetExplorer_page := Page;
   pmenuPage.PopUp;
 end;
 
-procedure TForm1.frameExploreDocClickRightView(View: TframeEditor);
+procedure TForm1.frameExploreDocClickRightView(frameEditor: TframeEditor);
 begin
-  ExploreDocView := View;
+  DocumetExplorer_frameEditor := frameEditor;
   pmenuView.PopUp;
 end;
 
@@ -158,22 +152,24 @@ begin
 
   //translating
   mFile.Caption :=msg.get('file');
-  mfileNewCustom.Caption :=msg.get('newCustomDocument');
+  mfileNewReserved.Caption :=msg.get('newReservedDocument');
   mfileClose.Caption :=msg.get('close');
   mfileExit.Caption :=msg.get('exit');
   //
-  mView.Caption :=msg.get('view');
+  mView.Caption :=msg.get('frameEditor');
   mviewProps.Caption :=msg.get('properties');
   //
   mDoc.Caption :=msg.get('document');
-  mdocAddPage.Caption:=msg.get('addPage');
-  mdocInsertPoly.Caption :=msg.get('insertPolyline');
   mdocProperties.Caption :=msg.get('properties');
   //
   mPage.Caption :=msg.get('page');
+  mpageAdd.Caption :=msg.get('addPage');
   mpageRename.Caption :=msg.get('rename');
   mpageRemove.Caption :=msg.get('remove');
   mpageProperies.Caption :=msg.get('properties');
+  //
+  mDraw.Caption :=msg.get('draw');
+  mdrawPoly.Caption :=msg.get('drawPoly');
   //
   pdocAddPage.Caption :=msg.get('addPage');
   pdocProperies.Caption :=msg.get('properties');
@@ -189,7 +185,7 @@ begin
   // ToolBar.
   btnPoly.Caption :=msg.get('addLine');
   //
-  TabSheet1.Caption :=msg.get('editor');
+  tabEditor.Caption :=msg.get('editor');
   TabSheet2.Caption :=msg.get('TabSheet2');
   //
   cmdInputLabel.Caption :=msg.get('commandPrompt');
@@ -220,30 +216,14 @@ begin
   if doc = nil then
     exit;
   //Send all commands to the command box
-  if TabSheet1.Focused then
+  if tabEditor.Focused then
     cmdInput.SetFocus//pass the focus
   else if PageControl1.Focused then
     cmdInput.SetFocus//pass the focus
   ;
 end;
 
-function TForm1.MessageSaveChanges: integer;
-{Displays a window to confirm whether changes are saved or not. If selected
-cancel, the glob.BUT_CANCEL value is returned.}
-var
-  answer: Integer;
-begin
-  if (doc <> nil) and doc.Modified then
-  begin
-    answer := Application.MessageBox(PChar(msg.Get('DocumentModifiedSaveChanges')), 'Question',
-           (MB_ICONQUESTION + MB_YESNO));
-    if answer = IDNO then
-      exit(glob.BUT_CANCEL);
-    if answer = IDYES then
-      doc.SaveFile;
-  end;
-  Result := 0;   //Default value
-end;
+
 
 procedure TForm1.form1SetCaption;
 begin
@@ -265,7 +245,7 @@ end;
 
 procedure TForm1.curDocumentChangeState(ViewState: TViewState);
 begin
-  StatusBar.Panels[0].Text := doc.ActivePage.View.StateAsStr;
+  StatusBar.Panels[0].Text := doc.ActivePage.frameEditor.StateAsStr;
 end;
 
 procedure TForm1.curDocumentMouseMoveVirt(Shift: TShiftState;
@@ -276,52 +256,19 @@ begin
     ' ' + 'z=' + formatfloat('0.00', zv);
 end;
 
-procedure TForm1.curDocumentChangeView(View: TframeEditor);
-begin
-  StatusBar.Panels[1].Text :=
-    'Alfa=' + formatfloat('0.00', View.Alfa) + ' ' + 'Fi=' +
-    formatfloat('0.00', View.Fi);
-  //FloatToStr(fraMotEdicion.Alfa);
-  StatusBar.Panels[2].Text :=
-    'Zoom=' + formatfloat('0.00', View.Zoom);
-end;
 
-procedure TForm1.curDocumentChangeActivePage;
-{The active page of the current document was changed. Show it on the screen}
-var
-  ap: TDocPage;
+procedure TForm1.showActivePage;
 begin
   if doc = nil then
     exit;
-  //Plug the viewer into PageControl1, to show it;
-  doc.HideAllPages; {Hide all the pages first because you may have
-                                      already put your "Parent" in viewer.}
-  ap := doc.ActivePage;
-  ap.View.Parent := TabSheet1;   //Place it here
-  ap.View.Left := Random(200);
-  ap.View.Top := Random(200);
-  ap.View.Align := alClient;
-  ap.View.Visible := True;  //it makes it visible
+  doc.ActivePage.frameEditor.Parent := tabEditor;   //Place it here
+  doc.ActivePage.frameEditor.Left := Random(200);
+  doc.ActivePage.frameEditor.Top := Random(200);
+  doc.ActivePage.frameEditor.Align := alClient;
+  doc.ActivePage.frameEditor.Visible := True;  //it makes it visible
 end;
 
-function ComponentFromAction(Sender: TObject): TComponent;
-  {Returns the component that triggered an action. If not object, returns NIL}
-var
-  compSource: TComponent;
-begin
-  if not (Sender is Taction) then
-    exit(nil);
-  compSource := TAction(Sender).ActionComponent;
-  //We already have the source component
-  if compSource is TMenuItem then
-    exit(TMenuItem(compSource).GetParentComponent)//It's a menu item, but which one?
-  else if compSource is TToolButton then
-    exit(TToolButton(compSource).GetParentComponent)
-    //It's a button on a toolbar, but which one?
-  else
-    exit(compSource)//It's another thing
-  ;
-end;
+
 
 procedure TForm1.cmdInputKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
 var
@@ -336,20 +283,14 @@ begin
       exit;
     strCmd := UpCase(strCmd);  //Convert upper case
     //Command entered.
-    doc.ActivePage.View.ExecuteCommand(strCmd);
+    doc.ActivePage.frameEditor.ExecuteCommand(strCmd);
   end
   else if key = VK_ESCAPE then
-    doc.ActivePage.View.ExecuteCommand('CANCEL')//Convert key to command
+    doc.ActivePage.frameEditor.ExecuteCommand('CANCEL')//Convert key to command
   ;
 end;
 
-procedure TForm1.curDocumentActivePageViewSendMessage(msg: string);
-{A message has arrived from the document}
-begin
-  cmdMessages.Lines.Add(cmdInput.Text);
-  cmdInputLabel.Caption := msg;
-  cmdInput.Text := '';
-end;
+
 ///////////////////////////// Actions ///////////////////////////////
 
 
@@ -359,19 +300,19 @@ procedure TForm1.acVerViewSupExecute(Sender: TObject);
 begin
   if doc = nil then
     exit;
-  doc.ActivePage.View.Alfa := 0;
-  doc.ActivePage.View.Fi := 0;
-  doc.ActivePage.View.Editor.Refresh;
+  doc.ActivePage.frameEditor.Alfa := 0;
+  doc.ActivePage.frameEditor.Fi := 0;
+  doc.ActivePage.frameEditor.Editor.Refresh;
 end;
 
-procedure TForm1.acViewPropExecute(Sender: TObject);
+procedure TForm1.btnNewReservedDocClick(Sender: TObject);
 begin
-  formViewProp.Exec(ExploreDocView);
+  hDoc.doNewReserved(self);
 end;
 
-procedure TForm1.btnNewCustomDocClick(Sender: TObject);
+procedure TForm1.btnPolyClick(Sender: TObject);
 begin
-  hDoc.doNewCustom(self);
+  hdraw.doPolyLine(self);
 end;
 
 procedure TForm1.cmdMessagesChange(Sender: TObject);
@@ -384,57 +325,9 @@ begin
 
 end;
 
-procedure TForm1.acDocPropExecute(Sender: TObject);
-begin
-  if doc = nil then
-    exit;
-  if formDocument.Exec(doc) then
-  begin
-    doc.Modified := True;
-    frameDocumentExplorer.Refresh;
-  end;
-end;
-
 procedure TForm1.acToolbarPointExecute(Sender: TObject);
 begin
 
-end;
-
-procedure TForm1.acDrawLinePolyExecute(Sender: TObject);  //Add line
-var
-  Page: TDocPage;
-begin
-  if doc = nil then
-    exit;
-  {It checks if the action comes from the document explorer, to give you the
-    possibility to take actions, on non-active pages}
-  if ComponentFromAction(Sender) = pmenuPage then
-    Page := ExploreDocPage
-  else
-    Page := doc.ActivePage;
-  Page.View.ExecuteCommand('LINE');
-  Refresh;
-end;
-
-procedure TForm1.acPagePropExecute(Sender: TObject);
-begin
-
-end;
-
-procedure TForm1.acDocInsRectanExecute(Sender: TObject);
-var
-  Page: TDocPage;
-begin
-  if doc = nil then
-    exit;
-  {It checks if the action comes from the document explorer, to give you the
-    possibility to take actions, on non-active pages}
-  if ComponentFromAction(Sender) = pmenuPage then
-    Page := ExploreDocPage
-  else
-    Page := doc.ActivePage;
-  Page.View.ExecuteCommand('RECTANGLE');
-  Refresh;
 end;
 
 procedure TForm1.acToolbarConfigExecute(Sender: TObject);
@@ -445,6 +338,21 @@ end;
 procedure TForm1.mdocAddPageClick(Sender: TObject);
 begin
   hpage.doAdd(self);
+end;
+
+procedure TForm1.mdocInsertPolyClick(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.mdocPropertiesClick(Sender: TObject);
+begin
+  hdoc.doProps(self);
+end;
+
+procedure TForm1.mdrawPolyClick(Sender: TObject);
+begin
+  hdraw.doPolyLine(self);
 end;
 
 procedure TForm1.mFileClick(Sender: TObject);
@@ -462,10 +370,17 @@ begin
   self.close;
 end;
 
-procedure TForm1.mfileNewCustomClick(Sender: TObject);
+procedure TForm1.mfileNewReservedClick(Sender: TObject);
 begin
-  hdoc.doNewCustom(self);
+  hdoc.doNewReserved(self);
 end;
+
+procedure TForm1.mpageAddClick(Sender: TObject);
+begin
+  hpage.doAdd(self);
+end;
+
+
 
 procedure TForm1.mpageRemoveClick(Sender: TObject);
 begin
@@ -474,7 +389,7 @@ end;
 
 procedure TForm1.mviewPropsClick(Sender: TObject);
 begin
-
+  hview.doView(self);
 end;
 
 procedure TForm1.pdocAddPageClick(Sender: TObject);
@@ -485,6 +400,11 @@ end;
 procedure TForm1.ppageRemoveClick(Sender: TObject);
 begin
   hpage.doRemove(self);
+end;
+
+procedure TForm1.pviewPropertiesClick(Sender: TObject);
+begin
+  hview.doView(self);
 end;
 
 procedure TForm1.SplitterHorCanOffset(Sender: TObject; var NewOffset: Integer;

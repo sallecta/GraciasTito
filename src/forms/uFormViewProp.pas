@@ -4,7 +4,7 @@ unit uFormViewProp;
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  Buttons, StdCtrls, Spin, sketchDocument, uFrameEditor
+  Buttons, StdCtrls, Spin, uDoc, uFrameEditor
   ;
 type
 
@@ -24,13 +24,12 @@ type
     procedure btnApplyClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    View: TframeEditor;
+    frameEditor: TframeEditor;
   public
     procedure Exec(argView: TframeEditor);
   end;
 
-var
-  formViewProp: TFormViewProp;
+
 
 implementation
 uses glob;
@@ -45,17 +44,17 @@ end;
 
 procedure TFormViewProp.btnApplyClick(Sender: TObject);
 begin
-  View.Editor.ShowAxes  := chbShowAxes.Checked;
-  View.Editor.AxesDistance  := spnAxeDist.Value;
-  View.Editor.ShowRotPoint := chbShowRotPoint.Checked;
-  View.Editor.ShowGrid   := chbShowGrid.Checked;
-  View.Editor.Refresh;
+  frameEditor.Editor.ShowAxes  := chbShowAxes.Checked;
+  frameEditor.Editor.AxesDistance  := spnAxeDist.Value;
+  frameEditor.Editor.ShowRotPoint := chbShowRotPoint.Checked;
+  frameEditor.Editor.ShowGrid   := chbShowGrid.Checked;
+  frameEditor.Editor.Refresh;
 end;
 
 procedure TFormViewProp.FormCreate(Sender: TObject);
 begin
   // captions
-  Caption:=msg.get('view')+': '+msg.get('properties');
+  Caption:=msg.get('frameEditor')+': '+msg.get('properties');
   chbShowAxes.caption:=msg.get('showAxes');
   Label1.caption:=msg.get('axesLength');
   chbShowRotPoint.caption:=msg.get('showRotationPoint');
@@ -68,11 +67,11 @@ end;
 
 procedure TFormViewProp.Exec(argView: TframeEditor);
 begin
-  View := argView;
-  chbShowAxes.Checked    := View.Editor.ShowAxes;
-  spnAxeDist.Value      := View.Editor.AxesDistance;
-  chbShowRotPoint.Checked := View.Editor.ShowRotPoint;
-  chbShowGrid.Checked := View.Editor.ShowGrid;
+  frameEditor := argView;
+  chbShowAxes.Checked    := frameEditor.Editor.ShowAxes;
+  spnAxeDist.Value      := frameEditor.Editor.AxesDistance;
+  chbShowRotPoint.Checked := frameEditor.Editor.ShowRotPoint;
+  chbShowGrid.Checked := frameEditor.Editor.ShowGrid;
   Showmodal;
 end;
 
