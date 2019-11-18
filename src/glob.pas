@@ -6,7 +6,9 @@ interface
 uses
   Classes, SysUtils, Forms,
   //local
-  uToLang, uhDoc, uhPage, uhView, uhDraw;
+  uToLang,
+  //uDoc,
+  uhDoc, uhPage, uhView, uhDraw;
 
 const
   APP_NAME = 'gTitoCAD';
@@ -25,6 +27,7 @@ var
   hPage: uhPage.tuhPage;
   hView: uhView.tuhView;
   hDraw: uhDraw.tuhDraw;
+  //doc: TObject;//TDoc;
 
 
 

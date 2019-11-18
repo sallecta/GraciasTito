@@ -25,14 +25,14 @@ end;
 procedure tuhDraw.doPolyLine(argForm: TObject);
 var
   argForm1: TForm1;
-  locPage: TDoc.TDocPage;
+  locPage: TDoc.TPage;
 begin
   argForm1 := TForm1(argForm);
   if argForm1.doc = nil then
     exit;
   //locPage := argForm1.DocumetExplorer_page;
   locPage := argForm1.doc.ActivePage;
-  locPage.frameEditor.ExecuteCommand('LINE');
+  argForm1.frameEditor.ExecuteCommand('LINE');
   argForm1.Refresh;
 end;
 

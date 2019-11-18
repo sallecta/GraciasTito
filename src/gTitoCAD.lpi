@@ -53,7 +53,7 @@
         <ResourceBaseClass Value="Form"/>
       </Unit1>
       <Unit2>
-        <Filename Value="sketch/uDoc.pas"/>
+        <Filename Value="units/doc/uDoc.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
@@ -68,61 +68,58 @@
         <IsPartOfProject Value="True"/>
       </Unit4>
       <Unit5>
-        <Filename Value="frames/uFrameDocumetExplorer.pas"/>
+        <Filename Value="units/doc/uDocDxf.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FrameDocumentExplorer"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Frame"/>
       </Unit5>
       <Unit6>
-        <Filename Value="sketch/sketchDxf.pas"/>
+        <Filename Value="units/doc/uDocCore.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit6>
       <Unit7>
-        <Filename Value="sketch/sketchCore.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit7>
-      <Unit8>
         <Filename Value="forms/uFormViewProp.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="formViewProp"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit8>
-      <Unit9>
+      </Unit7>
+      <Unit8>
         <Filename Value="frames/uFrameEditor.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frameEditor"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="units/doc/uDocEditor.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit9>
       <Unit10>
-        <Filename Value="sketch/sketchEditor.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit10>
-      <Unit11>
         <Filename Value="units/toLang/utolang.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uToLang"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="handlers/uhDoc.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit11>
       <Unit12>
-        <Filename Value="handlers/uhDoc.pas"/>
+        <Filename Value="handlers/uhDraw.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit12>
       <Unit13>
-        <Filename Value="handlers/uhDraw.pas"/>
+        <Filename Value="handlers/uhPage.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit13>
       <Unit14>
-        <Filename Value="handlers/uhPage.pas"/>
+        <Filename Value="handlers/uhView.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit14>
       <Unit15>
-        <Filename Value="handlers/uhView.pas"/>
+        <Filename Value="units/toLang/toLang_defaults.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit15>
       <Unit16>
-        <Filename Value="units/toLang/toLang_defaults.pas"/>
+        <Filename Value="units/draw/uDraw.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit16>
     </Units>
@@ -134,7 +131,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="forms;handlers;frames;sketch;units/toLang;units/MotGraf_5at_9Jan2017"/>
+      <OtherUnitFiles Value="forms;handlers;frames;units/toLang;units/draw;units/doc"/>
       <UnitOutputDirectory Value="../ignore/lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

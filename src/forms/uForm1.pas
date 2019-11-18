@@ -9,7 +9,7 @@ uses
   //local
   uDoc, uFrameEditor, uFormDocProps,
   uFrameDocumetExplorer, uFormViewProp,
-  sketchEditor
+  uDocEditor
   ;
 
 const
@@ -28,7 +28,8 @@ type
     cmdInputWrapper: TPanel;
     cmdMessages: TMemo;
     cmdRunBtn: TSpeedButton;
-    frameDocumentExplorer: TFrameDocumentExplorer;
+    frameDocumentExplorer: TFrame;
+    frameEditor: TframeEditor;
     mDraw: TMenuItem;
     mdrawPoly: TMenuItem;
     mpageAdd: TMenuItem;
@@ -105,16 +106,16 @@ type
     procedure PageControl1Change(Sender: TObject);
   public
     doc: TDoc;
-    DocumetExplorer_page: TDoc.TDocPage;     //page selected in the document explorer
+    DocumetExplorer_page: TDoc.TPage;     //page selected in the document explorer
     DocumetExplorer_frameEditor: TframeEditor;  //frameEditor selected in the document explorer
     public
     procedure curDocumentChangeState(ViewState: TViewState);
     procedure curDocumentMouseMoveVirt(Shift: TShiftState; xp, yp: integer;
       xv, yv, zv: single);
-    procedure showActivePage;
-    procedure frameExploreDocClickRightPage(Page: TDoc.TDocPage);
+    procedure showEditor;
+    procedure frameExploreDocClickRightPage(Page: TDoc.TPage);
     procedure fraExploreDocClickRightDoc(argDoc: TDoc);
-    procedure frameExploreDocClickRightView(frameEditor: TframeEditor);
+    procedure frameExploreDocClickRightView(argFrameEditor: TframeEditor);
     procedure form1SetCaption;
     procedure Refresh;
 
@@ -129,15 +130,15 @@ begin
   pmenuDoc.PopUp;
 end;
 
-procedure TForm1.frameExploreDocClickRightPage(Page: TDoc.TDocPage);
+procedure TForm1.frameExploreDocClickRightPage(Page: TDoc.TPage);
 begin
   DocumetExplorer_page := Page;
   pmenuPage.PopUp;
 end;
 
-procedure TForm1.frameExploreDocClickRightView(frameEditor: TframeEditor);
+procedure TForm1.frameExploreDocClickRightView(argFrameEditor: TframeEditor);
 begin
-  DocumetExplorer_frameEditor := frameEditor;
+  DocumetExplorer_frameEditor := argFrameEditor;
   pmenuView.PopUp;
 end;
 
@@ -145,10 +146,10 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   //Configure Document Explorer
   frameDocumentExplorer.Name := 'frameDocumentExplorer';
-  frameDocumentExplorer.OnClickRightDocument := @fraExploreDocClickRightDoc;
-  frameDocumentExplorer.OnClickRightPage := @frameExploreDocClickRightPage;
-  frameDocumentExplorer.OnClickRightView := @frameExploreDocClickRightView;
-  frameDocumentExplorer.Initiate(@doc);
+  //frameDocumentExplorer.OnClickRightDocument := @fraExploreDocClickRightDoc;
+  //frameDocumentExplorer.OnClickRightPage := @frameExploreDocClickRightPage;
+  //frameDocumentExplorer.OnClickRightView := @frameExploreDocClickRightView;
+  self.Refresh;
 
   //translating
   mFile.Caption :=msg.get('file');
@@ -245,7 +246,7 @@ end;
 
 procedure TForm1.curDocumentChangeState(ViewState: TViewState);
 begin
-  StatusBar.Panels[0].Text := doc.ActivePage.frameEditor.StateAsStr;
+  //StatusBar.Panels[0].Text := doc.ActivePage.frameEditor.StateAsStr;
 end;
 
 procedure TForm1.curDocumentMouseMoveVirt(Shift: TShiftState;
@@ -257,15 +258,20 @@ begin
 end;
 
 
-procedure TForm1.showActivePage;
+procedure TForm1.showEditor;
 begin
   if doc = nil then
     exit;
-  doc.ActivePage.frameEditor.Parent := tabEditor;   //Place it here
-  doc.ActivePage.frameEditor.Left := Random(200);
-  doc.ActivePage.frameEditor.Top := Random(200);
-  doc.ActivePage.frameEditor.Align := alClient;
-  doc.ActivePage.frameEditor.Visible := True;  //it makes it visible
+  frameEditor := TframeEditor.Create(nil, doc.ActivePage.DocCoreObjects);
+  frameEditor.docEditor.Canvas.backColor := clBlack;
+  frameEditor.docEditor.ShowAxes := True;
+  frameEditor.docEditor.ShowRotPoint := True;
+  frameEditor.docEditor.ShowGrid := True;
+  frameEditor.Left := Random(200);
+  frameEditor.Top := Random(200);
+  frameEditor.Align := alClient;
+  frameEditor.Visible := True;
+  frameEditor.Parent := tabEditor;
 end;
 
 
@@ -283,10 +289,10 @@ begin
       exit;
     strCmd := UpCase(strCmd);  //Convert upper case
     //Command entered.
-    doc.ActivePage.frameEditor.ExecuteCommand(strCmd);
+    //doc.ActivePage.frameEditor.ExecuteCommand(strCmd);
   end
   else if key = VK_ESCAPE then
-    doc.ActivePage.frameEditor.ExecuteCommand('CANCEL')//Convert key to command
+    //doc.ActivePage.frameEditor.ExecuteCommand('CANCEL')//Convert key to command
   ;
 end;
 
@@ -300,9 +306,9 @@ procedure TForm1.acVerViewSupExecute(Sender: TObject);
 begin
   if doc = nil then
     exit;
-  doc.ActivePage.frameEditor.Alfa := 0;
-  doc.ActivePage.frameEditor.Fi := 0;
-  doc.ActivePage.frameEditor.Editor.Refresh;
+  //doc.ActivePage.frameEditor.Alfa := 0;
+  //doc.ActivePage.frameEditor.Fi := 0;
+  //doc.ActivePage.frameEditor.Editor.Refresh;
 end;
 
 procedure TForm1.btnNewReservedDocClick(Sender: TObject);

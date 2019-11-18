@@ -71,7 +71,7 @@ object Form1: TForm1
     Color = clMenuBar
     ParentColor = False
     TabOrder = 1
-    inline frameDocumentExplorer: TFrameDocumentExplorer
+    inline frameDocumentExplorer: TFrame
       AnchorSideLeft.Control = WrapperMiddle
       AnchorSideTop.Control = WrapperMiddle
       AnchorSideRight.Control = splitterVert1
@@ -83,20 +83,9 @@ object Form1: TForm1
       Width = 150
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Bottom = 10
-      ClientHeight = 361
-      ClientWidth = 150
       Color = clMenuBar
       ParentColor = False
-      inherited treeNav: TTreeView
-        Height = 337
-        Width = 150
-        BackgroundColor = clWhite
-        Color = clWhite
-        ExpandSignType = tvestPlusMinus
-      end
-      inherited lblTreeNav: TLabel
-        Width = 150
-      end
+      TabOrder = 0
     end
     object splitterVert1: TSplitter
       AnchorSideLeft.Control = frameDocumentExplorer

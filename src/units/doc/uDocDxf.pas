@@ -1,16 +1,11 @@
-{
-Define graphic sketchCoreObjects.
-All of them must descend from sketchCoreObj, so that they can be treated
-by the "ogMotEdicion" engine}
-
-unit sketchDxf;
+unit uDocDxf;
 
 {$mode objfpc}{$H+}
 interface
 
 uses
   Classes, Graphics, LCLProc, fgl,
-  MotGraf3d, sketchCore,
+  uDraw, uDocCore,
   glob
   ;
 
@@ -23,18 +18,18 @@ type
   TDxf = class;
   TDxf_list = specialize TFPGObjectList<TDxf>;
   { TMyObject }
-  TMyObject = class(sketchCoreObj)  //graphic object that we will draw
+  TMyObject = class(TDocCoreObject)  //graphic object that we will draw
     procedure Draw; override;  //Draw the graphic object
-    constructor Create(argVirtScreen: TVirtScreen); override;
+    constructor Create(argCanvas: TDrawCanvas); override;
   private
-    procedure RelocateElements; override;
+    procedure RelocateElements;
   end;
 
   { TDxf }
   {The object is defined to be compatible with DXF files.}
-  TDxf = class(sketchCoreObj)
+  TDxf = class(TDocCoreObject)
   private
-    pc0, pc1, pcM: TControlPoint;
+    pc0, pc1, pcM: TDocCoreControlPoint;
     procedure ControlPoint_0_Move(x_vPoint, y_vPoint, dx, dy: single);
     procedure ControlPoint_1_Move(x_vPoint, y_vPoint, dx, dy: single);
     procedure ControlPoint_M_Move(x_vPoint, y_vPoint, x_dv, y_dv: single);
@@ -46,28 +41,28 @@ type
     style: string;
     isComplex: boolean;
     polyFlag: integer; {Flag for polylines. Bitmap, zero by default}
-    P0: TPoint3D;
-    P1: TPoint3D;
+    P0: TDrawPoint2D;
+    P1: TDrawPoint2D;
     radius: double;
-    vertexs: TDxf_list;   {Vertex list. Only instance for sketchCoreObjects
+    vertexs: TDxf_list;   {Vertex list. Only instance for DocCoreObjects
                                 complex. It is very heavy to keep a list of
                                 TDxf. It should be optimized}
     blkName: string;    //used when it is from Type dxfBlock.
   public
     procedure SetP0(const xv, yv, zv: single);
     procedure SetP1(const xv, yv, zv: single);
-    procedure RelocateElements; override;
+    procedure RelocateElements;
   public
     procedure Draw; override;  //Draw the graphic object
     function isSelected(xp, yp: integer): boolean; override;
-    constructor Create(argVirtScreen: TVirtScreen); override;
+    constructor Create(argCanvas: TDrawCanvas); override;
     //  destructor Destroy; override;
   end;
 
 implementation
 
 { TMyObject }
-constructor TMyObject.Create(argVirtScreen: TVirtScreen);
+constructor TMyObject.Create(argCanvas: TDrawCanvas);
 begin
   inherited;
   ReconstructGeom;
@@ -88,12 +83,12 @@ end;
 procedure TMyObject.Draw();
 begin
   //Draw label
-  VirtScreen.SetText(clWhite, 11, '', False);
-  VirtScreen.Texto(x + 2, Y + Height + 20, 0, Name);
+  self.Canvas.SetText(clWhite, 11, '', False);
+  self.Canvas.Text(x + 2, Y + Height + 20, 0, Name);
   //shows a rectangle
-  VirtScreen.SetPen(clWhite, 1, psSolid);
-  VirtScreen.FillFixed(clBlack);
-  VirtScreen.rectangXYr(x, y + 10, x + Width, y + Height, 0);
+  self.Canvas.SetPen(clWhite, 1, psSolid);
+  self.Canvas.FillFixed(clBlack);
+  self.Canvas.rectangXYr(x, y + 10, x + Width, y + Height);
   inherited;
 end;
 
@@ -121,7 +116,6 @@ procedure TDxf.SetP0(const xv, yv, zv: single);
 begin
   P0.x := xv;
   P0.y := yv;
-  P0.z := zv;
   RelocateElements;
 end;
 
@@ -129,13 +123,12 @@ procedure TDxf.SetP1(const xv, yv, zv: single);
 begin
   P1.x := xv;
   P1.y := yv;
-  P1.z := zv;
   RelocateElements;
 end;
 
-constructor TDxf.Create(argVirtScreen: TVirtScreen);
+constructor TDxf.Create(argCanvas: TDrawCanvas);
 begin
-  inherited Create(argVirtScreen);
+  inherited Create(argCanvas);
   {Note that the control points are static, although it may be better to create them
    only when the object is selected.  }
   pc0 := AddControlPoint(CPO_TOP_LEFT, @ControlPoint_0_Move);
@@ -148,23 +141,23 @@ end;
 procedure TDxf.RelocateElements;
 begin
   //Locate control points
-  pc0.PlaceAt(P0);
-  pc1.PlaceAt(P1);
-  pcM.PlaceAt((P0.x + P1.x) / 2, (P0.y + P1.y) / 2, (P0.z + P1.z) / 2);
+  pc0.PlaceAt(P0.x, P0.y);
+  pc1.PlaceAt(P1.x,P1.y);
+  pcM.PlaceAt((P0.x + P1.x) / 2, (P0.y + P1.y) / 2);
 end;
 
 procedure TDxf.Draw;
 var
-  ctrlPoint: TControlPoint;
+  ctrlPoint: TDocCoreControlPoint;
   Points: array of TPoint;
   i: integer;
 begin
   if Marked and canHighlight then
-    VirtScreen.SetPen(TColor($FF8000), 2, psSolid)
+    self.Canvas.SetPen(TColor($FF8000), 2, psSolid)
   else
-    VirtScreen.SetPen(clWhite, 1);
+    self.Canvas.SetPen(clWhite, 1);
   case DxfPrimitive of
-    dxfLine: VirtScreen.Line(P0, P1);
+    dxfLine: self.Canvas.Line(P0, P1);
   end;
   //---------------draw selection mark--------------
   if Selected then

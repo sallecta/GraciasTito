@@ -1,4 +1,4 @@
-object framePaintBox: TframeEditor
+object frameEditor: TframeEditor
   Left = 0
   Height = 298
   Top = 0

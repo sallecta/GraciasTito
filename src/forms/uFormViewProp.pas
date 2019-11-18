@@ -44,11 +44,11 @@ end;
 
 procedure TFormViewProp.btnApplyClick(Sender: TObject);
 begin
-  frameEditor.Editor.ShowAxes  := chbShowAxes.Checked;
-  frameEditor.Editor.AxesDistance  := spnAxeDist.Value;
-  frameEditor.Editor.ShowRotPoint := chbShowRotPoint.Checked;
-  frameEditor.Editor.ShowGrid   := chbShowGrid.Checked;
-  frameEditor.Editor.Refresh;
+  frameEditor.docEditor.ShowAxes  := chbShowAxes.Checked;
+  frameEditor.docEditor.AxesDistance  := spnAxeDist.Value;
+  frameEditor.docEditor.ShowRotPoint := chbShowRotPoint.Checked;
+  frameEditor.docEditor.ShowGrid   := chbShowGrid.Checked;
+  frameEditor.docEditor.Refresh;
 end;
 
 procedure TFormViewProp.FormCreate(Sender: TObject);
@@ -68,10 +68,10 @@ end;
 procedure TFormViewProp.Exec(argView: TframeEditor);
 begin
   frameEditor := argView;
-  chbShowAxes.Checked    := frameEditor.Editor.ShowAxes;
-  spnAxeDist.Value      := frameEditor.Editor.AxesDistance;
-  chbShowRotPoint.Checked := frameEditor.Editor.ShowRotPoint;
-  chbShowGrid.Checked := frameEditor.Editor.ShowGrid;
+  chbShowAxes.Checked    := frameEditor.docEditor.ShowAxes;
+  spnAxeDist.Value      := frameEditor.docEditor.AxesDistance;
+  chbShowRotPoint.Checked := frameEditor.docEditor.ShowRotPoint;
+  chbShowGrid.Checked := frameEditor.docEditor.ShowGrid;
   Showmodal;
 end;
 

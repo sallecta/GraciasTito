@@ -1,40 +1,9 @@
-object FrameDocumentExplorer: TFrameDocumentExplorer
+object Frame: TFrame
   Left = 0
   Height = 480
   Top = 0
   Width = 170
-  ClientHeight = 480
-  ClientWidth = 170
   LCLVersion = '2.0.6.0'
-  TabOrder = 0
-  DesignLeft = 319
-  DesignTop = 215
-  object treeNav: TTreeView
-    Left = 0
-    Height = 456
-    Top = 24
-    Width = 170
-    Align = alClient
-    Images = docexplImages16
-    ReadOnly = True
-    TabOrder = 0
-    OnKeyDown = treeNavKeyDown
-    Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
-  end
-  object lblTreeNav: TLabel
-    Left = 0
-    Height = 24
-    Top = 0
-    Width = 170
-    Align = alTop
-    Alignment = taCenter
-    AutoSize = False
-    Caption = 'documents'
-    Color = clMenuBar
-    Layout = tlCenter
-    ParentColor = False
-    Transparent = False
-  end
   object docexplImages16: TImageList
     left = 40
     top = 48

@@ -39,7 +39,7 @@ begin
   tuToLang(objinst).Add('PageDoesNotExist',
          'Page does not exist: '); // No existe la página
   tuToLang(objinst).Add('documentObjects',
-         'sketchCoreObjects'); // sketchCoreObjects Gráficos
+         'DocCoreObjects'); // DocCoreObjects Gráficos
   tuToLang(objinst).Add('defaultObjName',
          'Object'); // Objeto
   tuToLang(objinst).Add('stateNormal',
@@ -47,13 +47,13 @@ begin
   tuToLang(objinst).Add('stateSelMultiple',
          'Multiple selection'); // Selecc. Múltiple
   tuToLang(objinst).Add('stateObjectsMoving.',
-         'sketchCoreObjects moving'); // 'Moviendo sketchCoreObjects'
+         'DocCoreObjects moving'); // 'Moviendo DocCoreObjects'
   tuToLang(objinst).Add('stateScreenScrolling.',
          'Screen scrolling'); // 'Desplaz. Pantalla'
   tuToLang(objinst).Add('stateScreenRotating',
          'Screen rotating'); // Rotando Pantalla
   tuToLang(objinst).Add('stateDimensioningObjects',
-         'Dimensioning sketchCoreObjects'); // 'Dimension.sketchCoreObjects'
+         'Dimensioning DocCoreObjects'); // 'Dimension.DocCoreObjects'
   tuToLang(objinst).Add('stateMouseZooming',
          'Mouse zooming'); // 'Zoom con ratón'
   tuToLang(objinst).Add('stateLineCreating',

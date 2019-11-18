@@ -1,10 +1,10 @@
 
-unit sketchEditor;
+unit uDocEditor;
 {$mode objfpc}{$H+}
 INTERFACE
 uses
   Classes, Controls, ExtCtrls, Graphics, LCLProc, LCLType, fgl,
-  MotGraf3d, sketchCore, sketchDxf;
+  uDraw, uDocCore, uDocDxf;
 const
   ZOOM_MAX_EDITOR = 5  ;//Defines the maximal zoom allowed in a diagram
   ZOOM_MIN_EDITOR = 0.1;//Defines the minimal zoom allowed in a diagram
@@ -28,7 +28,7 @@ type
       //Visual editor states
        VS_NORMAL,      //No operation is being performed
       VS_SELECTINGMULT,   //You are in multiple selection mode
-      VS_OBJS_MOVING,    //Indicates that one or more sketchCoreObjects are moving
+      VS_OBJS_MOVING,    //Indicates that one or more DocCoreObjects are moving
       VS_SCREEN_SCROLLING,
       VS_SCREEN_ANG,   //Indicates offset of frameEditor angles
       VS_DIMEN_OBJ,   // Indicates that an object is being dimensioned
@@ -42,12 +42,12 @@ type
   TEvChangeState = procedure(ViewState: TViewState) of object;
   TEvSendMessage = procedure(msg: string) of object;
 
-  { TEditor }
-  TEditor = class
+  { TDocEditor }
+  TDocEditor = class
   private
     FState: TViewState;
-    procedure GraphicObjectAdd(argGraphicObject: sketchCoreObj; AutoPos: boolean=true);
-    procedure GraphicObjectDelete(obj: sketchCoreObj);
+    procedure GraphicObjectAdd(argGraphicObject: TDocCoreObject; AutoPos: boolean=true);
+    procedure GraphicObjectDelete(obj: TDocCoreObject);
     procedure DeleteSelected;
     procedure proc_COMM_RECTAN(EventType: TViewEvent; Button: TMouseButton;
       Shift: TShiftState; xp, yp: Integer; txt: string);
@@ -55,8 +55,8 @@ type
     procedure VirtualScreen_ChangeView;
   protected
     PBox         : TPaintBox;   //Output Control
-    MovingObject: sketchCoreObj;    //reference to object that captured movement
-    MarkedObject   : sketchCoreObj;
+    MovingObject: TDocCoreObject;    //reference to object that captured movement
+    MarkedObject   : TDocCoreObject;
     Moving : Boolean;     //Control flag for the start of the movement
     procedure PBox_MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
                         xp, yp: Integer); virtual;
@@ -68,7 +68,7 @@ type
     procedure PBox_DblClick(Sender: TObject);
     procedure PBox_Resize(Sender: TObject);
   public
-    procedure ExecuteCommand(command: string);
+    procedure ExecuteCommand(argCommand: string);
   public
     OnClickRight  : TOnClickRight;
     OnMouseUp   : TMouseEvent;
@@ -84,16 +84,16 @@ type
     xvPt       : Single;
     yvPt       : Single;
     zvPt       : Single;
-    sketchCoreObjects     : TSketchCoreObjects;
-    selection   : TSketchCoreObjects;
-    VirtScreen         : TVirtScreen;    //graphic output
+    DocCoreObjects     : TDocCoreObjects;
+    selection   : TDocCoreObjects;
+    Canvas         : TDrawCanvas;    //graphic output
     Wheel_step    : Single;
     ShowAxes : boolean;
     AxesDistance : integer;
     ShowRotPoint: boolean;
     ShowGrid  : boolean;
-    function ObjSelected: sketchCoreObj;
-    function ObjByName(argName: string): sketchCoreObj;
+    function ObjSelected: TDocCoreObject;
+    function ObjByName(argName: string): TDocCoreObject;
     procedure Refresh;
     procedure SelectAll;
     procedure SelectNone();
@@ -113,7 +113,7 @@ type
     y_cam_prev: Single;
     procedure ZoomToClick(factor: real=ZOOM_STEP_EDITOR; xr: integer=0;
       yr: integer=0);
-    function PreviousVisible(c: sketchCoreObj): sketchCoreObj;
+    function PreviousVisible(c: TDocCoreObject): TDocCoreObject;
     procedure DrawRectangleSeleccion;
 
     function inRectangleSeleccion(X, Y: Single): Boolean;
@@ -124,20 +124,20 @@ type
     procedure moveLeft(offs: Double=OFFSET_EDITOR);
     procedure Displace(dx, dy: integer);
     function VisibleObjectsCount: Integer;
-    function FirstVisible: sketchCoreObj;
+    function FirstVisible: TDocCoreObject;
     function RectangleSelectionIsNil: Boolean;
     procedure ZoomReduceClick(factor: Real=ZOOM_STEP_EDITOR; x_zoom: Real=0;
       y_zoom: Real=0);
-    function SelectObjectAt(xp, yp: Integer): sketchCoreObj;
+    function SelectObjectAt(xp, yp: Integer): TDocCoreObject;
     procedure SelectPrevious;
     procedure SelectNext;
-    function NextVisible(c: sketchCoreObj): sketchCoreObj;
-    function LastVisible: sketchCoreObj;
-    function VerifyMouseMovement(X, Y: Integer): sketchCoreObj;
+    function NextVisible(c: TDocCoreObject): TDocCoreObject;
+    function LastVisible: TDocCoreObject;
+    function VerifyMouseMovement(X, Y: Integer): TDocCoreObject;
     procedure VerifyToMove(xp, yp: Integer);
   public
-    procedure GraphicObject_Select(obj: sketchCoreObj);     //Response to Event
-    procedure GraphicObject_Unselec(obj: sketchCoreObj);    //Response to Event
+    procedure GraphicObject_Select(obj: TDocCoreObject);     //Response to Event
+    procedure GraphicObject_Unselec(obj: TDocCoreObject);    //Response to Event
     procedure GraphicObject_SetPointer(argPoint: integer);  //Response to Event
   private
     {Container that associates the state with its handling procedure. Use to access
@@ -170,36 +170,36 @@ type
                             Shift: TShiftState; xp, yp: Integer; txt: string);
   public //Inicialización
     procedure RestoreState(msg: string='');
-    constructor Create(PB0: TPaintBox; objectList: TSketchCoreObjects);
+    constructor Create(PB0: TPaintBox; objectList: TDocCoreObjects);
     destructor Destroy; override;
   end;
 
 implementation
 uses glob;
 
-procedure TEditor.SetState(AValue: TViewState);
+procedure TDocEditor.SetState(AValue: TViewState);
 begin
   if FState=AValue then Exit;
   FState:=AValue;
   if OnChangeState<>nil then OnChangeState(FState);
 end;
-procedure TEditor.VirtualScreen_ChangeView;
+procedure TDocEditor.VirtualScreen_ChangeView;
 begin
   if OnChangeView<>nil then OnChangeView;
 end;
-procedure TEditor.PBox_MouseDown(Sender: TObject;
+procedure TDocEditor.PBox_MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer);
 begin
     if OnMouseDown<>nil then OnMouseDown(Sender, Button, Shift, Xp, Yp);
     x_mouse := xp;
     y_mouse := yp;
     //Prepares start of scrolling the screen.
-    x_cam_prev := VirtScreen.x_cam;
-    y_cam_prev := VirtScreen.y_cam;
+    x_cam_prev := Canvas.x_cam;
+    y_cam_prev := Canvas.y_cam;
 
     CallEventState(State, vmeMouseDown, Button, Shift, xp, yp, ''); //Process according to state
 end;
-procedure TEditor.PBox_MouseUp(Sender: TObject; Button: TMouseButton;
+procedure TDocEditor.PBox_MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer);
 begin
    //Check if the selection is NULL
@@ -209,33 +209,33 @@ begin
      if OnClickRight<> nil then OnClickRight(xp,yp);
    if OnMouseUp<>nil then OnMouseUp(Sender, Button, Shift, xp, yp);
 end;
-procedure TEditor.PBox_MouseMove(Sender: TObject; Shift: TShiftState;
+procedure TDocEditor.PBox_MouseMove(Sender: TObject; Shift: TShiftState;
   X,  Y: Integer);
 begin
   zvPt := 0;   //we set the work plane at z = 0
-  VirtScreen.XYvirt(X,Y,zvPt, xvPt, yvPt);
+  Canvas.XYvirt(X,Y, xvPt, yvPt);
   if OnMouseMove<>nil then OnMouseMove(Sender, Shift, X, Y);
   if Moving = True Then VerifyToMove(X, Y);
   CallEventState(State, vmeMouseMove, mbExtra1, Shift, x, y, ''); //Process according to state
 end;
-procedure TEditor.PBox_Paint(Sender: TObject);
+procedure TDocEditor.PBox_Paint(Sender: TObject);
 var
-  o:sketchCoreObj;
+  o:TDocCoreObject;
   x, y, xGrid1, xGrid2, yGrid1, yGrid2: Single;
   nGrid, ix, distCovered, step: Integer;
 begin
-    VirtScreen.Clear;
+    Canvas.Clear;
     If State = VS_SELECTINGMULT Then DrawRectangleSeleccion;
     if ShowGrid then begin
       //Shows grid
-      VirtScreen.SetPen(TColor($404040),1);
-      if VirtScreen.Zoom > 7 then begin
+      Canvas.SetPen(TColor($404040),1);
+      if Canvas.Zoom > 7 then begin
         distCovered := 100;  //covered distance (virtual value)
         step := 10;      //step width (virtual value)
-      end else if VirtScreen.Zoom > 3 then begin
+      end else if Canvas.Zoom > 3 then begin
         distCovered := 200;
         step := 20;
-      end else if VirtScreen.Zoom > 1 then begin
+      end else if Canvas.Zoom > 1 then begin
         distCovered := 600;
         step := 50;
       end else begin
@@ -243,92 +243,85 @@ begin
         step := 100;
       end;
       nGrid := distCovered div step;
-      xGrid1 := int((VirtScreen.x_cam - distCovered/2)/step)*step;
+      xGrid1 := int((Canvas.x_cam - distCovered/2)/step)*step;
       xGrid2 := xGrid1 + distCovered;
-      yGrid1 := int((VirtScreen.y_cam - distCovered/2)/step)*step;
+      yGrid1 := int((Canvas.y_cam - distCovered/2)/step)*step;
       yGrid2 := yGrid1 + distCovered;
 
       x := xGrid1;
       for ix := 0 to nGrid do begin
-        VirtScreen.Line(x,yGrid1,0, x, yGrid2, 0);
+        Canvas.Line(x,yGrid1, x, yGrid2);
         x := x + step;
       end;
       y := yGrid1;
       for ix := 0 to nGrid do begin
-        VirtScreen.Line(xGrid1, y, 0, xGrid2, y, 0);
+        Canvas.Line(xGrid1, y, xGrid2, y);
         y := y + step;
       end;
     end;
-    //Draw sketchCoreObjects
-    for o In sketchCoreObjects do begin
+    //Draw DocCoreObjects
+    for o In DocCoreObjects do begin
       o.Draw;
     end;
     //Draw axis
     if ShowAxes then begin
-      VirtScreen.SetPen(clRed, 1);
-      VirtScreen.Line(0,0,0,100,0,0);
-      VirtScreen.Line(0,0,0,0,100,0);
-      VirtScreen.Line(0,0,0,0,0,100);
-      VirtScreen.Texto(100,10,0,'x');
-      VirtScreen.Texto(0,100,0,'y');
+      Canvas.SetPen(clRed, 1);
+      Canvas.Line(0,0,100,0);
+      Canvas.Line(0,0,0,100);
+      Canvas.Line(0,0,0,0);
+      Canvas.Text(100,10,0,'x');
+      Canvas.Text(0,100,0,'y');
     end;
     if ShowRotPoint then begin
-      x := VirtScreen.x_cam;
-      y := VirtScreen.y_cam;
-      VirtScreen.SetPen(clGreen, 1);
-      VirtScreen.Line(x-30,y,0,  x+30,y,0);
-      VirtScreen.Line(x, y-30,0, x, y+30,0);
+      x := Canvas.x_cam;
+      y := Canvas.y_cam;
+      Canvas.SetPen(clGreen, 1);
+      Canvas.Line(x-30,y,  x+30,y);
+      Canvas.Line(x, y-30, x, y+30);
     end;
 end;
-procedure TEditor.PBox_MouseWheel(Sender: TObject; Shift: TShiftState;
+procedure TDocEditor.PBox_MouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 var
   d: Single;
 begin
   if Shift = [ssCtrl] then begin
     if WheelDelta>0 then d := Wheel_step else d := -Wheel_step;
-    VirtScreen.Alfa := VirtScreen.Alfa + d;
   end;
   if Shift = [ssShift] then begin
     if WheelDelta>0 then d := Wheel_step else d := -Wheel_step;
-    VirtScreen.Fi := VirtScreen.Fi + d;
+    Canvas.Fi := Canvas.Fi + d;
   end;
   if Shift = [] then begin
-    if WheelDelta>0 then VirtScreen.Zoom:=VirtScreen.Zoom*1.2
-    else VirtScreen.Zoom:=VirtScreen.Zoom/1.2;
+    if WheelDelta>0 then Canvas.Zoom:=Canvas.Zoom*1.2
+    else Canvas.Zoom:=Canvas.Zoom/1.2;
   end;
   Refresh;
 end;
-procedure TEditor.PBox_DblClick(Sender: TObject);
+procedure TDocEditor.PBox_DblClick(Sender: TObject);
 begin
   if OnDblClick<>nil then OnDblClick(Sender);
 end;
-procedure TEditor.PBox_Resize(Sender: TObject);
+procedure TDocEditor.PBox_Resize(Sender: TObject);
 {It is used to set the rotation point to the center of the control.}
 begin
-  VirtScreen.x_offs := PBox.Width div 2;
-  VirtScreen.y_offs := PBox.Height div 2;
+  Canvas.x_offs := PBox.Width div 2;
+  Canvas.y_offs := PBox.Height div 2;
 end;
-procedure TEditor.ExecuteCommand(command: string);
-{Request to execute, a command to the viewer. This must be the only means, in addition to the
-mouse events, by which actions are communicated to the viewer. Seen in this way,
-ExecuteCommand (), is similar to the event handler routines: PBOX _ ??? (), with the
-exception that it is not executed, in response to a mouse event, but must be
-externally called }
+procedure TDocEditor.ExecuteCommand(argCommand: string);
 begin
-  {Pass the command event, to the routine corresponding to the current state.
-   The only state that this command should treat, would be the NORMAL state. }
-  CallEventState(State, vmeCmdStart, mbExtra1, [], 0, 0, command); //Process according to state
+  writeln('TDocEditor.ExecuteCommand: ',argCommand);
+  CallEventState(State, vmeCmdStart, mbExtra1, [], 0, 0, argCommand); //Process according to state
 end;
 
-procedure TEditor.Refresh();  //   Optional s: sketchCoreObj = Nothing
+procedure TDocEditor.Refresh();  //   Optional s: TDocCoreObject = Nothing
 begin
   PBox.Invalidate;
 end;
-function TEditor.SelectObjectAt(xp, yp: Integer): sketchCoreObj;
+function TDocEditor.SelectObjectAt(xp, yp: Integer): TDocCoreObject;
 var
   i: Integer;
-  s: sketchCoreObj;
+  s: TDocCoreObject;
 begin
   Result := NIL;
   For i := selection.Count-1 downTo 0 do begin
@@ -338,20 +331,20 @@ begin
         Exit;
     End;
   end;
-  For i := sketchCoreObjects.Count-1 downTo 0 do begin
-    s := sketchCoreObjects[i];
+  For i := DocCoreObjects.Count-1 downTo 0 do begin
+    s := DocCoreObjects[i];
     If not s.SelLocked and s.isSelected(xp, yp) Then begin
         Result := s;
         Exit;
     End;
   end;
 End;
-procedure TEditor.VerifyToMove(xp, yp: Integer);
+procedure TDocEditor.VerifyToMove(xp, yp: Integer);
 {If the movement starts, first select an element that
 could be below the pointer and update "EstPuntero".
 It should only be executed once at the beginning of the movement, for this purpose
 use the Moving flag, which should be set to FALSE here.}
-var s: sketchCoreObj;
+var s: TDocCoreObject;
 begin
     for s In selection  do begin
       if s.PosLocked then continue;
@@ -363,7 +356,7 @@ begin
           Exit;
       end;
     end;
-    for s In sketchCoreObjects do begin
+    for s In DocCoreObjects do begin
       if s.PosLocked then continue;
       s.StartMove(xp, yp);
       if s.Processing Then begin
@@ -375,15 +368,15 @@ begin
       end;
     end;
 {No object has captured, the event, we assume that the
-Simple scrolling of selected sketchCoreObjects Debug.Print "VerifParaMover: VS_OBJS_MOVING" }
+Simple scrolling of selected DocCoreObjects Debug.Print "VerifParaMover: VS_OBJS_MOVING" }
     State := VS_OBJS_MOVING;
     MovingObject := nil;
     Moving := False;
 End;
-function TEditor.VerifyMouseMovement(X, Y: Integer): sketchCoreObj;
-{It animates the marking of the sketchCoreObjects when the mouse passes over them
+function TDocEditor.VerifyMouseMovement(X, Y: Integer): TDocCoreObject;
+{It animates the marking of the DocCoreObjects when the mouse passes over them
 Returns reference to the object through which the cirsor passes    }
-var s: sketchCoreObj;
+var s: TDocCoreObject;
 begin
 
     s := SelectObjectAt(X, Y);
@@ -415,62 +408,62 @@ begin
 
 End;
 //***********Functions to manage the visible elements and selection by keyboard**********
-function TEditor.VisibleObjectsCount: Integer;
-//returns the number of visible sketchCoreObjects
+function TDocEditor.VisibleObjectsCount: Integer;
+//returns the number of visible DocCoreObjects
 var
-  v: sketchCoreObj;
+  v: TDocCoreObject;
   tmp: Integer;
 begin
   tmp := 0;
-  For v in sketchCoreObjects do begin
+  For v in DocCoreObjects do begin
     if v.visible then Inc(tmp);
   end;
   Result := tmp;
 end;
-function TEditor.FirstVisible: sketchCoreObj;
+function TDocEditor.FirstVisible: TDocCoreObject;
 var
   i: integer;
 begin
-  for i:=0 to sketchCoreObjects.Count-1 do begin
-    if sketchCoreObjects[i].visible then begin
-      Result := sketchCoreObjects[i];
+  for i:=0 to DocCoreObjects.Count-1 do begin
+    if DocCoreObjects[i].visible then begin
+      Result := DocCoreObjects[i];
       exit;
     end;
   end;
 End;
-function TEditor.LastVisible: sketchCoreObj;
+function TDocEditor.LastVisible: TDocCoreObject;
 var
   i: Integer;
 begin
-  for i:=sketchCoreObjects.Count-1 downto 0 do begin
-    if sketchCoreObjects[i].visible then begin
-      Result := sketchCoreObjects[i];
+  for i:=DocCoreObjects.Count-1 downto 0 do begin
+    if DocCoreObjects[i].visible then begin
+      Result := DocCoreObjects[i];
       exit;
     end;
   end;
 end;
-function TEditor.NextVisible(c: sketchCoreObj): sketchCoreObj;
+function TDocEditor.NextVisible(c: TDocCoreObject): TDocCoreObject;
 var
   i: Integer;
 begin
-    For i := 0 To sketchCoreObjects.Count-1 do begin
-      if sketchCoreObjects[i] = c Then break;
+    For i := 0 To DocCoreObjects.Count-1 do begin
+      if DocCoreObjects[i] = c Then break;
     end;
     repeat
       Inc(i);
-      If i >= sketchCoreObjects.Count Then begin
+      If i >= DocCoreObjects.Count Then begin
         Result := FirstVisible;
         Exit;
       end;
-    until sketchCoreObjects[i].visible;
-    Result := sketchCoreObjects[i];
+    until DocCoreObjects[i].visible;
+    Result := DocCoreObjects[i];
 end;
-function TEditor.PreviousVisible(c: sketchCoreObj): sketchCoreObj;
+function TDocEditor.PreviousVisible(c: TDocCoreObject): TDocCoreObject;
 var
   i: Integer;
 begin
-    For i := 0 To sketchCoreObjects.Count-1 do begin
-      If sketchCoreObjects[i] = c Then break;
+    For i := 0 To DocCoreObjects.Count-1 do begin
+      If DocCoreObjects[i] = c Then break;
     end;
     repeat
       Dec(i);
@@ -478,12 +471,12 @@ begin
         Result := LastVisible;
         Exit;
       End;
-    until sketchCoreObjects[i].visible;
-    Result := sketchCoreObjects[i];
+    until DocCoreObjects[i].visible;
+    Result := DocCoreObjects[i];
 End;
-procedure TEditor.SelectNext;
+procedure TDocEditor.SelectNext;
 var
-  s: sketchCoreObj;
+  s: TDocCoreObject;
 begin
     if VisibleObjectsCount() = 0 Then exit;
     if selection.Count = 1 Then begin
@@ -498,9 +491,9 @@ begin
     end;
     Refresh;
 end;
-procedure TEditor.SelectPrevious;
+procedure TDocEditor.SelectPrevious;
 var
-  s: sketchCoreObj;
+  s: TDocCoreObject;
 begin
     if VisibleObjectsCount() = 0 Then exit;
     if selection.Count = 1 then begin
@@ -516,43 +509,43 @@ begin
     Refresh;
 end;
 //******************* Display functions **********************
-procedure TEditor.ZoomToClick(factor: real = ZOOM_STEP_EDITOR;
+procedure TDocEditor.ZoomToClick(factor: real = ZOOM_STEP_EDITOR;
                         xr: integer = 0; yr: integer = 0);
 var screen_width: Real ;
     screen_height: Real ;
     x_zoom, y_zoom: Single;
 begin
-    If VirtScreen.zoom < ZOOM_MAX_EDITOR Then
-        VirtScreen.zoom := VirtScreen.zoom * factor;
+    If Canvas.zoom < ZOOM_MAX_EDITOR Then
+        Canvas.zoom := Canvas.zoom * factor;
     If (xr <> 0) Or (yr <> 0) Then begin  //a central coordinate has been specified
-        screen_width := PBox.width / VirtScreen.zoom;
-        screen_height := PBox.Height / VirtScreen.zoom;
-        VirtScreen.XYvirt(xr, yr, 0, x_zoom, y_zoom);     //convert
-        VirtScreen.SetWindow(PBox.Width, PBox.Height,
+        screen_width := PBox.width / Canvas.zoom;
+        screen_height := PBox.Height / Canvas.zoom;
+        Canvas.XYvirt(xr, yr, x_zoom, y_zoom);     //convert
+        Canvas.SetWindow(PBox.Width, PBox.Height,
                 x_zoom - screen_width / 2, x_zoom + screen_width / 2, y_zoom - screen_height / 2, y_zoom + screen_height / 2);
     End;
     Refresh;
 End;
-procedure TEditor.ZoomReduceClick(factor: Real = ZOOM_STEP_EDITOR;
+procedure TDocEditor.ZoomReduceClick(factor: Real = ZOOM_STEP_EDITOR;
                         x_zoom: Real = 0; y_zoom: Real = 0);
 begin
-    If VirtScreen.zoom > ZOOM_MIN_EDITOR Then
-        VirtScreen.zoom := VirtScreen.zoom / factor;
+    If Canvas.zoom > ZOOM_MIN_EDITOR Then
+        Canvas.zoom := Canvas.zoom / factor;
     Refresh;
 End;
 ///////////////////////// Selection functions/////////////////////////////
-procedure TEditor.SelectAll;
-var obj: sketchCoreObj;
+procedure TDocEditor.SelectAll;
+var obj: TDocCoreObject;
 begin
-    For obj In sketchCoreObjects do obj.Select;
+    For obj In DocCoreObjects do obj.Select;
 End;
-procedure TEditor.SelectNone();
-var s: sketchCoreObj;
+procedure TDocEditor.SelectNone();
+var s: TDocCoreObject;
 begin
-  For s In sketchCoreObjects do
+  For s In DocCoreObjects do
     if s.Selected then s.Deselect;
 End;
-function  TEditor.ObjSelected: sketchCoreObj;
+function  TDocEditor.ObjSelected: TDocCoreObject;
 //Returns the ObjSelected object. If there is no ObjSelected, it returns NIL.
 begin
   Result := nil;
@@ -560,29 +553,29 @@ begin
   //there is at least one
   Result := selection[selection.Count-1];  //returns the only or last
 End;
-function  TEditor.ObjByName(argName: string): sketchCoreObj;
-var s: sketchCoreObj;
+function  TDocEditor.ObjByName(argName: string): TDocCoreObject;
+var s: TDocCoreObject;
 begin
   Result := nil;
   if argName = '' then exit;
-  For s In sketchCoreObjects do
+  For s In DocCoreObjects do
     if s.Name = argName then begin
        Result := s;
        break;
     end;
 End;
 
-procedure TEditor.moveDown(offs: Double = OFFSET_EDITOR) ;
+procedure TDocEditor.moveDown(offs: Double = OFFSET_EDITOR) ;
 {It generates a displacement on the screen making it independent of the
 current expansion factor}
 var
     z: Single ;  //zoom
 begin
-    z := VirtScreen.zoom;
+    z := Canvas.zoom;
     Displace(0, round(offs / z));
     Refresh;
 end;
-procedure TEditor.moveUp(offs: Double = OFFSET_EDITOR) ;
+procedure TDocEditor.moveUp(offs: Double = OFFSET_EDITOR) ;
 {
  It generates a displacement on the screen making it independent of the
   current expansion factor
@@ -590,11 +583,11 @@ procedure TEditor.moveUp(offs: Double = OFFSET_EDITOR) ;
 var
     z: Single ;  //zoom
 begin
-    z := VirtScreen.zoom;
+    z := Canvas.zoom;
     Displace(0, round(-offs / z));
     Refresh;
 end;
-procedure TEditor.moveRight(offs: Double = OFFSET_EDITOR) ;
+procedure TDocEditor.moveRight(offs: Double = OFFSET_EDITOR) ;
 {
 It generates a displacement on the screen making it independent of the
 current expansion factor
@@ -602,11 +595,11 @@ current expansion factor
 var
     z: Single ;  //zoom
 begin
-    z := VirtScreen.zoom;
+    z := Canvas.zoom;
     Displace(round(offs / z), 0);
     Refresh;
 end;
-procedure TEditor.moveLeft(offs: Double = OFFSET_EDITOR) ;
+procedure TDocEditor.moveLeft(offs: Double = OFFSET_EDITOR) ;
 {
 It generates a displacement on the screen making it independent of the
   current expansion factor
@@ -614,23 +607,23 @@ It generates a displacement on the screen making it independent of the
 var
     z: Single ;  //zoom
 begin
-    z := VirtScreen.zoom;
+    z := Canvas.zoom;
     Displace(round(-offs / z), 0);
     Refresh;
 end;
-procedure TEditor.Displace(dx, dy: integer);
+procedure TDocEditor.Displace(dx, dy: integer);
 begin
 {
 "Standard" procedure to scroll the screen
   Varies the parameters of the perspective "x_cam" and "y_cam"
 }
-    VirtScreen.Displace(dx, dy);
+    Canvas.Displace(dx, dy);
 end;
-//Modification of sketchCoreObjects
-procedure TEditor.GraphicObjectAdd(argGraphicObject: sketchCoreObj; AutoPos: boolean = true);
+//Modification of DocCoreObjects
+procedure TDocEditor.GraphicObjectAdd(argGraphicObject: TDocCoreObject; AutoPos: boolean = true);
 {
 Add a graphic object to the editor. The graphic object must have been created previously,
-  and be of Type sketchCoreObj or a descendant. "AutoPos", allows automatic positioning
+  and be of Type TDocCoreObject or a descendant. "AutoPos", allows automatic positioning
   to the object on the screen, so that you avoid putting it always in the same position.
 }
 var
@@ -640,26 +633,26 @@ begin
   if OnModify<>nil then OnModify;
   //Position trying to always appear on the screen
   if AutoPos Then begin  //Position is calculated
-    x := VirtScreen.Xvirt(100, 100) + 30 * sketchCoreObjects.Count Mod 400;
-    y := VirtScreen.Yvirt(100, 100) + 30 * sketchCoreObjects.Count Mod 400;
+    x := Canvas.Xvirt(100, 100) + 30 * DocCoreObjects.Count Mod 400;
+    y := Canvas.Yvirt(100, 100) + 30 * DocCoreObjects.Count Mod 400;
     argGraphicObject.PlaceAt(x,y);
   end;
   //configure events to be controlled by this editor
   argGraphicObject.OnSelect   := @GraphicObject_Select;
   argGraphicObject.OnDeselect := @GraphicObject_Unselec;
-  argGraphicObject.OnCamPoint := @GraphicObject_SetPointer;
-  sketchCoreObjects.Add(argGraphicObject);
+  argGraphicObject.OnChangePoint := @GraphicObject_SetPointer;
+  DocCoreObjects.Add(argGraphicObject);
 end;
-procedure TEditor.GraphicObjectDelete(obj: sketchCoreObj);
+procedure TDocEditor.GraphicObjectDelete(obj: TDocCoreObject);
 begin
   obj.Deselect;
-  sketchCoreObjects.Remove(obj);
+  DocCoreObjects.Remove(obj);
   obj := nil;
   if OnModify<>nil then OnModify;
 End;
-procedure TEditor.DeleteSelected;
+procedure TDocEditor.DeleteSelected;
 var
-  v: sketchCoreObj;
+  v: TDocCoreObject;
 begin
   For v In selection  do  //explore all
     GraphicObjectDelete(v);
@@ -668,16 +661,16 @@ begin
 end;
 
 /////////////////////////  Selection Rectangle Functions/////////////////////////
-procedure TEditor.DrawRectangleSeleccion();
+procedure TDocEditor.DrawRectangleSeleccion();
 //Draw the selection rectangle on the screen
 begin
-    VirtScreen.SetPen(clGreen, 1, psDot);
-    VirtScreen.rectang0(x1Sel, y1Sel, x2Sel, y2Sel);
+    Canvas.SetPen(clGreen, 1, psDot);
+    Canvas.rectang0(x1Sel, y1Sel, x2Sel, y2Sel);
 
     x1Sel_prev := x1Sel; y1Sel_prev := y1Sel;
     x2Sel_prev := x2Sel; y2Sel_prev := y2Sel;
 End;
-procedure TEditor.startRectangleSeleccion(X, Y: Integer);
+procedure TDocEditor.startRectangleSeleccion(X, Y: Integer);
 //Start the selection rectangle, with the coordinates
 begin
     x1Sel:= X; y1Sel := Y;
@@ -687,7 +680,7 @@ begin
     x2Sel_prev := x2Sel;
     y2Sel_prev := y2Sel;
 End;
-function TEditor.RectangleSelectionIsNil: Boolean;
+function TDocEditor.RectangleSelectionIsNil: Boolean;
  //Indicates whether the selection rectangle is NULL or negligible size
 begin
     If (x1Sel = x2Sel) And (y1Sel = y2Sel) Then
@@ -695,7 +688,7 @@ begin
     Else
         RectangleSelectionIsNil := False;
 End;
-function TEditor.inRectangleSeleccion(X, Y: Single): Boolean;
+function TDocEditor.inRectangleSeleccion(X, Y: Single): Boolean;
 //Returns true if (x, y) is inside the selection rectangle.
 var xMin, xMax: Integer;
     yMin, yMax: Integer;
@@ -718,8 +711,8 @@ begin
         yMax := y1Sel;
     End;
 
-    VirtScreen.XYvirt(xMin, yMin, 0, xx1, yy1);
-    VirtScreen.XYvirt(xMax, yMax, 0, xx2, yy2);
+    Canvas.XYvirt(xMin, yMin, xx1, yy1);
+    Canvas.XYvirt(xMax, yMax, xx2, yy2);
 
     //check if you are in region
     If (X >= xx1) And (X <= xx2) And (Y >= yy1) And (Y <= yy2) Then
@@ -727,8 +720,8 @@ begin
     Else
         inRectangleSeleccion := False;
 End;
-//////////////////  "sketchCoreObj" Events  ///////////////////////
-procedure TEditor.GraphicObject_Select(obj: sketchCoreObj);
+//////////////////  "TDocCoreObject" Events  ///////////////////////
+procedure TDocEditor.GraphicObject_Select(obj: TDocCoreObject);
 {
 Add a graphic object to the "selection" list. This method should not be called directly.
   If you want to select an object you must use the object.Select form.
@@ -736,7 +729,7 @@ Add a graphic object to the "selection" list. This method should not be called d
 begin
   selection.Add(obj);
 End;
-procedure TEditor.GraphicObject_Unselec(obj: sketchCoreObj);
+procedure TDocEditor.GraphicObject_Unselec(obj: TDocCoreObject);
 {
 Remove a graphic object from the "selection" list. This method should not be called directly.
   If you want to remove the selection from an object, you must use the object.Select form.
@@ -745,15 +738,15 @@ begin
 //    If not obj.ObjSelected Then Exit;
   selection.Remove(obj);
 End;
-procedure TEditor.GraphicObject_SetPointer(argPoint: integer);
+procedure TDocEditor.GraphicObject_SetPointer(argPoint: integer);
 {
-Procedure that changes the mouse pointer. It is used to provide the "sketchCoreObj" sketchCoreObjects
+Procedure that changes the mouse pointer. It is used to provide the "TDocCoreObject" DocCoreObjects
   the possibility of changing the pointer.
 }
 begin
   PBox.Cursor := argPoint;        //define cursor
 end;
-function TEditor.StateAsStr: string;
+function TDocEditor.StateAsStr: string;
 {It must state as a descriptive string. It is necessary to update the desciprción
 for each new state that is being added.}
 begin
@@ -771,13 +764,13 @@ begin
     Result := msg.get('stateUnknown');
   end;
 end;
-procedure TEditor.RegisterState(argState: TViewState;
+procedure TDocEditor.RegisterState(argState: TViewState;
   EventHandler: TViewEventHandler);
 {Register a new mouse state}
 begin
   EventOfState[argState] := EventHandler;
 end;
-procedure TEditor.ClearEventState;
+procedure TDocEditor.ClearEventState;
 var
   st: TViewState;
 begin
@@ -785,21 +778,21 @@ begin
     EventOfState[st] := nil;
   end;
 end;
-procedure TEditor.SendData(Data: string);
+procedure TDocEditor.SendData(Data: string);
 {Request to send data to the current command (which should be the current state).}
 begin
   CallEventState(State, vmeCmdStart, mbExtra1, [], 0, 0, Data);
 end;
-procedure TEditor.CallEventState(argState: TViewState;
+procedure TDocEditor.CallEventState(argState: TViewState;
   EventType: TViewEvent; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; txt: string);
 {Call the appropriate event for the indicated state}
 var
-  eveHandler: TViewEventHandler;
+  evHandler: TViewEventHandler;
 begin
-  eveHandler := EventOfState[argState];
-  if eveHandler=nil then exit;
-  eveHandler(EventType, Button, Shift, xp, yp, txt);
+  evHandler := EventOfState[argState];
+  if evHandler=nil then exit;
+  evHandler(EventType, Button, Shift, xp, yp, txt);
 end;
 // State event handlers
 function GetNumber(var txt: string): Single;
@@ -858,14 +851,14 @@ begin
   if y=MaxInt then exit(false);
   exit(true);
 end;
-procedure TEditor.proc_NORMAL(EventType: TViewEvent; Button: TMouseButton;
+procedure TDocEditor.proc_NORMAL(EventType: TViewEvent; Button: TMouseButton;
   Shift: TShiftState; xp, yp: Integer; txt: string);
 {Process events, in the NORMAL state. This is the stable state or Doc defect.
 From here they are passed to all other states.}
 var
-  o: sketchCoreObj;
-  s: sketchCoreObj;
-  o_sel: sketchCoreObj;  //ObjSelected
+  o: TDocCoreObject;
+  s: TDocCoreObject;
+  o_sel: TDocCoreObject;  //ObjSelected
 begin
   if EventType = vmeMouseDown then begin
      o_sel := SelectObjectAt(xp, yp);
@@ -949,19 +942,19 @@ begin
       end;
   end;
 end;
-procedure TEditor.proc_SELECTINGMULT(EventType: TViewEvent;
+procedure TDocEditor.proc_SELECTINGMULT(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
-  o: sketchCoreObj;
-  s: sketchCoreObj;
+  o: TDocCoreObject;
+  s: TDocCoreObject;
 begin
   if EventType = vmeMouseDown then begin
   end else if EventType = vmeMouseMove then begin
     x2Sel := xp;
     y2Sel := xp;
     //check those that are selected
-    if sketchCoreObjects.Count < 100 Then begin//iterate for few sketchCoreObjects only
-        for s In sketchCoreObjects do begin
+    if DocCoreObjects.Count < 100 Then begin//iterate for few DocCoreObjects only
+        for s In DocCoreObjects do begin
           if s.SelLocked then continue;
           if inRectangleSeleccion(s.XCent, s.YCent) And Not s.Selected Then begin
             s.Select;
@@ -973,18 +966,18 @@ begin
     End;
     Refresh
   end else if EventType = vmeMouseUp then begin
-    if sketchCoreObjects.Count > 100 Then begin  //You need to update because the multiple selection is different
-      for o in sketchCoreObjects do
+    if DocCoreObjects.Count > 100 Then begin  //You need to update because the multiple selection is different
+      for o in DocCoreObjects do
         if inRectangleSeleccion(o.XCent, o.YCent) And Not o.Selected Then o.Select;
     end;
     State := VS_NORMAL;
   end;
 end;
-procedure TEditor.proc_OBJS_MOVING(EventType: TViewEvent;
+procedure TDocEditor.proc_OBJS_MOVING(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
-  s: sketchCoreObj;
-  o: sketchCoreObj;
+  s: TDocCoreObject;
+  o: TDocCoreObject;
 begin
   if EventType = vmeMouseDown then begin
   end else if EventType = vmeMouseMove then begin
@@ -997,20 +990,20 @@ begin
         o.MouseUp(self, Button, Shift, xp, yp, State = VS_OBJS_MOVING);
     State := VS_NORMAL;  //end of movement
     Refresh;
-    //Generate events The moved sketchCoreObjects can be determined from the selection.
+    //Generate events The moved DocCoreObjects can be determined from the selection.
     if OnObjectsMoved<>nil then OnObjectsMoved;
   end;
 end;
-procedure TEditor.proc_SCREEN_SCROLLING(EventType: TViewEvent;
+procedure TDocEditor.proc_SCREEN_SCROLLING(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   dx, dy: Single;
 begin
   if EventType = vmeMouseDown then begin
   end else if EventType = vmeMouseMove then begin
-    VirtScreen.ObtenerDesplazXY( xp, yp, x_mouse, y_mouse, dx, dy);
-    VirtScreen.x_cam -= dx;
-    VirtScreen.y_cam -= dy;
+    Canvas.GetOffsetXY( xp, yp, x_mouse, y_mouse, dx, dy);
+    Canvas.x_cam -= dx;
+    Canvas.y_cam -= dy;
     x_mouse := xp; y_mouse := yp;  {Maybe you should use other variables than x_mouse, and
                                    y_mouse, so as not to interfere}
     Refresh;
@@ -1019,16 +1012,15 @@ begin
     State := VS_NORMAL;
   end;
 end;
-procedure TEditor.proc_SCREEN_ANG(EventType: TViewEvent;
+procedure TDocEditor.proc_SCREEN_ANG(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 var
   dx, dy: Single;
 begin
   if EventType = vmeMouseDown then begin
   end else if EventType = vmeMouseMove then begin
-    VirtScreen.ObtenerDesplazXY( xp, yp, x_mouse, y_mouse, dx, dy);
-    VirtScreen.Alfa := VirtScreen.Alfa + dx/100;
-    VirtScreen.Fi   := VirtScreen.Fi + dy/100;
+    Canvas.GetOffsetXY( xp, yp, x_mouse, y_mouse, dx, dy);
+    Canvas.Fi   := Canvas.Fi + dy/100;
     x_mouse := xp; y_mouse := yp;  {Maybe you should use other variables than x_mouse, and
                                     y_mouse, so as not to interfere}
     Refresh;
@@ -1036,7 +1028,7 @@ begin
     State := VS_NORMAL;
   end;
 end;
-procedure TEditor.proc_DIMEN_OBJ(EventType: TViewEvent;
+procedure TDocEditor.proc_DIMEN_OBJ(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 begin
   if EventType = vmeMouseDown then begin
@@ -1053,7 +1045,7 @@ begin
     Moving := False;
   end;
 end;
-procedure TEditor.proc_ZOOMING(EventType: TViewEvent;
+procedure TDocEditor.proc_ZOOMING(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 begin
   if EventType = vmeMouseDown then begin
@@ -1064,7 +1056,7 @@ begin
     State := VS_NORMAL;
   end;
 end;
-procedure TEditor.proc_CMD_ADDING_LINE(EventType: TViewEvent;
+procedure TDocEditor.proc_CMD_ADDING_LINE(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 const
   {We use constant with Type because there is no STATIC in FreePascal, and like this
@@ -1094,14 +1086,14 @@ begin
         exit;
       end;
       //Add straight, with coord. given
-      line := TDxf.Create(VirtScreen);
+      line := TDxf.Create(Canvas);
       line.SetP0(xLine, yLine, 0); //Specify the first point
       line.SetP1(xvPt, yvPt, 0); //Specify next default point
       x0 := xLine; y0 := yLine;  //saves first point
     end;
     vmeMouseDown: begin
       //Add straight, with coord. given
-      line := TDxf.Create(VirtScreen);
+      line := TDxf.Create(Canvas);
       line.SetP0(xvPt, yvPt, 0);
       line.SetP1(xvPt, yvPt, 0);
       x0 := xvPt; y0 := yvPt;
@@ -1138,7 +1130,7 @@ begin
       Refresh;
 
       //Start another line, without leaving the state
-      line := TDxf.Create(VirtScreen);
+      line := TDxf.Create(Canvas);
       line.SetP0(xLine, yLine, 0);
       line.SetP1(xvPt, yvPt, 0);
       GraphicObjectAdd(line);
@@ -1153,7 +1145,7 @@ begin
       line.SetP1(xvPt, yvPt, 0);
       Refresh;
       //Start another line, without leaving the state
-      line := TDxf.Create(VirtScreen);
+      line := TDxf.Create(Canvas);
       line.SetP0(xvPt, yvPt, 0);
       line.SetP1(xvPt, yvPt, 0);
       GraphicObjectAdd(line);
@@ -1163,7 +1155,7 @@ begin
     end;
   end;
 end;
-procedure TEditor.proc_COMM_RECTAN(EventType: TViewEvent;
+procedure TDocEditor.proc_COMM_RECTAN(EventType: TViewEvent;
   Button: TMouseButton; Shift: TShiftState; xp, yp: Integer; txt: string);
 const
   {We use constant with Type because there is no STATIC in FreePascal, and like this
@@ -1190,7 +1182,7 @@ begin
           exit;
         end;
         //Add straight, with coord. given
-        line := TDxf.Create(VirtScreen);
+        line := TDxf.Create(Canvas);
         line.SetP0(xline, yline, 0); //Specify the first point
         line.SetP1(xvPt, yvPt, 0);
         GraphicObjectAdd(line);
@@ -1231,7 +1223,7 @@ begin
   vmeMouseDown: begin
       if step = 1 then begin
         //Add straight, with coord. given
-        line := TDxf.Create(VirtScreen);
+        line := TDxf.Create(Canvas);
         line.SetP0(xvPt, yvPt, 0);
         line.SetP1(xvPt, yvPt, 0);
         GraphicObjectAdd(line);
@@ -1243,7 +1235,7 @@ begin
         Refresh;
 
         //Start another line, without leaving the state
-        line := TDxf.Create(VirtScreen);
+        line := TDxf.Create(Canvas);
         line.SetP0(xvPt, yvPt, 0);
         line.SetP1(xvPt, yvPt, 0);
         GraphicObjectAdd(line);
@@ -1254,7 +1246,7 @@ begin
   end;
 end;
 //Initialization
-procedure TEditor.RestoreState(msg: string='');
+procedure TDocEditor.RestoreState(msg: string='');
 {Resaturate the state of the Viewer, putting it in the VS_NORMAL state.
 If "msg" is indicated, the OnSendMessage () event is generated.}
 begin
@@ -1265,15 +1257,15 @@ begin
   PBox.Cursor := crDefault;
   if msg<>'' then OnSendMessage(msg);
 end;
-constructor TEditor.Create(PB0: TPaintBox; objectList: TSketchCoreObjects);
+constructor TDocEditor.Create(PB0: TPaintBox; objectList: TDocCoreObjects);
 {Initialization method of the Viewer class. The PaintBox should be indicated
-output where the graphic sketchCoreObjects will be controlled.
-and you should also receive the list of sketchCoreObjects to be managed.}
+output where the graphic DocCoreObjects will be controlled.
+and you should also receive the list of DocCoreObjects to be managed.}
 var
   argGraphicObject: TMyObject;
 begin
   PBox := PB0;
-  sketchCoreObjects := objectList;
+  DocCoreObjects := objectList;
   //Intercept events
   PBox.OnMouseUp   := @PBox_MouseUp;
   PBox.OnMouseDown := @PBox_MouseDown;
@@ -1282,11 +1274,11 @@ begin
   PBox.OnDblClick  := @PBox_DblClick;
   PBox.OnPaint     := @PBox_Paint;
   PBox.OnResize    := @PBox_Resize;
-  VirtScreen := TVirtScreen.Create(PBox);
-  VirtScreen.SetFont('MS Sans Serif');
-  VirtScreen.OnChangeView:=@VirtualScreen_ChangeView;
-  selection := TSketchCoreObjects.Create(FALSE);  {create list without possession ", because the
-                                              administration will do "sketchCoreObjects".}
+  Canvas := TDrawCanvas.Create(PBox);
+  Canvas.SetFont('MS Sans Serif');
+  Canvas.OnChangeView:=@VirtualScreen_ChangeView;
+  selection := TDocCoreObjects.Create(FALSE);  {create list without possession ", because the
+                                              administration will do "DocCoreObjects".}
   RestoreState;
   Wheel_step  := 0.1;
   ClearEventState;
@@ -1301,13 +1293,13 @@ begin
   //Commands
   RegisterState(VS_CMD_ADDING_LINE, @proc_CMD_ADDING_LINE);
   RegisterState(VS_CMD_ADDING_RECTAN, @proc_COMM_RECTAN);
-argGraphicObject := TMyObject.Create(VirtScreen);
+argGraphicObject := TMyObject.Create(Canvas);
 GraphicObjectAdd(argGraphicObject);
 end;
-destructor TEditor.Destroy;
+destructor TDocEditor.Destroy;
 begin
   selection.Free;
-  VirtScreen.Free;
+  Canvas.Free;
   //reset events
   PBox.OnMouseUp:=nil;
   PBox.OnMouseDown:=nil;

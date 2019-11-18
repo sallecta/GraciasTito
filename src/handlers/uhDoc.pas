@@ -32,7 +32,7 @@ begin
   argform1.doc := TDoc.Create;
   argform1.doc.Name := msg.Get('document');
   argform1.doc.ActivePage.name := msg.Get('page');
-  argForm1.showActivePage;
+  argForm1.showEditor;
   argForm1.Refresh;
 end;
 

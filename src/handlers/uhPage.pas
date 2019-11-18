@@ -26,7 +26,7 @@ end;
 procedure tuhPage.doAdd(argForm: TObject);
 var
   argForm1: TForm1;
-  newPage: TDoc.TDocPage;
+  newPage: TDoc.TPage;
 begin
   argForm1 := TForm1(argForm);
   if argForm1.doc = nil then

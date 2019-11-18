@@ -7,7 +7,7 @@ MotGraf es una librería que encapsula las funciones de dibujo, para transformar
 
 Trabaja asociada a un control TGraphicControl, como un PaintBox, que es a donde dirige su salida, usando el lienzo "Canvas", somo soporte gráfico. Mo utiliza OpenGL u otra librería externa.
 
-Para su uso debe incluirse la unidad MotGraf2d o MotGraf3d, de acuerdo al tipo de gráficos que se desee usar. Luego debe crearse un objeto de la clase "TMotGraf" y asociarla a un componente como un PaintBox. Finalmente se deben usar los métodos del motor, para generar los dibujos, de preferecnia usando el evento Paint del control asociado:
+Para su uso debe incluirse la unidad MotGraf2d o uDraw, de acuerdo al tipo de gráficos que se desee usar. Luego debe crearse un objeto de la clase "TMotGraf" y asociarla a un componente como un PaintBox. Finalmente se deben usar los métodos del motor, para generar los dibujos, de preferecnia usando el evento Paint del control asociado:
 
 ```
 procedure TForm1.FormCreate(Sender: TObject);

@@ -6,60 +6,60 @@ interface
 uses
   Classes, SysUtils, fgl, Graphics, Dialogs,
   //local
-  glob,
-  uFrameEditor, sketchCore, sketchEditor;
+  //uFrameEditor,
+  uDocCore, uDocEditor;
 
 
   { TDoc }
   type TDoc = class
   { TDoc types }
-    { TDocPageEntity }
-    type TDocPageEntity = class
-        Name: string;
-        dxfEntity: ( //Type of graphic object according to the ODA standard
-          dxfLine,
-          dxfCircle,
-          dxfPolyline,
-          dxfBlock
-          );
-    end;//TDocPageEntity
+    //{ TDocPageEntity }
+    //type TDocPageEntity = class
+    //    Name: string;
+    //    dxfEntity: ( //Type of graphic object according to the ODA standard
+    //      dxfLine,
+    //      dxfCircle,
+    //      dxfPolyline,
+    //      dxfBlock
+    //      );
+    //end;//TDocPageEntity
     { TDocPageEntities }
-    type  TDocPageEntities = specialize TFPGObjectList<TDocPageEntity>;
+    //type  TDocPageEntities = specialize TFPGObjectList<TDocPageEntity>;
     //end  TDocPageEntities
-    { TDocPage }
-    type TDocPage = class
+    { TPage }
+    type TPage = class
       public
         Name: string;
         parent: TDoc;      //Reference to the parent object.
-        docPageEntities: TDocPageEntities;  //List of graphic elements
-        sketchCoreObjects: TSketchCoreObjects; //List of sketchCoreObjects
-      public  //Managing views
-        frameEditor: TframeEditor;
+        //docPageEntities: TDocPageEntities;  //List of graphic elements
+        DocCoreObjects: TDocCoreObjects; //List of DocCoreObjects
+      public
+        //frameEditor: TframeEditor;
       public
         constructor Create;
         destructor Destroy; override;
-    end;//TDocPage
+    end;//TPage
     { TDocPages }
-    type TDocPages = specialize TFPGObjectList<TDocPage>;
+    type TDocPages = specialize TFPGObjectList<TPage>;
     //end TDocPages
     { TDoc vars and procs}
     private
-      FActivePage: TDocPage;
-      procedure SetActivePage(argPage: TDocPage);
+      FActivePage: TPage;
+      procedure SetActivePage(argPage: TPage);
     public
       Name: string;
       createdBy: string;
       notes: string;
     public  //Page fields
       docPages: TDocPages; {List of docPages. It must contain at least one.}
-      property ActivePage: TDocPage read FActivePage write SetActivePage;
-      function IndexOfPage(Page: TDocPage): integer;
-      function PrevPage(Page: TDocPage): TDocPage;
-      function NextPage(Page: TDocPage): TDocPage;
-      function PageByName(pageName: string): TDocPage;
+      property ActivePage: TPage read FActivePage write SetActivePage;
+      function IndexOfPage(Page: TPage): integer;
+      function PrevPage(Page: TPage): TPage;
+      function NextPage(Page: TPage): TPage;
+      function PageByName(pageName: string): TPage;
       procedure SetActivePageByName(pageName: string);
-      function AddPage: TDocPage;
-      procedure RemovePage(pageName: TDocPage);
+      function AddPage: TPage;
+      procedure RemovePage(pageName: TPage);
       procedure RemovePage(argName: string);
     public
       constructor Create;
@@ -69,31 +69,26 @@ uses
   type TPtrDocument = ^TDoc;
 
 implementation
+uses glob;
 
-constructor TDoc.TDocPage.Create;
+constructor TDoc.TPage.Create;
 begin
-  docPageEntities := TDocPageEntities.Create(True);
-  sketchCoreObjects := TSketchCoreObjects.Create(True);   //container
-  frameEditor := TframeEditor.Create(nil, sketchCoreObjects);  //create a frameEditor
-  frameEditor.Editor.VirtScreen.backColor := clBlack;
-  frameEditor.Editor.ShowAxes := True;
-  frameEditor.Editor.ShowRotPoint := True;
-  frameEditor.Editor.ShowGrid := True;
+  DocCoreObjects := TDocCoreObjects.Create(True);   //container
 end;
 
-destructor TDoc.TDocPage.Destroy;
+destructor TDoc.TPage.Destroy;
 begin
-  frameEditor.Destroy;
-  sketchCoreObjects.Destroy;
-  docPageEntities.Destroy;
+  //frameEditor.Destroy;
+  DocCoreObjects.Destroy;
+  //docPageEntities.Destroy;
   inherited Destroy;
 end;
 
 { TDoc }
 //Page fields
-procedure TDoc.SetActivePage(argPage: TDocPage);
+procedure TDoc.SetActivePage(argPage: TPage);
 var
-  Page: TDocPage;
+  Page: TPage;
 begin
   if FActivePage = argPage then
     Exit;
@@ -106,7 +101,7 @@ begin
     end;
 end;
 
-function TDoc.IndexOfPage(Page: TDocPage): integer;
+function TDoc.IndexOfPage(Page: TPage): integer;
 var
   i: integer;
 begin
@@ -117,7 +112,7 @@ begin
   exit(-1);
 end;
 
-function TDoc.PrevPage(Page: TDocPage): TDocPage;
+function TDoc.PrevPage(Page: TPage): TPage;
 var
   i: integer;
 begin
@@ -130,7 +125,7 @@ begin
     exit(docPages[i - 1]);//return previous
 end;
 
-function TDoc.NextPage(Page: TDocPage): TDocPage;
+function TDoc.NextPage(Page: TPage): TPage;
 var
   i: integer;
 begin
@@ -143,9 +138,9 @@ begin
     exit(docPages[i + 1]);//return next page
 end;
 
-function TDoc.PageByName(pageName: string): TDocPage;
+function TDoc.PageByName(pageName: string): TPage;
 var
-  Page: TDocPage;
+  Page: TPage;
 begin
   for Page in docPages do
     if Page.Name = pageName then
@@ -155,7 +150,7 @@ end;
 
 procedure TDoc.SetActivePageByName(pageName: string);
 var
-  Page: TDocPage;
+  Page: TPage;
 begin
   for Page in docPages do
     if Page.Name = pageName then
@@ -165,17 +160,17 @@ begin
     end;
 end;
 
-function TDoc.AddPage: TDocPage;
+function TDoc.AddPage: TPage;
 var
-  Page: TDocPage;
+  Page: TPage;
 begin
-  Page := TDocPage.Create;
+  Page := TPage.Create;
   Page.parent := self;
   docPages.Add(Page);
   Result := Page;
 end;
 
-procedure TDoc.RemovePage(pageName: TDocPage);
+procedure TDoc.RemovePage(pageName: TPage);
 begin
   if docPages.Count = 1 then
   begin
@@ -196,7 +191,7 @@ end;
 
 procedure TDoc.RemovePage(argName: string);
 var
-  Page: TDocPage;
+  Page: TPage;
 begin
   for Page in docPages do
     if Page.Name = argName then
@@ -211,9 +206,9 @@ end;
 
 constructor TDoc.Create;
 var
-  Page: TDocPage;
+  Page: TPage;
 begin
-  docPages := TDocPages.Create(True);
+  docPages := TDocPages.Create(True);//init object list
   //Create a page
   Page := AddPage;
   ActivePage := Page;//puts it as active by default

@@ -1,8 +1,4 @@
-{
-This Frame will be used to place our graphic editor. Includes a PaintBox,
-as graphic output.
-Being a frame, it can be included in any form.
-}
+
 unit uFrameEditor;
 
 {$mode objfpc}{$H+}
@@ -10,7 +6,7 @@ interface
 
 uses
   Classes, Forms, ExtCtrls,
-  sketchEditor, sketchCore;
+  uDocEditor, uDocCore;
 
 type
   TOnObjectsRemove = procedure of object;
@@ -45,8 +41,8 @@ type
     procedure Editor_MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure Editor_SendMessage(msg: string);
   public
-    sketchCoreObjects: TSketchCoreObjects;
-    Editor: TEditor;
+    DocCoreObjects: TDocCoreObjects;
+    docEditor: TDocEditor;
     Modified: boolean;
     OnObjectsRemove: TOnObjectsRemove;
     OnChangePersp:
@@ -67,7 +63,7 @@ type
     function StateAsStr: string;
   public
     procedure InitView;
-    constructor Create(AOwner: TComponent; ListObjGraf: TSketchCoreObjects);
+    constructor Create(AOwner: TComponent; argDocCorePbjects: TDocCoreObjects);
     destructor Destroy; override;
   end;
 
@@ -77,11 +73,11 @@ implementation
 
 procedure TframeEditor.documentObjectsDeleteAll;
 begin
-  if sketchCoreObjects.Count = 0 then
+  if DocCoreObjects.Count = 0 then
     exit;
-  Editor.SelectNone;
-  sketchCoreObjects.Clear;
-  Editor.RestoreState;
+  docEditor.SelectNone;
+  DocCoreObjects.Clear;
+  docEditor.RestoreState;
   Modified := True;
   if OnObjectsRemove <> nil then
     OnObjectsRemove;
@@ -89,57 +85,57 @@ end;
 
 function TframeEditor.Get_X_Offs: integer;
 begin
-  Result := Editor.VirtScreen.x_offs;
+  Result := docEditor.Canvas.x_offs;
 end;
 
 procedure TframeEditor.Set_X_Offs(AValue: integer);
 begin
-  Editor.VirtScreen.x_offs := AValue;
+  docEditor.Canvas.x_offs := AValue;
 end;
 
 function TframeEditor.Get_Y_Offs: integer;
 begin
-  Result := Editor.VirtScreen.y_offs;
+  Result := docEditor.Canvas.y_offs;
 end;
 
 procedure TframeEditor.Set_Y_Offs(AValue: integer);
 begin
-  Editor.VirtScreen.y_offs := AValue;
+  docEditor.Canvas.y_offs := AValue;
 end;
 
 function TframeEditor.Get_X_Cam: single;
 begin
-  Result := Editor.VirtScreen.x_cam;
+  Result := docEditor.Canvas.x_cam;
 end;
 
 procedure TframeEditor.Set_X_Cam(AValue: single);
 begin
-  Editor.VirtScreen.x_cam := AValue;
+  docEditor.Canvas.x_cam := AValue;
 end;
 
 function TframeEditor.Get_Y_Cam: single;
 begin
-  Result := Editor.VirtScreen.y_cam;
+  Result := docEditor.Canvas.y_cam;
 end;
 
 procedure TframeEditor.Set_Y_Cam(AValue: single);
 begin
-  Editor.VirtScreen.y_cam := AValue;
+  docEditor.Canvas.y_cam := AValue;
 end;
 
 function TframeEditor.GetZoom: single;
 begin
-  Result := Editor.VirtScreen.Zoom;
+  Result := docEditor.Canvas.Zoom;
 end;
 
 procedure TframeEditor.ExecuteCommand(command: string);
 begin
-  Editor.ExecuteCommand(command);
+  docEditor.ExecuteCommand(command);
 end;
 
 function TframeEditor.StateAsStr: string;
 begin
-  Result := Editor.StateAsStr;
+  Result := docEditor.StateAsStr;
 end;
 
 procedure TframeEditor.Editor_ViewChange;
@@ -155,7 +151,7 @@ end;
 
 procedure TframeEditor.SetZoom(AValue: single);
 begin
-  Editor.VirtScreen.Zoom := AValue;
+  docEditor.Canvas.Zoom := AValue;
 end;
 
 procedure TframeEditor.Editor_ChangeState(ViewState: TViewState);
@@ -169,7 +165,7 @@ procedure TframeEditor.Editor_MouseMove(Sender: TObject; Shift: TShiftState;
 var
   xv, yv: single;
 begin
-  Editor.VirtScreen.XYvirt(X, Y, 0, xv, yv);
+  docEditor.Canvas.XYvirt(X, Y, xv, yv);
   if OnMouseMoveVirt <> nil then
     OnMouseMoveVirt(Shift, X, Y, xv, yv, 0);
 end;
@@ -182,50 +178,51 @@ end;
 
 function TframeEditor.Get_Alfa: single;
 begin
-  Result := Editor.VirtScreen.Alfa;
+  Result := docEditor.Canvas.Alfa;
 end;
 
 procedure TframeEditor.Set_Alfa(AValue: single);
 begin
-  Editor.VirtScreen.Alfa := AValue;
+  docEditor.Canvas.Alfa := AValue;
 end;
 
 function TframeEditor.Get_Fi: single;
 begin
-  Result := Editor.VirtScreen.Fi;
+  writeln('uframeeditor Get_Fi');
+  Result := docEditor.Canvas.Fi;
 end;
 
 procedure TframeEditor.Set_Fi(AValue: single);
 begin
-  Editor.VirtScreen.Fi := AValue;
+  docEditor.Canvas.Fi := AValue;
 end;
 
 procedure TframeEditor.InitView;
 {Locate the perspective and the axes, so that the origin (0,0) appears in the
 lower left corner. Call when the frame has its final size}
 begin
-  Editor.VirtScreen.Alfa := 0;
-  Editor.VirtScreen.Fi := 0;
-  Editor.VirtScreen.Zoom := 0.5;
-  Editor.VirtScreen.x_cam := ((PaintBox1.Width div 2) - 10) / Editor.VirtScreen.Zoom;
-  Editor.VirtScreen.y_cam := ((PaintBox1.Height div 2) - 10) / Editor.VirtScreen.Zoom;
+  docEditor.Canvas.Alfa := 0;
+  docEditor.Canvas.Fi := 0;
+  docEditor.Canvas.Zoom := 0.5;
+  docEditor.Canvas.x_cam := ((PaintBox1.Width div 2) - 10) / docEditor.Canvas.Zoom;
+  docEditor.Canvas.y_cam := ((PaintBox1.Height div 2) - 10) / docEditor.Canvas.Zoom;
 end;
 
-constructor TframeEditor.Create(AOwner: TComponent; ListObjGraf: TSketchCoreObjects);
+constructor TframeEditor.Create(AOwner: TComponent; argDocCorePbjects: TDocCoreObjects);
 begin
   inherited Create(AOwner);
-  sketchCoreObjects := ListObjGraf;
-  Editor := TEditor.Create(PaintBox1, sketchCoreObjects);
-  Editor.OnModify := @Editor_Modified;
-  Editor.OnChangeView := @Editor_ViewChange;
-  Editor.OnMouseMove := @Editor_MouseMove;
-  Editor.OnChangeState := @Editor_ChangeState;
-  Editor.OnSendMessage := @Editor_SendMessage;
+  DocCoreObjects := argDocCorePbjects;
+  docEditor := TDocEditor.Create(PaintBox1, DocCoreObjects);
+  docEditor.OnModify := @Editor_Modified;
+  docEditor.OnChangeView := @Editor_ViewChange;
+  docEditor.OnMouseMove := @Editor_MouseMove;
+  docEditor.OnChangeState := @Editor_ChangeState;
+  docEditor.OnSendMessage := @Editor_SendMessage;
 end;
 
 destructor TframeEditor.Destroy;
 begin
-  Editor.Destroy;
+  docEditor.Destroy;
   inherited;
 end;
 
